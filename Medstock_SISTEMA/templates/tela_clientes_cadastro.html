@@ -1,0 +1,184 @@
+{% extends 'tela_home.html' %}
+
+{% block conteudo %}
+<title>Document</title>
+<link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tela_clientes_cadastro.css') }}">
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Ícones -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<!-- Fonte moderna -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <div class="container d-flex align-items-center justify-content-center cadastro container">
+        <div class="cadastro-card text-center">
+
+            <h2 class="mb-3 text-dark">
+
+                {% if clientes_cadastro and clientes_cadastro.id %}
+                    Editar Cliente
+                {% else %}
+                    Cadastrar Cliente
+                {% endif %}
+            
+            </h2>
+
+            <form method="POST" action="{% if clientes_cadastro and clientes_cadastro.id %}{{ url_for('atualizar_clientes_cadastro', id=clientes_cadastro.id) }}{% else %}{{ url_for('salvar_clientes_cadastro') }}{% endif %}" id="cadastro-form">
+
+                <div class="linha">
+                <div class="mb-3 text-start">
+                    <label class="form-label text-dark">Nome</label>
+                    <div class="input-group">
+
+                        <input placeholder="Ex: João da Silva" type="text" name="nome" id="nome" class="form-control" value="{{ clientes_cadastro.nome if clientes_cadastro else '' }}" required>
+                    </div>
+                </div>
+
+                <div class="mb-3 text-start">
+                    <label class="form-label text-dark">CPF</label>
+                    <div class="input-group">
+
+                        <!--implementar api externa para validar cnpj posteriormente-->
+                        <input placeholder="000.000.000-00" type="text" name="cpf" id="cpf" class="form-control" value="{{ clientes_cadastro.cpf if clientes_cadastro else '' }}" maxlength="14" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="linha">
+                <div class="mb-3 text-start">
+                    <label class="form-label text-dark">telefone</label>
+                    <div class="input-group">
+
+                        <input placeholder="(11) 99999-9999" type="tel" name="telefone" id="telefone" class="form-control" value="{{ clientes_cadastro.telefone if clientes_cadastro else '' }}" maxlength="15" required>
+                    </div>
+                </div>
+
+                <div class="mb-3 text-start">
+                    <label class="form-label text-dark">Cidade</label>
+                    <div class="input-group">
+
+                        <input placeholder="Ex: São Paulo" type="text" name="cidade" id="cidade" class="form-control" value="{{ clientes_cadastro.cidade if clientes_cadastro else '' }}" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="linha">
+                <div class="mb-3 text-start">
+                    <label class="form-label text-dark">Estado</label>
+                    <div class="input-group">
+
+                        <select type="text" name="estado" id="estado" class="form-control" required>
+                            <option value="" disabled selected>Selecione um estado</option>
+                            <option value="AC" {% if clientes_cadastro and clientes_cadastro.estado == 'AC' %}selected{% endif %}>AC</option>
+                            <option value="AL" {% if clientes_cadastro and clientes_cadastro.estado == 'AL' %}selected{% endif %}>AL</option>
+                            <option value="AP" {% if clientes_cadastro and clientes_cadastro.estado == 'AP' %}selected{% endif %}>AP</option>
+                            <option value="AM" {% if clientes_cadastro and clientes_cadastro.estado == 'AM' %}selected{% endif %}>AM</option>
+                            <option value="BA" {% if clientes_cadastro and clientes_cadastro.estado == 'BA' %}selected{% endif %}>BA</option>
+                            <option value="CE" {% if clientes_cadastro and clientes_cadastro.estado == 'CE' %}selected{% endif %}>CE</option>
+                            <option value="DF" {% if clientes_cadastro and clientes_cadastro.estado == 'DF' %}selected{% endif %}>DF</option>
+                            <option value="ES" {% if clientes_cadastro and clientes_cadastro.estado == 'ES' %}selected{% endif %}>ES</option>
+                            <option value="GO" {% if clientes_cadastro and clientes_cadastro.estado == 'GO' %}selected{% endif %}>GO</option>
+                            <option value="MA" {% if clientes_cadastro and clientes_cadastro.estado == 'MA' %}selected{% endif %}>MA</option>
+                            <option value="MT" {% if clientes_cadastro and clientes_cadastro.estado == 'MT' %}selected{% endif %}>MT</option>
+                            <option value="MS" {% if clientes_cadastro and clientes_cadastro.estado == 'MS' %}selected{% endif %}>MS</option>
+                            <option value="MG" {% if clientes_cadastro and clientes_cadastro.estado == 'MG' %}selected{% endif %}>MG</option>
+                            <option value="PA" {% if clientes_cadastro and clientes_cadastro.estado == 'PA' %}selected{% endif %}>PA</option>
+                            <option value="PB" {% if clientes_cadastro and clientes_cadastro.estado == 'PB' %}selected{% endif %}>PB</option>
+                            <option value="PR" {% if clientes_cadastro and clientes_cadastro.estado == 'PR' %}selected{% endif %}>PR</option>
+                            <option value="PE" {% if clientes_cadastro and clientes_cadastro.estado == 'PE' %}selected{% endif %}>PE</option>
+                            <option value="PI" {% if clientes_cadastro and clientes_cadastro.estado == 'PI' %}selected{% endif %}>PI</option>
+                            <option value="RJ" {% if clientes_cadastro and clientes_cadastro.estado == 'RJ' %}selected{% endif %}>RJ</option>
+                            <option value="RN" {% if clientes_cadastro and clientes_cadastro.estado == 'RN' %}selected{% endif %}>RN</option>
+                            <option value="RS" {% if clientes_cadastro and clientes_cadastro.estado == 'RS' %}selected{% endif %}>RS</option>
+                            <option value="RO" {% if clientes_cadastro and clientes_cadastro.estado == 'RO' %}selected{% endif %}>RO</option>
+                            <option value="RR" {% if clientes_cadastro and clientes_cadastro.estado == 'RR' %}selected{% endif %}>RR</option>
+                            <option value="SC"{% if clientes_cadastro and clientes_cadastro.estado == 'SC' %}selected{% endif %}>SC</option>
+                            <option value="SP"{% if clientes_cadastro and clientes_cadastro.estado == 'SP' %}selected{% endif %}>SP</option>
+                            <option value="SE"{% if clientes_cadastro and clientes_cadastro.estado == 'SE' %}selected{% endif %}>SE</option>
+                            <option value="TO"{% if clientes_cadastro and clientes_cadastro.estado == 'TO' %}selected{% endif %}>TO</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3 text-start">
+                    <label class="form-label text-dark">CEP</label>
+                    <div class="input-group">
+
+                        <input placeholder="00000-000" type="text" name="cep" id="cep" class="form-control" value="{{ clientes_cadastro.cep if clientes_cadastro else '' }}" required>
+                    </div>
+                </div>
+            </div>
+
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% if mensagens %}
+              {% for categoria, msg in mensagens %}
+                <div class="custom-alert alert-{{ categoria }} alert-flash animate__animated animate__fadeIn" role="alert">
+                    <div class="alert-content">
+                        {% if categoria == 'success' %}
+                            <i class="bi bi-check-circle-fill alert-icon"></i>
+                        {% elif categoria == 'danger' or categoria == 'error' %}
+                            <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
+                        {% else %}
+                            <i class="bi bi-info-circle-fill alert-icon"></i>
+                        {% endif %}
+                        <span class="alert-text">{{ msg }}</span>
+                    </div>
+                </div>
+              {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+                <button class="btn btn-cadastro w-100 text-white mt-2">Cadastrar</button>
+            </form>
+
+
+        </div>
+    </div>
+
+    <script>
+// CPF ==================================================
+const cpf = document.getElementById('cpf');
+
+if (cpf) {
+    cpf.addEventListener('input', function (e) {
+        let valor = e.target.value.replace(/\D/g, '');
+
+        valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+        valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+        valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+
+        e.target.value = valor;
+    });
+}
+
+// TELEFONE =============================================
+const telefone = document.getElementById('telefone');
+
+if (telefone) {
+    telefone.addEventListener('input', function (e) {
+        let valor = e.target.value.replace(/\D/g, '');
+
+        valor = valor.replace(/^(\d{2})(\d)/, '($1) $2');
+        valor = valor.replace(/(\d{5})(\d)/, '$1-$2');
+
+        e.target.value = valor;
+    });
+}
+
+// CEP ==================================================
+const cep = document.getElementById('cep');
+
+if (cep) {
+    cep.addEventListener('input', function (e) {
+        let valor = e.target.value.replace(/\D/g, '');
+
+        valor = valor.replace(/^(\d{5})(\d)/, '$1-$2');
+
+        e.target.value = valor;
+    });
+}
+        </script>
+    {% endblock %}

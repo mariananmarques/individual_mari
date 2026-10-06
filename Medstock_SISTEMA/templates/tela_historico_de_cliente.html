@@ -1,0 +1,145 @@
+{% extends 'tela_home.html' %}
+
+{% block conteudo %}
+<title>Clientes | MEDSTOCK</title>
+<link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tela_historico_de_cliente.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<div class="container">
+    <main class="content">
+        
+        <div class="header">
+            <div class="header-left">
+                <h1>Clientes</h1>
+            </div>
+
+            <div class="header-right">
+                <div class="search-wrapper">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" id="inputBusca" placeholder="Buscar cliente...">
+                </div>
+                <a href="{{ url_for('tela_clientes_cadastro') }}" class="btn btn-cadastro">
+                    <i class="bi bi-plus-lg me-2"></i> Cadastrar Novo Cliente
+                </a>
+            </div>
+        </div>
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+          {% for categoria, msg in mensagens %}
+            <div class="custom-alert alert-{{ categoria }} alert-flash animate__animated animate__fadeIn" role="alert">
+                <div class="alert-content">
+                    {% if categoria == 'success' %}
+                        <i class="bi bi-check-circle-fill alert-icon"></i>
+                    {% elif categoria == 'danger' or categoria == 'error' %}
+                        <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
+                    {% else %}
+                        <i class="bi bi-info-circle-fill alert-icon"></i>
+                    {% endif %}
+                    <span class="alert-text">{{ msg }}</span>
+                </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>Telefone</th>
+                    <th>Estado</th>
+                    <th>Cidade</th>
+                    <th>CEP</th>
+                    <th class="col-acao"></th>
+                    <th class="col-acao"></th>
+                    <th class="col-acao"></th>
+                    <th class="col-acao"></th>
+                </tr>
+            </thead>
+            <tbody id="tabelaDados">
+                {% for cliente in clientes %}
+                <tr>
+                    <td>{{ cliente.nome }}</td>
+                    <td>{{ cliente.cpf }}</td>
+                    <td id="td_telefone">({{ cliente.telefone[:2] }}) {{ cliente.telefone[2:11] }}</td>
+                    <td>{{ cliente.estado }}</td>
+                    <td>{{ cliente.cidade }}</td>
+                    <td>{{ cliente.cep }}</td>
+                    <td class="acoes">
+                        <a class="btn-acao btn-editar" href="{{ url_for('editar_clientes_cadastro', id=cliente.id) }}">
+                            <i class="bi bi-pencil-square"></i>
+                            Editar
+                        </a>
+                    </td>
+                    <td class="acoes">
+
+                        <a class="btn-acao btn-pedido"
+                           href="{{ url_for('tela_produtos') }}">
+                            <i class="bi bi-cart-plus"></i>
+                            Fazer Pedido
+                        </a>
+                    
+                    </td>
+                    
+                    <td class="acoes">
+                    
+                        <a class="btn-acao btn-ver"
+                           href="{{ url_for('tela_pedidos_clientes', clientes_cadastro_id=cliente.id) }}">
+                            <i class="bi bi-clipboard-data"></i>
+                            Ver Pedidos
+                        </a>
+                    
+                    </td>
+                    
+                    <td class="acoes">
+                    
+                        <a class="btn-acao btn-excluir"
+                           href="{{ url_for('excluir_clientes_cadastro', id=cliente.id) }}">
+                            <i class="bi bi-trash"></i>
+                            Excluir
+                        </a>
+                    
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </main>
+</div>
+
+<script>
+    document.getElementById("inputBusca").addEventListener("keyup", function() {
+    
+        let filtro = this.value.toLowerCase();
+        let linhas = document.querySelectorAll("#tabelaDados tr");
+    
+        linhas.forEach(function(linha) {
+    
+            let nome = linha.cells[0].textContent.toLowerCase();
+            let cpf = linha.cells[1].textContent.toLowerCase();
+            let telefone = linha.cells[2].textContent.toLowerCase();
+            let estado = linha.cells[3].textContent.toLowerCase();
+            let cidade = linha.cells[4].textContent.toLowerCase();
+            let cep = linha.cells[5].textContent.toLowerCase();
+    
+            if (
+                nome.includes(filtro) ||
+                cpf.includes(filtro) ||
+                telefone.includes(filtro) ||
+                estado.includes(filtro) ||
+                cidade.includes(filtro) ||
+                cep.includes(filtro)
+            ) {
+                linha.style.display = "";
+            } else {
+                linha.style.display = "none";
+            }
+    
+        });
+    });
+    </script>
+{% endblock %}

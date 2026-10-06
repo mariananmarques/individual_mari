@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | MEDSTOCK</title>
+
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">  
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tela_home.css') }}">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Ícones -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <!-- Fonte -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <header class="navbar" id="cabecalho">
+
+        <!-- LADO ESQUERDO -->
+
+        <div class="left-navbar">
+
+            <!-- BOTÃO MENU -->
+
+            <button id="btn-menu" class="btn-menu">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <!-- LOGO -->
+
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/escrita_medstock2.png') }}" alt="" id="logoig">
+            </div>
+
+        </div>
+
+        <!-- MENU -->
+
+        <ul class="menu">
+            <li><a href="{{ url_for('tela_historico_de_fornecedor') }}">Fornecedor</a></li>
+            <li><a href="{{ url_for('tela_historico_de_cliente') }}">Cliente</a></li>
+        </ul>
+
+        <!-- ÍCONES -->
+
+        <div class="icones">
+
+            <!-- BOTÃO DO SINO -->
+            <button id="btnNotificacao"
+                    class="btn-icon-nav"
+                    aria-label="Notificações">
+        
+                <i class="bi bi-bell"></i>
+        
+                {% if notificacoes %}
+                    <span id="contadorNotificacao" class="contador-notificacao">
+                        {{ notificacoes|length }}
+                    </span>
+                {% endif %}
+        
+            </button>
+        
+        
+            <!-- PAINEL DE NOTIFICAÇÕES -->
+            <div id="painelNotificacao" class="painel-notificacao">
+        
+                <!-- CABEÇALHO -->
+                <div class="notificacao-header">
+        
+                    <h4>
+                        <i class="bi bi-bell"></i>
+                        Notificações
+                    </h4>
+        
+                    {% if notificacoes %}
+                        <button id="btnLimparNotificacoes"
+                                class="btn-limpar-notificacoes"
+                                type="button">
+        
+                            <i class="bi bi-trash3"></i>
+                            Limpar
+                        </button>
+                    {% endif %}
+        
+                </div>
+        
+        
+                <!-- LISTA DE NOTIFICAÇÕES -->
+                <div id="listaNotificacoes">
+        
+                    {% if notificacoes %}
+        
+                        {% for noti in notificacoes %}
+        
+                        <div class="noti-card">
+        
+                            <div class="circulo-{{ noti.tipo }}">
+        
+                                {% if noti.tipo == "vermelho" %}
+        
+                                    <i class="bi bi-exclamation-circle-fill"></i>
+        
+                                {% elif noti.tipo == "amarelo" %}
+        
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+        
+                                {% endif %}
+        
+                            </div>
+        
+                            <div class="noti-conteudo">
+        
+                                <h5>{{ noti.titulo }}</h5>
+        
+                                <p>{{ noti.mensagem }}</p>
+        
+                            </div>
+        
+                        </div>
+        
+                        {% endfor %}
+        
+                    {% else %}
+        
+                        <div class="noti-card notificacao-vazia">
+        
+                            <div class="circulo-azul">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+        
+                            <div class="noti-conteudo">
+        
+                                <h5>Sistema OK</h5>
+        
+                                <p>Nenhuma notificação pendente.</p>
+        
+                            </div>
+        
+                        </div>
+        
+                    {% endif %}
+        
+                </div>
+        
+            </div>
+        
+        </div>
+        
+    <a href="{{ url_for('tela_perfil_do_usuario') }}" class="user-nav" title="Meu perfil">
+        <div class="user-nav-info">
+            <span class="user-nav-hello">Olá,</span>
+            <span class="user-nav-name">
+                {{ session.get('cliente_nome', 'Usuário') }}
+            </span>
+        </div>
+        <div class="user-nav-avatar">
+            {% if session.get('usuario_foto') %}
+                <img src="{{ url_for('static', filename='img/' ~ session['usuario_foto']) }}" alt="">
+            {% else %}
+                <i class="bi bi-person-fill"></i>
+            {% endif %}
+        </div>
+    </a>
+</div>
+
+    </header>
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar close" id="sidebar">
+
+  <!-- Marca interna da sidebar -->
+  <div class="sb-brand">
+    <img src="{{ url_for('static', filename='img/favicon.png') }}" alt="MEDSTOCK">
+    <span class="sb-brand-text">MEDSTOCK</span>
+  </div>
+
+  <p class="sb-section">PRINCIPAL</p>
+
+  <ul class="sb-menu">
+    <li>
+      <a href="{{ url_for('tela_inicial') }}"
+         class="{{ 'active' if request.path == url_for('tela_inicial') }}"
+         data-tip="Home">
+        <i class="bi bi-house-door"></i>
+        <span>Home</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('tela_dashboard') }}"
+         class="{{ 'active' if request.path == url_for('tela_dashboard') }}"
+         data-tip="Dashboard">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+  </ul>
+
+  <p class="sb-section">ESTOQUE</p>
+
+  <ul class="sb-menu">
+    <li>
+      <a href="{{ url_for('tela_produtos') }}"
+         class="{{ 'active' if request.path == url_for('tela_produtos') }}"
+         data-tip="Gestão de Produtos">
+        <i class="bi bi-box-seam"></i>
+        <span>Gestão de Estoque</span>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('tela_cadastro_produto') }}"
+         class="{{ 'active' if request.path == url_for('tela_cadastro_produto') }}"
+         data-tip="Cadastro de Produtos">
+        <i class="bi bi-plus-square"></i>
+        <span>Cadastro de Produtos</span>
+      </a>
+    </li>
+  </ul>
+
+  <p class="sb-section">MOVIMENTAÇÕES</p>
+
+  <ul class="sb-menu">
+    <li>
+      <a href="{{ url_for('tela_entrada') }}"
+         class="{{ 'active' if request.path == url_for('tela_entrada') }}"
+         data-tip="Entrada">
+        <i class="bi bi-arrow-down-circle"></i>
+        <span>Entrada</span>
+        <em class="sb-dot in"></em>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('tela_saida') }}"
+         class="{{ 'active' if request.path == url_for('tela_saida') }}"
+         data-tip="Saída">
+        <i class="bi bi-arrow-up-circle"></i>
+        <span>Saída</span>
+        <em class="sb-dot out"></em>
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('tela_movimentacao') }}"
+         class="{{ 'active' if request.path == url_for('tela_movimentacao') }}"
+         data-tip="Movimentações">
+        <i class="bi bi-clock-history"></i>
+        <span>Movimentações</span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- Rodapé da sidebar -->
+  <div class="sb-footer">
+    <a href="{{ url_for('logout') }}" class="sb-logout" data-tip="Sair">
+      <i class="bi bi-box-arrow-right"></i>
+      <span>Sair</span>
+    </a>
+    <span class="sb-version">v1.0</span>
+  </div>
+
+</aside>
+
+
+    <!-- CONTEÚDO -->
+
+    <main class="conteudo expand" id="conteudo">
+
+        {% block conteudo %}{% endblock %}
+
+    </main>
+
+    <!-- SCRIPT -->
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const conteudo = document.getElementById("conteudo");
+            const linksMenu = document.querySelectorAll(".sidebar a, .menu a, .btn-cadastro, .btn-retorno-universal");
+    
+            linksMenu.forEach(link => {
+                // Ignora links vazios, de exclusão ou javascript puro
+                if (!link.getAttribute("href") || link.getAttribute("href").startsWith("#") || link.getAttribute("href").startsWith("javascript")) {
+                    return;
+                }
+    
+                link.addEventListener("click", function(e) {
+                    e.preventDefault(); // Segura o carregamento por milissegundos
+                    const destino = this.href;
+    
+                    // Suaviza a saída do conteúdo atual
+                    conteudo.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+                    conteudo.style.opacity = "0";
+                    conteudo.style.transform = "translateY(-4px)";
+    
+                    // Redireciona logo após o início do fade-out
+                    setTimeout(() => {
+                        window.location.href = destino;
+                    }, 180);
+                });
+            });
+        });
+    </script>
+
+    <script>
+        // Executa o código assim que a página terminar de carregar
+        document.addEventListener("DOMContentLoaded", function() {
+            // Seleciona todos os alertas que possuem a classe 'alert-flash'
+            const alertas = document.querySelectorAll('.alert-flash');
+            
+            alertas.forEach(function(alerta) {
+                // Define um temporizador de 4000 milissegundos (4 segundos)
+                setTimeout(function() {
+                    // Aplica uma transição suave de opacidade (efeito fade-out)
+                    alerta.style.transition = "opacity 0.5s ease";
+                    alerta.style.opacity = "0";
+                    
+                    // Remove o elemento do HTML completamente após o término da transição (0.5s)
+                    setTimeout(function() {
+                        alerta.remove();
+                    }, 500);
+                    
+                }, 7000); 
+            });
+        });
+    </script>
+
+    <script>
+
+        const btnMenu = document.getElementById("btn-menu");
+        const sidebar = document.getElementById("sidebar");
+        const conteudo = document.getElementById("conteudo");
+
+        btnMenu.addEventListener("click", () => {
+
+            sidebar.classList.toggle("close");
+            conteudo.classList.toggle("expand");
+
+        });
+
+    </script>
+
+
+<script>
+
+    const btnNotificacao =
+        document.getElementById("btnNotificacao");
+    
+    const painelNotificacao =
+        document.getElementById("painelNotificacao");
+    
+    btnNotificacao.addEventListener("click", function(e){
+    
+        e.stopPropagation();
+    
+        painelNotificacao.classList.toggle("ativo");
+    
+    });
+    
+    document.addEventListener("click", function(){
+    
+        painelNotificacao.classList.remove("ativo");
+    
+    });
+    
+    </script>
+
+    <script>
+        const btnLimparNotificacoes =
+    document.getElementById("btnLimparNotificacoes");
+
+const listaNotificacoes =
+    document.getElementById("listaNotificacoes");
+
+const contadorNotificacao =
+    document.getElementById("contadorNotificacao");
+
+
+if (btnLimparNotificacoes) {
+
+    btnLimparNotificacoes.addEventListener("click", function () {
+
+        // Remove todas as notificações
+        listaNotificacoes.innerHTML = `
+            <div class="noti-card notificacao-vazia">
+
+                <div class="circulo-azul">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+
+                <div class="noti-conteudo">
+                    <h5>Sistema OK</h5>
+                    <p>Nenhuma notificação pendente.</p>
+                </div>
+
+            </div>
+        `;
+
+
+        // Remove o contador
+        if (contadorNotificacao) {
+            contadorNotificacao.remove();
+        }
+
+
+        // Remove o próprio botão "Limpar"
+        btnLimparNotificacoes.remove();
+
+    });
+
+}
+    </script>
+</body>
+</html>

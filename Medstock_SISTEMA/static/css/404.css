@@ -1,0 +1,353 @@
+:root {
+    --deep: #1b4f8a;
+    --teal: #3fc1c9;
+
+    --bg: #f7fbfc;
+    --card: #ffffff;
+
+    --fg: #0f2b3f;
+    --muted: #5c7385;
+    --border: #e3edf1;
+
+    --gradient: linear-gradient(
+        100deg,
+        var(--deep),
+        var(--teal)
+    );
+
+    --shadow:
+        0 24px 60px -24px rgba(27, 79, 138, 0.35);
+}
+
+
+/* ==========================================================
+   RESET
+   ========================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ==========================================================
+   BODY
+   ========================================================== */
+
+body {
+    min-height: 100vh;
+
+    display: grid;
+    place-items: center;
+
+    padding: 64px 24px;
+
+    background: var(--bg);
+    color: var(--fg);
+
+    font-family:
+        system-ui,
+        -apple-system,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+
+    overflow: hidden;
+}
+
+
+/* ==========================================================
+   EFEITOS DE FUNDO
+   ========================================================== */
+
+.glow {
+    position: fixed;
+
+    width: 420px;
+    height: 420px;
+
+    border-radius: 50%;
+
+    background: var(--gradient);
+
+    filter: blur(90px);
+
+    opacity: 0.18;
+
+    pointer-events: none;
+}
+
+.glow.a {
+    top: -160px;
+    right: -120px;
+}
+
+.glow.b {
+    bottom: -160px;
+    left: -120px;
+
+    opacity: 0.13;
+}
+
+
+/* ==========================================================
+   CARD
+   ========================================================== */
+
+.card {
+    position: relative;
+
+    width: 100%;
+    max-width: 620px;
+
+    padding: 48px 40px;
+
+    text-align: center;
+
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    border-radius: 24px;
+
+    box-shadow: var(--shadow);
+
+    animation:
+        fadeIn 0.5s ease-out both;
+}
+
+
+/* ==========================================================
+   ÍCONE 404
+   ========================================================== */
+
+.badge {
+    position: relative;
+
+    width: 80px;
+    height: 80px;
+
+    margin: 0 auto 32px;
+
+    display: grid;
+    place-items: center;
+}
+
+.badge span {
+    width: 80px;
+    height: 80px;
+
+    border-radius: 20px;
+
+    background: var(--gradient);
+
+    color: #ffffff;
+
+    font-size: 30px;
+    font-weight: 700;
+
+    display: grid;
+    place-items: center;
+
+    animation:
+        float 6s ease-in-out infinite;
+}
+
+.badge::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 20px;
+
+    background: var(--gradient);
+
+    animation:
+        ring 2.6s ease-out infinite;
+}
+
+
+/* ==========================================================
+   TÍTULO 404
+   ========================================================== */
+
+h1 {
+    font-size: clamp(64px, 12vw, 96px);
+
+    line-height: 1;
+
+    font-weight: 800;
+
+    letter-spacing: -0.03em;
+
+    background: var(--gradient);
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+}
+
+
+/* ==========================================================
+   LINHA DECORATIVA
+   ========================================================== */
+
+.rule {
+    width: 96px;
+    height: 4px;
+
+    margin: 12px auto 0;
+
+    border-radius: 99px;
+
+    background: var(--gradient);
+}
+
+
+/* ==========================================================
+   SUBTÍTULO
+   ========================================================== */
+
+h2 {
+    margin-top: 24px;
+
+    font-size: 24px;
+}
+
+
+/* ==========================================================
+   TEXTO
+   ========================================================== */
+
+p {
+    max-width: 440px;
+
+    margin: 12px auto 0;
+
+    font-size: 15px;
+
+    line-height: 1.6;
+
+    color: var(--muted);
+}
+
+
+/* ==========================================================
+   BOTÃO
+   ========================================================== */
+
+.btn {
+    display: inline-block;
+
+    margin-top: 32px;
+
+    padding: 14px 28px;
+
+    border-radius: 14px;
+
+    background: var(--gradient);
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.btn:hover {
+    transform:
+        translateY(-2px)
+        scale(1.03);
+
+    box-shadow: var(--shadow);
+}
+
+
+/* ==========================================================
+   ANIMAÇÕES
+   ========================================================== */
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+
+@keyframes ring {
+
+    0% {
+        transform: scale(0.9);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+
+@keyframes fadeIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+
+/* ==========================================================
+   RESPONSIVIDADE
+   ========================================================== */
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 32px 18px;
+    }
+
+    .card {
+        padding: 40px 24px;
+
+        border-radius: 20px;
+    }
+
+    .badge {
+        margin-bottom: 24px;
+    }
+
+    h2 {
+        font-size: 21px;
+    }
+
+    p {
+        font-size: 14px;
+    }
+
+    .btn {
+        width: 100%;
+
+        padding: 14px 20px;
+    }
+}

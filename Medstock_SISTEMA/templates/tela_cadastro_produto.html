@@ -1,0 +1,324 @@
+{% extends 'tela_home.html' %}
+
+{% block conteudo %}
+<link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tela_cadastro_produto.css') }}">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<div id="btn-voltar">
+    <a href="{{ url_for('tela_produtos') }}" aria-label="Voltar para produtos">
+        <i class="bi bi-arrow-left"></i>
+        <span>Voltar</span>
+    </a>
+</div>
+<div class="main-content d-flex align-items-center justify-content-center main-wrapper">
+    <div class="container d-flex align-items-center justify-content-center cadastro-container">
+        <div class="cadastro-card">
+
+            <h2 class="form-title">{{ 'Editar Produto' if produto and produto.id else 'Cadastrar Produto' }}</h2>
+
+            <form method="POST"
+                action="{% if produto and produto.id %}{{ url_for('atualizar_produto', id=produto.id) }}{% else %}{{ url_for('salvar_produto') }}{% endif %}"
+                id="cadastro-form"
+                enctype="multipart/form-data">
+
+                <div class="row g-3 text-start">
+
+                    <div class="col-md-6">
+                        <label class="form-label">Nome do Produto</label>
+                        <input placeholder="Ex: Dipirona 500mg" type="text" name="nome" id="nome" class="form-control"
+                            value="{{ produto.nome if produto else '' }}" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Fornecedor</label>
+                        <select name="fornecedor_id" class="form-select" required>
+                            <option value="">Selecione um fornecedor</option>
+                            {% for fornecedor in fornecedores %}
+                                <option value="{{ fornecedor.id }}" {% if produto and produto.fornecedor_id == fornecedor.id %}selected{% endif %}>
+                                    {{ fornecedor.nome_fornecedor }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Quantidade em Estoque</label>
+                        <input placeholder="Ex: 150" type="number" id="quantidade" class="form-control" name="quantidade_estoque"
+                            value="{{ produto.quantidade_estoque if produto else '' }}" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Categoria</label>
+                        <select name="categoria" id="categoria" class="form-select" required>
+                            <option value="">Selecione uma categoria</option>
+                            
+                            <!-- Medicamentos Frequentes -->
+                            <option value="Analgésicos" {% if produto and produto.categoria == 'Analgésicos' %}selected{% endif %}>Analgésicos</option>
+                            <option value="Anti-inflamatórios" {% if produto and produto.categoria == 'Anti-inflamatórios' %}selected{% endif %}>Anti-inflamatórios</option>
+                            <option value="Antibióticos" {% if produto and produto.categoria == 'Antibióticos' %}selected{% endif %}>Antibióticos</option>
+                            <option value="Antialérgicos" {% if produto and produto.categoria == 'Antialérgicos' %}selected{% endif %}>Antialérgicos</option>
+                            <option value="Antifúngicos e Antivirais" {% if produto and produto.categoria == 'Antifúngicos e Antivirais' %}selected{% endif %}>Antifúngicos e Antivirais</option>
+                            <option value="Gastrointestinais" {% if produto and produto.categoria == 'Gastrointestinais' %}selected{% endif %}>Gastrointestinais</option>
+                            <option value="Cardiovasculares" {% if produto and produto.categoria == 'Cardiovasculares' %}selected{% endif %}>Cardiovasculares</option>
+                            <option value="Anti-hipertensivos" {% if produto and produto.categoria == 'Anti-hipertensivos' %}selected{% endif %}>Anti-hipertensivos</option>
+                            <option value="Antidiabéticos" {% if produto and produto.categoria == 'Antidiabéticos' %}selected{% endif %}>Antidiabéticos</option>
+                            <option value="Respiratórios" {% if produto and produto.categoria == 'Respiratórios' %}selected{% endif %}>Respiratórios</option>
+                            <option value="Dermatológicos" {% if produto and produto.categoria == 'Dermatológicos' %}selected{% endif %}>Dermatológicos</option>
+                            <option value="Corticoides" {% if produto and produto.categoria == 'Corticoides' %}selected{% endif %}>Corticoides</option>
+                            <option value="Psiquiatria e Neurologia" {% if produto and produto.categoria == 'Psiquiatria e Neurologia' %}selected{% endif %}>Psiquiatria e Neurologia</option>
+                            <option value="Medicamentos Controlados" {% if produto and produto.categoria == 'Medicamentos Controlados' %}selected{% endif %}>Medicamentos Controlados</option>
+                    
+                            <!-- Especialidades e Saúde Específica -->
+                            <option value="Ginecologia e Saúde da Mulher" {% if produto and produto.categoria == 'Ginecologia e Saúde da Mulher' %}selected{% endif %}>Ginecologia e Saúde da Mulher</option>
+                            <option value="Oftalmológicos e Otológicos" {% if produto and produto.categoria == 'Oftalmológicos e Otológicos' %}selected{% endif %}>Oftalmológicos e Otológicos</option>
+                            <option value="Endocrinologia" {% if produto and produto.categoria == 'Endocrinologia' %}selected{% endif %}>Endocrinologia</option>
+                            <option value="Fitoterápicos" {% if produto and produto.categoria == 'Fitoterápicos' %}selected{% endif %}>Fitoterápicos</option>
+                            <option value="Vacinas" {% if produto and produto.categoria == 'Vacinas' %}selected{% endif %}>Vacinas</option>
+                    
+                            <!-- Suplementos, Higiene e Utilidades -->
+                            <option value="Vitaminas e Suplementos" {% if produto and produto.categoria == 'Vitaminas e Suplementos' %}selected{% endif %}>Vitaminas e Suplementos</option>
+                            <option value="Higiene e Cuidados Pessoais" {% if produto and produto.categoria == 'Higiene e Cuidados Pessoais' %}selected{% endif %}>Higiene e Cuidados Pessoais</option>
+                            <option value="Dermocosméticos" {% if produto and produto.categoria == 'Dermocosméticos' %}selected{% endif %}>Dermocosméticos</option>
+                            <option value="Infantil e Bebês" {% if produto and produto.categoria == 'Infantil e Bebês' %}selected{% endif %}>Infantil e Bebês</option>
+                    
+                            <!-- Materiais de Apoio e Hospitalares -->
+                            <option value="Materiais Hospitalares" {% if produto and produto.categoria == 'Materiais Hospitalares' %}selected{% endif %}>Materiais Hospitalares</option>
+                            <option value="First Aid e Curativos" {% if produto and produto.categoria == 'First Aid e Curativos' %}selected{% endif %}>First Aid e Curativos</option>
+                            <option value="EPIs" {% if produto and produto.categoria == 'EPIs' %}selected{% endif %}>EPIs</option>
+                            <option value="Outros" {% if produto and produto.categoria == 'Outros' %}selected{% endif %}>Outros</option>
+                        </select>
+                    </div>
+
+                    <!-- Campo Tipo de Medicamento -->
+                    <div class="col-md-6">
+                        <label for="tipo_medicamento" class="form-label">Tipo do Medicamento</label>
+                        <select name="tipo_medicamento" id="tipo_medicamento" class="form-select" required>
+                            <option value="">Selecione o tipo</option>
+                            <option value="referencia" {% if produto and produto.tipo_medicamento == 'referencia' %}selected{% endif %}>Referência</option>
+                            <option value="generico" {% if produto and produto.tipo_medicamento == 'generico' %}selected{% endif %}>Genérico</option>
+                            <option value="similar" {% if produto and produto.tipo_medicamento == 'similar' %}selected{% endif %}>Similar</option>
+                            <option value="biologico" {% if produto and produto.tipo_medicamento == 'biologico' %}selected{% endif %}>Biológico</option>
+                            <option value="fitoterapico" {% if produto and produto.tipo_medicamento == 'fitoterapico' %}selected{% endif %}>Fitoterápico</option>
+                            <option value="outros" {% if produto and produto.tipo_medicamento == 'outros' %}selected{% endif %}>Outros</option>
+                        </select>
+                    </div>
+
+                    <!-- Campo Data de Validade -->
+                    <div class="col-md-6">
+                        <label for="data_validade" class="form-label">Data de Validade</label>
+                        <input
+                            type="date"
+                            name="data_validade"
+                            id="data_validade"
+                            class="form-control"
+                            value="{{ produto.data_validade if produto and produto.data_validade else '' }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label">Estoque Mínimo</label>
+                        <input placeholder="Ex: 20" type="number" id="estoque-min" class="form-control" name="estoque_minimo"
+                            value="{{ produto.estoque_minimo if produto else '' }}" required>
+                    </div>
+
+                    <!-- Preço de Custo -->
+                    <div class="col-md-6">
+                        <div class="label-row">
+                            <label class="form-label" for="preco_custo">Preço de Custo</label>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text">R$</span>
+                            <input placeholder="0,00" type="text" inputmode="decimal" class="form-control"
+                                name="preco_custo" id="preco_custo" autocomplete="off"
+                                value="{{ produto.preco_custo if produto else '' }}" required>
+                        </div>
+                    </div>
+
+                    <!-- Preço de Venda (automático + editável) -->
+                    <div class="col-md-6">
+                        <div class="label-row">
+                            <label class="form-label" for="preco_venda">Preço de Venda</label>
+                            <span class="margem-badge vazia" id="margem-badge" title="Margem sobre o preço de custo">
+                                <i class="bi bi-percent"></i>
+                                <span id="margem-texto">Margem 60%</span>
+                            </span>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text">R$</span>
+                            <input placeholder="0,00" type="text" inputmode="decimal" class="form-control"
+                                name="preco_venda" id="preco_venda" autocomplete="off"
+                                value="{{ produto.preco_venda if produto else '' }}" required>
+                        </div>
+                        <div class="preco-hint" id="preco-hint">
+                            <i class="bi bi-magic" id="hint-icone"></i>
+                            <span id="hint-texto">Calculado automaticamente (100% sobre o custo). Você pode editar.</span>
+                            <button type="button" class="btn-restaurar" id="btn-restaurar">
+                                <i class="bi bi-arrow-counterclockwise"></i> Restaurar 100%
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="campo foto-produto">
+                        <label for="imagem">Foto do Produto</label>
+
+                        <label class="upload-area" for="imagem">
+                            <i class="bi bi-cloud-arrow-up"></i>
+
+                            <span id="nome-arquivo">
+                                Clique para selecionar uma imagem
+                            </span>
+
+                            <small>PNG, JPG ou WEBP</small>
+                        </label>
+
+                        <input
+                            type="file"
+                            id="imagem"
+                            name="imagem"
+                            accept=".png,.jpg,.jpeg,.webp"
+                            hidden
+                        >
+                    </div>
+
+                </div>
+
+                {% with mensagens = get_flashed_messages(with_categories=true) %}
+                    {% if mensagens %}
+                        {% for categoria, msg in mensagens %}
+                            <div class="custom-alert alert-{{ categoria }} alert-flash animate__animated animate__fadeIn" role="alert">
+                                <div class="alert-content">
+                                    {% if categoria == 'success' %}
+                                        <i class="bi bi-check-circle-fill alert-icon"></i>
+                                    {% elif categoria == 'danger' or categoria == 'error' %}
+                                        <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
+                                    {% else %}
+                                        <i class="bi bi-info-circle-fill alert-icon"></i>
+                                    {% endif %}
+                                    <span class="alert-text">{{ msg }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <button type="submit" class="btn btn-cadastro w-100 text-white mt-4">
+                    <i class="bi bi-check-circle me-2"></i> Salvar Registro
+                </button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // ===== Preço de venda automático =====
+    const MARGEM_PADRAO = 100; // % sobre o preço de custo (altere aqui se quiser outro valor)
+
+    const precoCusto   = document.getElementById('preco_custo');
+    const precoVenda   = document.getElementById('preco_venda');
+    const badge        = document.getElementById('margem-badge');
+    const margemTexto  = document.getElementById('margem-texto');
+    const hintTexto    = document.getElementById('hint-texto');
+    const hintIcone    = document.getElementById('hint-icone');
+    const btnRestaurar = document.getElementById('btn-restaurar');
+
+    // Ao editar um produto que já tem preço de venda, começa em modo manual
+    // para não sobrescrever o valor salvo.
+    let manual = {{ 'true' if produto and produto.preco_venda else 'false' }};
+
+    function paraNumero(valor) {
+        const n = parseFloat(String(valor).replace(',', '.'));
+        return isNaN(n) ? 0 : n;
+    }
+
+    function limparDecimal(input) {
+        input.value = input.value.replace(',', '.').replace(/[^0-9.]/g, '');
+    }
+
+    function formatarPct(n) {
+        return String(Number(n.toFixed(1))).replace('.', ',');
+    }
+
+    function atualizar() {
+        const custo = paraNumero(precoCusto.value);
+
+        if (!manual) {
+            precoVenda.value = custo > 0
+                ? (custo * (1 + MARGEM_PADRAO / 100)).toFixed(2)
+                : '';
+        }
+
+        const venda = paraNumero(precoVenda.value);
+        const pct = (custo > 0 && venda > 0) ? (venda / custo - 1) * 100 : null;
+
+        // Badge com a porcentagem
+        badge.classList.remove('manual', 'negativa', 'vazia');
+        if (pct === null) {
+            margemTexto.textContent = 'Margem ' + MARGEM_PADRAO + '%';
+            badge.classList.add('vazia');
+        } else {
+            margemTexto.textContent = 'Margem ' + formatarPct(pct) + '%';
+            if (pct < 0) badge.classList.add('negativa');
+            else if (manual) badge.classList.add('manual');
+        }
+
+        // Texto de ajuda
+        if (manual) {
+            hintIcone.className = 'bi bi-pencil-square';
+            hintTexto.textContent = pct !== null && pct < 0
+                ? 'Atenção: preço de venda abaixo do custo.'
+                : 'Valor editado manualmente.';
+            btnRestaurar.classList.add('visivel');
+        } else {
+            hintIcone.className = 'bi bi-magic';
+            hintTexto.textContent = 'Calculado automaticamente (' + MARGEM_PADRAO + '% sobre o custo). Você pode editar.';
+            btnRestaurar.classList.remove('visivel');
+        }
+    }
+
+    precoCusto.addEventListener('input', function () {
+        limparDecimal(this);
+        atualizar();
+    });
+
+    precoVenda.addEventListener('input', function () {
+        limparDecimal(this);
+        manual = true;
+        atualizar();
+    });
+
+    // Se o usuário apagar o campo e sair, volta para o cálculo automático
+    precoVenda.addEventListener('blur', function () {
+        if (this.value.trim() === '') {
+            manual = false;
+            atualizar();
+        }
+    });
+
+    btnRestaurar.addEventListener('click', function () {
+        manual = false;
+        atualizar();
+    });
+
+    atualizar();
+</script>
+
+<script>
+    document.getElementById("imagem").addEventListener("change", function () {
+
+        const nome = document.getElementById("nome-arquivo");
+
+        if (this.files.length > 0) {
+            nome.textContent = this.files[0].name;
+        } else {
+            nome.textContent = "Clique para selecionar uma imagem";
+        }
+
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,783 @@
+{% extends 'tela_home.html' %}
+
+{% block conteudo %}
+
+<title>Pedidos de Entrada</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tela_entrada.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+{# Quantidade de filtros ativos (selo do botão) #}
+{% set filtros_ativos = (1 if produto_selecionado else 0)
+                      + (1 if fornecedor_selecionado else 0)
+                      + (1 if status_selecionado else 0) %}
+
+<div id="container">
+
+    <main id="content">
+
+        <!-- ================= HEADER ================= -->
+
+        <div id="header">
+
+            <div class="header-title">
+                <h1>Pedidos de Entrada</h1>
+                <i id="icon" class="bi bi-box-arrow-in-down"></i>
+            </div>
+
+            <div class="header-controls">
+
+                <!-- FILTROS -->
+                <div class="filtro-dropdown">
+
+                    <button type="button"
+                            class="btn-filtros {% if filtros_ativos %}ativo{% endif %}"
+                            id="btnFiltros"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            aria-controls="filtrosPainel">
+                        <i class="bi bi-funnel-fill"></i>
+                        <span>Filtros</span>
+                        {% if filtros_ativos %}
+                        <span class="filtro-badge">{{ filtros_ativos }}</span>
+                        {% endif %}
+                        <i class="bi bi-list"></i>
+                    </button>
+
+                    <div class="filtros-painel" id="filtrosPainel">
+
+                        <form method="GET" action="{{ url_for('tela_entrada') }}" class="filtros-form">
+
+                            <label class="filtro-campo">
+                                <span>Produto</span>
+                                <select name="produto" onchange="this.form.submit()">
+                                    <option value="">Todos os produtos</option>
+                                    {% for produto in produtos_filtro %}
+                                    <option value="{{ produto.nome }}"
+                                        {% if produto_selecionado == produto.nome %}selected{% endif %}>
+                                        {{ produto.nome }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+
+                            <label class="filtro-campo">
+                                <span>Fornecedor</span>
+                                <select name="fornecedor" onchange="this.form.submit()">
+                                    <option value="">Todos os fornecedores</option>
+                                    {% for fornecedor in fornecedores_filtro %}
+                                    <option value="{{ fornecedor.nome_fornecedor }}"
+                                        {% if fornecedor_selecionado == fornecedor.nome_fornecedor %}selected{% endif %}>
+                                        {{ fornecedor.nome_fornecedor }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+
+                            <label class="filtro-campo">
+                                <span>Status</span>
+                                <select name="status" onchange="this.form.submit()">
+                                    <option value="">Todos os status</option>
+                                    <option value="PENDENTE" {% if status_selecionado == 'PENDENTE' %}selected{% endif %}>⏳ Pendente</option>
+                                    <option value="PROCESSADO" {% if status_selecionado == 'PROCESSADO' %}selected{% endif %}>✅ Processado</option>
+                                    <option value="CANCELADO" {% if status_selecionado == 'CANCELADO' %}selected{% endif %}>❌ Cancelado</option>
+                                </select>
+                            </label>
+
+                        </form>
+
+                        {% if filtros_ativos %}
+                        <a href="{{ url_for('tela_entrada') }}" class="btn-limpar-filtros">
+                            <i class="bi bi-x-circle"></i>
+                            Limpar filtros
+                        </a>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                <!-- BUSCA -->
+                <div class="busca-wrap">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="inputBusca" placeholder="Pesquisar">
+                </div>
+
+                <!-- NOVO PEDIDO -->
+                <a href="{{ url_for('tela_produtos') }}" class="btn-cadastro">
+                    <i class="bi bi-plus-lg"></i>
+                    Fazer Novo Pedido
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= MENSAGENS ================= -->
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% if mensagens %}
+                {% for categoria, msg in mensagens %}
+                <div class="custom-alert alert-{{ categoria }} alert-flash" role="alert">
+                    <div class="alert-content">
+                        {% if categoria == 'success' %}
+                            <i class="bi bi-check-circle-fill alert-icon"></i>
+                        {% elif categoria == 'danger' or categoria == 'error' %}
+                            <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
+                        {% else %}
+                            <i class="bi bi-info-circle-fill alert-icon"></i>
+                        {% endif %}
+                        <span class="alert-text">{{ msg }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+
+        <!-- ================= TOPO ================= -->
+
+        <div class="pedidos-topo-info">
+
+            <div>
+                <h2><i class="bi bi-list-check"></i> Entradas de produtos</h2>
+                <p>Histórico dos pedidos de entrada e movimentações.</p>
+            </div>
+
+            <div class="total-registros">
+                <i class="bi bi-box-arrow-in-down"></i>
+                <strong id="contadorRegistros">{{ entradas|length }}</strong>
+                <span>registros</span>
+            </div>
+
+        </div>
+
+
+        <!-- ================= GRID ================= -->
+
+        <div class="pedidos-grid" id="pedidosGrid">
+
+            {% for item in entradas %}
+
+            {% set status_classe = 'status-pendente' %}
+            {% if item.status == 'PROCESSADO' %}
+                {% set status_classe = 'status-processado' %}
+            {% elif item.status == 'CANCELADO' %}
+                {% set status_classe = 'status-cancelado' %}
+            {% endif %}
+
+            <div class="pedido-card {{ status_classe }}"
+                data-id="{{ item.id }}"
+                data-nome="{{ item.nome }}"
+                data-fornecedor="{{ item.nome_fornecedor }}"
+                data-status="{{ item.status }}"
+                data-quantidade="{{ item.quantidade_pedido }}"
+                data-valor="{{ '%.2f'|format(item.valor_total|float) }}"
+                data-data="{{ item.data_pedido.strftime('%d/%m/%Y') }}"
+                data-observacao="{{ item.observacao if item.observacao else '' }}"
+                data-processar="{% if item.status == 'PENDENTE' %}{{ url_for('processar_entrada', id=item.id) }}{% endif %}"
+                data-cancelar="{% if item.status == 'PENDENTE' %}{{ url_for('cancelar_entrada', id=item.id) }}{% endif %}"
+                data-imagem="{% if item.imagem %}{% if item.imagem.startswith('http://') or item.imagem.startswith('https://') %}{{ item.imagem }}{% else %}{{ url_for('static', filename='uploads/produtos/' + item.imagem) }}{% endif %}{% endif %}">
+
+                <!-- TOPO -->
+                <div class="card-topo">
+
+                    <div class="card-imagem {% if not item.imagem %}sem-imagem{% endif %}">
+
+                        {% if item.imagem %}
+                            {% if item.imagem.startswith('http://') or item.imagem.startswith('https://') %}
+                                <img src="{{ item.imagem }}" alt="{{ item.nome }}" loading="lazy"
+                                     onerror="this.parentElement.classList.add('sem-imagem');">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='uploads/produtos/' + item.imagem) }}"
+                                     alt="{{ item.nome }}" loading="lazy"
+                                     onerror="this.parentElement.classList.add('sem-imagem');">
+                            {% endif %}
+                        {% endif %}
+
+                        <i class="bi bi-capsule"></i>
+
+                    </div>
+
+                    <span class="status-badge {{ status_classe }}">
+                        <span class="dot"></span>
+                        {% if item.status == 'PENDENTE' %}Pendente
+                        {% elif item.status == 'PROCESSADO' %}Processado
+                        {% elif item.status == 'CANCELADO' %}Cancelado
+                        {% else %}{{ item.status }}{% endif %}
+                    </span>
+
+                </div>
+
+                <!-- CORPO -->
+                <div class="card-corpo">
+
+                    <span class="card-categoria">
+                        <i class="bi bi-building"></i>
+                        {{ item.nome_fornecedor }}
+                    </span>
+
+                    <h3 class="card-nome">{{ item.nome }}</h3>
+
+                    <div class="card-preco">
+                        <span class="moeda">R$</span>
+                        <span>{{ '%.2f'|format(item.valor_total|float) }}</span>
+                    </div>
+
+                    <div class="card-estoque-linha">
+                        <div class="estoque-info">
+                            <i class="bi bi-box-seam"></i>
+                            <span>{{ item.quantidade_pedido }} un.</span>
+                        </div>
+                        <div class="estoque-minimo-info">
+                            <span>{{ item.data_pedido.strftime('%d/%m/%Y') }}</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- AÇÕES -->
+                <div class="card-acoes">
+
+                    {% if item.status == 'PENDENTE' %}
+
+                        <a class="btn-acao btn-entrada"
+                           href="{{ url_for('processar_entrada', id=item.id) }}"
+                           onclick="abrirModalConfirmacao(event, this, 'processar')">
+                            <i class="bi bi-check-lg"></i> Processar
+                        </a>
+
+                        <a class="btn-acao btn-cancelar"
+                           href="{{ url_for('cancelar_entrada', id=item.id) }}"
+                           onclick="abrirModalConfirmacao(event, this, 'cancelar')">
+                            <i class="bi bi-x-lg"></i> Cancelar
+                        </a>
+
+                    {% else %}
+
+                        <span class="acao-indisponivel-card">
+                            {% if item.status == 'PROCESSADO' %}
+                                <i class="bi bi-check-circle"></i> Pedido processado
+                            {% elif item.status == 'CANCELADO' %}
+                                <i class="bi bi-x-circle"></i> Pedido cancelado
+                            {% else %}
+                                <i class="bi bi-lock"></i> Pedido finalizado
+                            {% endif %}
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- ================= ESTADO VAZIO ================= -->
+
+        {% if not entradas %}
+        <div class="estado-vazio">
+            <i class="bi bi-box-seam"></i>
+            <p>Nenhum pedido de entrada encontrado para os filtros selecionados.</p>
+            {% if filtros_ativos %}
+            <a href="{{ url_for('tela_entrada') }}" class="btn-limpar-filtros">
+                <i class="bi bi-x-circle"></i>
+                Limpar filtros
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Aparece quando a busca esconde todos os cards -->
+        <div class="estado-vazio" id="semResultadosBusca" hidden>
+            <i class="bi bi-search"></i>
+            <p>Nenhum pedido corresponde à sua pesquisa.</p>
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- =============================================================
+     MODAL DE DETALHES DO PEDIDO
+============================================================= -->
+
+<div id="modalOverlay" class="modal-overlay" aria-hidden="true">
+
+    <div id="modalPedido" class="modal-produto" role="dialog" aria-modal="true"
+         aria-labelledby="modalNome" tabindex="-1">
+
+        <div class="modal-header">
+
+            <div class="modal-header-info">
+
+                <div class="modal-icone" id="modalIcone">
+                    <i class="bi bi-capsule"></i>
+                </div>
+
+                <div class="modal-header-texto">
+                    <span class="modal-categoria-tag status-badge" id="modalStatus">Status</span>
+                    <h2 id="modalNome">Produto</h2>
+                </div>
+
+            </div>
+
+            <button type="button" id="fecharModal" class="btn-fechar-modal" aria-label="Fechar">
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+        </div>
+
+        <div class="modal-conteudo">
+
+            <div class="modal-alerta-estoque" id="modalAlertaPendente" hidden>
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span>Este pedido ainda está pendente de processamento.</span>
+            </div>
+
+            <div class="modal-info">
+                <div class="modal-info-icone"><i class="bi bi-truck"></i></div>
+                <div class="modal-info-texto">
+                    <span>Fornecedor</span>
+                    <strong id="modalFornecedor">-</strong>
+                </div>
+            </div>
+
+            <div class="modal-precos">
+
+                <div class="preco-box">
+                    <span>Quantidade</span>
+                    <strong id="modalQuantidade">0 un.</strong>
+                </div>
+
+                <div class="preco-box preco-venda">
+                    <span>Valor total</span>
+                    <strong><small>R$</small><span id="modalValor">0,00</span></strong>
+                </div>
+
+                <div class="preco-box">
+                    <span>Data</span>
+                    <strong id="modalData">-</strong>
+                </div>
+
+            </div>
+
+            <div class="modal-informacoes">
+
+                <div class="modal-info">
+                    <div class="modal-info-icone"><i class="bi bi-hash"></i></div>
+                    <div class="modal-info-texto">
+                        <span>Código do pedido</span>
+                        <strong id="modalId">#0</strong>
+                    </div>
+                </div>
+
+                <div class="modal-info" id="modalObsWrap">
+                    <div class="modal-info-icone"><i class="bi bi-chat-left-text"></i></div>
+                    <div class="modal-info-texto">
+                        <span>Observação</span>
+                        <strong id="modalObservacao">Nenhuma observação</strong>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="modal-acoes" id="modalAcoes">
+
+            <a id="modalProcessar" href="#" class="modal-btn modal-btn-entrada">
+                <i class="bi bi-check-lg"></i> Processar
+            </a>
+
+            <a id="modalCancelar" href="#" class="modal-btn modal-btn-excluir">
+                <i class="bi bi-x-lg"></i> Cancelar
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     MODAL DE CONFIRMAÇÃO (Processar / Cancelar)
+============================================================= -->
+
+<div id="modalConfirmacao" class="modal-overlay" aria-hidden="true">
+
+    <div class="modal-confirmacao-card" role="dialog" aria-modal="true"
+         aria-labelledby="confirmTitulo" aria-describedby="confirmMensagem">
+
+        <div id="confirmIcone" class="modal-confirmacao-icone">
+            <i class="bi bi-question-lg"></i>
+        </div>
+
+        <h3 id="confirmTitulo">Confirmar ação</h3>
+
+        <p id="confirmMensagem">Tem certeza que deseja realizar esta ação?</p>
+
+        <div class="modal-confirmacao-acoes">
+
+            <button type="button" class="confirm-btn confirm-btn-voltar" onclick="fecharModalConfirmacao()">
+                <i class="bi bi-arrow-left"></i>
+                <span>Voltar</span>
+            </button>
+
+            <a id="btnConfirmarAcao" href="#" class="confirm-btn confirm-btn-confirmar">
+                <i id="confirmBtnIcone" class="bi bi-check-lg"></i>
+                <span id="confirmBtnTexto">Confirmar</span>
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* Move os overlays para o BODY (modais sempre centralizados) */
+    const overlay = document.getElementById("modalOverlay");
+    const overlayConfirmacao = document.getElementById("modalConfirmacao");
+
+    [overlay, overlayConfirmacao].forEach(function (el) {
+        if (el && el.parentElement !== document.body) {
+            document.body.appendChild(el);
+        }
+    });
+
+
+    /* ========================================================
+       PAINEL DE FILTROS (abrir / fechar)
+    ======================================================== */
+
+    const btnFiltros = document.getElementById("btnFiltros");
+    const filtrosPainel = document.getElementById("filtrosPainel");
+
+    function fecharFiltros() {
+        filtrosPainel.classList.remove("aberto");
+        btnFiltros.setAttribute("aria-expanded", "false");
+    }
+
+    btnFiltros.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const aberto = filtrosPainel.classList.toggle("aberto");
+        btnFiltros.setAttribute("aria-expanded", aberto ? "true" : "false");
+    });
+
+    filtrosPainel.addEventListener("click", function (e) {
+        e.stopPropagation();
+    });
+
+    document.addEventListener("click", fecharFiltros);
+
+
+    /* ========================================================
+       BUSCA (mantém o texto ao trocar de filtro)
+    ======================================================== */
+
+    const inputBusca = document.getElementById("inputBusca");
+    const contador = document.getElementById("contadorRegistros");
+    const semResultadosBusca = document.getElementById("semResultadosBusca");
+    const CHAVE_BUSCA = "medstock_busca_entrada";
+
+    function aplicarBusca() {
+
+        const filtro = (inputBusca.value || "").toLowerCase().trim();
+        const cards = document.querySelectorAll(".pedido-card");
+        let visiveis = 0;
+
+        cards.forEach(function (card) {
+
+            const texto = [
+                card.dataset.nome,
+                card.dataset.fornecedor,
+                card.dataset.status
+            ].join(" ").toLowerCase();
+
+            const mostrar = texto.includes(filtro);
+
+            card.style.display = mostrar ? "" : "none";
+
+            if (mostrar) visiveis++;
+
+        });
+
+        if (contador) contador.textContent = visiveis;
+
+        semResultadosBusca.hidden = !(cards.length > 0 && visiveis === 0);
+
+    }
+
+    try {
+        const salva = sessionStorage.getItem(CHAVE_BUSCA);
+        if (salva) {
+            inputBusca.value = salva;
+            aplicarBusca();
+        }
+    } catch (err) { /* sessionStorage indisponível */ }
+
+    inputBusca.addEventListener("input", function () {
+        try { sessionStorage.setItem(CHAVE_BUSCA, this.value); } catch (err) { /* ignora */ }
+        aplicarBusca();
+    });
+
+
+    /* ========================================================
+       ELEMENTOS DO MODAL
+    ======================================================== */
+
+    const modal = document.getElementById("modalPedido");
+    const fecharModal = document.getElementById("fecharModal");
+    const modalIcone = document.getElementById("modalIcone");
+    const modalNome = document.getElementById("modalNome");
+    const modalStatus = document.getElementById("modalStatus");
+    const modalId = document.getElementById("modalId");
+    const modalFornecedor = document.getElementById("modalFornecedor");
+    const modalQuantidade = document.getElementById("modalQuantidade");
+    const modalValor = document.getElementById("modalValor");
+    const modalData = document.getElementById("modalData");
+    const modalObservacao = document.getElementById("modalObservacao");
+    const modalAlertaPendente = document.getElementById("modalAlertaPendente");
+    const modalAcoes = document.getElementById("modalAcoes");
+    const modalProcessar = document.getElementById("modalProcessar");
+    const modalCancelar = document.getElementById("modalCancelar");
+
+    let ultimoElementoFocado = null;
+
+    function formatarPreco(valor) {
+        return parseFloat(valor || 0).toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+
+    /* ========================================================
+       PREENCHER MODAL
+    ======================================================== */
+
+    function preencherModal(card) {
+
+        const nome = card.dataset.nome || "Pedido";
+        const status = card.dataset.status || "-";
+        const imagem = card.dataset.imagem || "";
+        const observacao = card.dataset.observacao || "";
+
+        /* Imagem ou ícone */
+        modalIcone.innerHTML = "";
+
+        const iconeEl = document.createElement("i");
+        iconeEl.className = "bi bi-capsule";
+
+        if (imagem) {
+
+            modalIcone.classList.remove("sem-imagem");
+
+            const img = document.createElement("img");
+            img.src = imagem;
+            img.alt = nome;
+            img.onerror = function () {
+                modalIcone.classList.add("sem-imagem");
+                img.remove();
+            };
+
+            modalIcone.appendChild(img);
+
+        } else {
+
+            modalIcone.classList.add("sem-imagem");
+
+        }
+
+        modalIcone.appendChild(iconeEl);
+
+        modalNome.textContent = nome;
+
+        /* Status */
+        modalStatus.classList.remove("status-pendente", "status-processado", "status-cancelado");
+
+        const rotulos = {
+            PENDENTE: ["Pendente", "status-pendente"],
+            PROCESSADO: ["Processado", "status-processado"],
+            CANCELADO: ["Cancelado", "status-cancelado"]
+        };
+
+        if (rotulos[status]) {
+            modalStatus.textContent = rotulos[status][0];
+            modalStatus.classList.add(rotulos[status][1]);
+        } else {
+            modalStatus.textContent = status;
+        }
+
+        modalId.textContent = "#" + (card.dataset.id || "0");
+        modalFornecedor.textContent = card.dataset.fornecedor || "-";
+        modalQuantidade.textContent = (card.dataset.quantidade || "0") + " un.";
+        modalValor.textContent = formatarPreco(card.dataset.valor);
+        modalData.textContent = card.dataset.data || "-";
+        modalObservacao.textContent = observacao || "Nenhuma observação";
+
+        modalAlertaPendente.hidden = (status !== "PENDENTE");
+
+        /* Ações (só para pedidos pendentes) */
+        if (status === "PENDENTE") {
+
+            modalAcoes.hidden = false;
+
+            modalProcessar.href = card.dataset.processar || "#";
+            modalCancelar.href = card.dataset.cancelar || "#";
+
+            modalProcessar.onclick = function (e) { abrirModalConfirmacao(e, this, "processar"); };
+            modalCancelar.onclick = function (e) { abrirModalConfirmacao(e, this, "cancelar"); };
+
+        } else {
+
+            modalAcoes.hidden = true;
+
+        }
+
+    }
+
+
+    /* ========================================================
+       ABRIR / FECHAR DETALHES
+    ======================================================== */
+
+    function abrirModal(card) {
+
+        ultimoElementoFocado = document.activeElement;
+
+        preencherModal(card);
+
+        overlay.classList.add("visivel");
+        overlay.setAttribute("aria-hidden", "false");
+        document.body.classList.add("modal-aberto");
+
+        requestAnimationFrame(function () { modal.focus(); });
+
+    }
+
+    function fecharDetalhes() {
+
+        overlay.classList.remove("visivel");
+        overlay.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("modal-aberto");
+
+        if (ultimoElementoFocado) ultimoElementoFocado.focus();
+
+    }
+
+    document.querySelectorAll(".pedido-card").forEach(function (card) {
+
+        card.addEventListener("click", function (e) {
+            if (e.target.closest("a")) return;
+            abrirModal(card);
+        });
+
+    });
+
+    fecharModal.addEventListener("click", function (e) {
+        e.stopPropagation();
+        fecharDetalhes();
+    });
+
+    overlay.addEventListener("click", function (e) {
+        if (e.target === overlay) fecharDetalhes();
+    });
+
+    overlayConfirmacao.addEventListener("click", function (e) {
+        if (e.target === overlayConfirmacao) fecharModalConfirmacao();
+    });
+
+
+    /* ESC: fecha o modal aberto (confirmação > detalhes > filtros) */
+    document.addEventListener("keydown", function (e) {
+
+        if (e.key !== "Escape") return;
+
+        if (overlayConfirmacao.classList.contains("visivel")) {
+            fecharModalConfirmacao();
+        } else if (overlay.classList.contains("visivel")) {
+            fecharDetalhes();
+        } else {
+            fecharFiltros();
+        }
+
+    });
+
+
+    /* ========================================================
+       MODAL DE CONFIRMAÇÃO
+    ======================================================== */
+
+    window.abrirModalConfirmacao = function (event, elemento, tipo) {
+
+        if (event) event.preventDefault();
+
+        const url = elemento.getAttribute("href");
+
+        if (!url || url === "#") return;
+
+        if (overlay.classList.contains("visivel")) fecharDetalhes();
+
+        const confirmIcone = document.getElementById("confirmIcone");
+        const confirmTitulo = document.getElementById("confirmTitulo");
+        const confirmMensagem = document.getElementById("confirmMensagem");
+        const btnConfirmarAcao = document.getElementById("btnConfirmarAcao");
+        const confirmBtnIcone = document.getElementById("confirmBtnIcone");
+        const confirmBtnTexto = document.getElementById("confirmBtnTexto");
+
+        confirmIcone.classList.remove("tipo-cancelar");
+        btnConfirmarAcao.classList.remove("tipo-cancelar");
+
+        if (tipo === "cancelar") {
+
+            confirmIcone.classList.add("tipo-cancelar");
+            confirmIcone.innerHTML = '<i class="bi bi-exclamation-lg"></i>';
+            confirmTitulo.textContent = "Cancelar pedido?";
+            confirmMensagem.textContent = "Tem certeza que deseja cancelar este pedido? Esta ação não pode ser desfeita.";
+            btnConfirmarAcao.classList.add("tipo-cancelar");
+            confirmBtnIcone.className = "bi bi-x-lg";
+            confirmBtnTexto.textContent = "Sim, cancelar";
+
+        } else {
+
+            confirmIcone.innerHTML = '<i class="bi bi-check-lg"></i>';
+            confirmTitulo.textContent = "Processar pedido?";
+            confirmMensagem.textContent = "Tem certeza que deseja processar este pedido? O estoque será atualizado.";
+            confirmBtnIcone.className = "bi bi-check-lg";
+            confirmBtnTexto.textContent = "Sim, processar";
+
+        }
+
+        btnConfirmarAcao.href = url;
+
+        overlayConfirmacao.classList.add("visivel");
+        overlayConfirmacao.setAttribute("aria-hidden", "false");
+        document.body.classList.add("modal-aberto");
+
+    };
+
+    window.fecharModalConfirmacao = function () {
+
+        overlayConfirmacao.classList.remove("visivel");
+        overlayConfirmacao.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("modal-aberto");
+
+    };
+
+});
+
+</script>
+
+{% endblock %}

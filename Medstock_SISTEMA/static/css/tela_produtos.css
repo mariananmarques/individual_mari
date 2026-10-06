@@ -1,0 +1,1160 @@
+/* ============================================================
+   MEDSTOCK - TELA DE PRODUTOS
+============================================================ */
+
+/* RESET */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+body { background: #F4F6FA; overflow-x: hidden; }
+body.modal-aberto { overflow: hidden; }
+
+#container { display: flex; }
+
+#content { flex: 1; padding: 30px 40px; overflow-x: auto; }
+
+
+/* ============================================================
+   HEADER
+============================================================ */
+
+#header { display: flex; flex-direction: column; gap: 18px; margin-bottom: 28px; }
+
+.header-title { display: flex; align-items: center; gap: 10px; }
+
+#header h1 { color: #0B2D6B; font-size: 40px; font-weight: 700; line-height: 1; }
+
+#icon { font-size: 30px; color: #00C4C0; }
+
+.header-controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+
+/* ============================================================
+   FILTROS (botão + painel)
+============================================================ */
+
+.filtro-dropdown { position: relative; flex-shrink: 0; }
+
+.btn-filtros {
+    display: flex; align-items: center; gap: 10px;
+    height: 52px; padding: 0 20px;
+    background: #EEF1F5;
+    border: 2px solid transparent;
+    border-radius: 26px;
+    color: #0B2D6B; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: .2s ease;
+}
+
+.btn-filtros:hover { background: #E3E7EE; }
+
+.btn-filtros:focus-visible { outline: none; border-color: #00C4C0; }
+
+/* Botão com filtro ativo */
+.btn-filtros.ativo { background: #E6FBFA; border-color: #00C4C0; }
+
+.btn-filtros i.bi-funnel-fill { color: #0B2D6B; font-size: 15px; }
+
+.btn-filtros i.bi-list { color: #8A93A6; font-size: 18px; }
+
+/* Selo com a quantidade de filtros ativos */
+.filtro-badge {
+    min-width: 22px; height: 22px; padding: 0 6px;
+    border-radius: 999px;
+    background: #0B2D6B; color: #fff;
+    font-size: 12px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+}
+
+.filtro-badge[hidden] { display: none; }
+
+.filtros-painel {
+    position: absolute; top: 60px; left: 0;
+    background: #FFFFFF;
+    border: 1px solid #E7EAF0;
+    border-radius: 14px;
+    box-shadow: 0 10px 24px rgba(16, 24, 64, 0.14);
+    padding: 16px;
+    width: 380px; max-width: calc(100vw - 48px);
+    max-height: min(78vh, 680px);
+    overflow-y: auto;
+    display: none; flex-direction: column; gap: 14px;
+    z-index: 100;
+}
+
+.filtros-painel.aberto { display: flex; }
+
+.filtros-painel::-webkit-scrollbar { width: 5px; }
+.filtros-painel::-webkit-scrollbar-track { background: transparent; }
+.filtros-painel::-webkit-scrollbar-thumb { background: #D5DCE8; border-radius: 10px; }
+
+.filtros-form { display: flex; flex-direction: column; gap: 12px; }
+
+.filtro-campo { display: flex; flex-direction: column; gap: 6px; }
+
+.filtro-campo > span { font-size: 12.5px; font-weight: 600; color: #536078; }
+
+.filtros-form select,
+.filtro-select {
+    width: 100%; height: 46px; padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    background: #fafafa;
+    font-size: 14px; color: #17223B;
+    cursor: pointer; transition: .3s;
+}
+
+.filtros-form select:hover,
+.filtro-select:hover { border-color: #00C4C0; }
+
+.filtros-form select:focus,
+.filtro-select:focus {
+    outline: none; border-color: #00C4C0;
+    box-shadow: 0 0 0 3px rgba(0, 196, 192, .15);
+}
+
+.btn-limpar-filtros {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #FFEDEE; color: #DC2626;
+    font-size: 13.5px; font-weight: 600;
+    text-decoration: none; transition: .2s ease;
+}
+
+.btn-limpar-filtros:hover { background: #FFE0E2; }
+
+.btn-limpar-filtros[hidden] { display: none; }
+
+
+/* ----- Seção "Sanitários e Regulatórios" ----- */
+
+.filtro-secao-titulo {
+    display: flex; align-items: center; gap: 8px;
+    padding-top: 14px;
+    border-top: 1px solid #EEF1F6;
+    color: #00819F;
+    font-size: 12px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: .5px;
+}
+
+.filtro-secao-titulo i { font-size: 14px; }
+
+.filtro-grupo { display: flex; flex-direction: column; gap: 8px; }
+
+.filtro-rotulo { font-size: 12.5px; font-weight: 600; color: #536078; }
+
+
+/* ----- Chips (seleção única) ----- */
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.chips.desativado { opacity: .5; }
+
+.chip {
+    height: 32px; padding: 0 12px;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #FAFAFA;
+    border: 1px solid #D7DCE6;
+    border-radius: 999px;
+    color: #536078; font-size: 12.5px; font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer; transition: .15s ease;
+}
+
+.chip i { font-size: 12px; }
+
+.chip:hover { border-color: #00C4C0; color: #0B2D6B; }
+
+.chip:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(0, 196, 192, .25); }
+
+.chip:disabled { cursor: not-allowed; }
+
+.chip:disabled:hover { border-color: #D7DCE6; color: #536078; }
+
+.chip.ativo { background: #E6FBFA; border-color: #00C4C0; color: #00819F; }
+
+/* Validade: cores por urgência */
+.chip.chip-perigo:hover { border-color: #DC2626; color: #DC2626; }
+.chip.chip-perigo.ativo { background: #FFEDEE; border-color: #DC2626; color: #DC2626; }
+
+.chip.chip-atencao:hover { border-color: #D97706; color: #D97706; }
+.chip.chip-atencao.ativo { background: #FFF4E5; border-color: #D97706; color: #D97706; }
+
+.chip.chip-aviso:hover { border-color: #CA8A04; color: #A16207; }
+.chip.chip-aviso.ativo { background: #FEFCE8; border-color: #EAB308; color: #A16207; }
+
+
+/* ----- Bolinha da cor da receita (Branca / Azul / Amarela) ----- */
+
+.dot-receita {
+    display: inline-block;
+    width: 11px; height: 11px;
+    margin-right: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(15, 23, 42, .18);
+    flex-shrink: 0;
+    vertical-align: -1px;
+}
+
+.receita-branca { background: #FFFFFF; border-color: #94A3B8; }
+.receita-azul { background: #2563EB; border-color: #1D4ED8; }
+.receita-amarela { background: #FACC15; border-color: #CA8A04; }
+
+/* Dentro do modal a bolinha precisa de espaço até o texto */
+.modal-info-texto .dot-receita { margin-right: 6px; }
+
+
+/* ============================================================
+   RESUMO DE RESULTADOS (busca / filtros)
+============================================================ */
+
+.resultados-info {
+    display: flex; align-items: center; gap: 8px;
+    margin: -12px 0 16px;
+    font-size: 13px; font-weight: 600; color: #536078;
+}
+
+.resultados-info[hidden] { display: none; }
+
+.resultados-info i { color: #00C4C0; }
+
+
+/* ============================================================
+   BUSCA
+============================================================ */
+
+.busca-wrap {
+    flex: 1; min-width: 220px;
+    display: flex; align-items: center; gap: 10px;
+    height: 52px; padding: 0 20px;
+    background: #EEF1F5; border-radius: 26px;
+}
+
+.busca-wrap i { color: #8A93A6; font-size: 16px; }
+
+.busca-wrap input {
+    flex: 1; height: 100%;
+    border: none; background: transparent; outline: none;
+    font-size: 15px; color: #17223B;
+}
+
+.busca-wrap input::placeholder { color: #97A0B3; }
+
+
+/* ============================================================
+   ALTERNÂNCIA DE VISUALIZAÇÃO (Grade / Lista / Tabela)
+============================================================ */
+
+.view-toggle {
+    display: flex; align-items: center; gap: 4px;
+    flex-shrink: 0;
+    height: 52px; padding: 4px;
+    background: #EEF1F5; border-radius: 26px;
+}
+
+.view-btn {
+    width: 44px; height: 44px;
+    border: none; border-radius: 20px;
+    background: transparent; color: #8A93A6; font-size: 17px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: .2s ease;
+}
+
+.view-btn:hover { color: #0B2D6B; }
+
+.view-btn.ativo {
+    background: #FFFFFF; color: #00819F;
+    box-shadow: 0 2px 6px rgba(16, 24, 64, .14);
+}
+
+.view-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(0, 196, 192, .35); }
+
+
+/* ============================================================
+   BOTÃO CADASTRO
+============================================================ */
+
+.btn-cadastro {
+    flex-shrink: 0;
+    height: 52px; padding: 0 22px;
+    border: none; border-radius: 12px;
+    background: #EEF1F5; color: #8A93A6 !important;
+    font-size: 14.5px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 8px;
+    text-decoration: none; white-space: nowrap;
+    transition: all .25s ease;
+    box-shadow: 0 2px 6px rgba(11, 45, 107, 0.25);
+}
+
+.btn-cadastro i { font-size: 14px; }
+
+.btn-cadastro:hover {
+    cursor: pointer;
+    background: #00C4C0; color: #fcfcfc !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(11, 45, 107, 0.3);
+}
+
+.btn-cadastro:active { transform: translateY(1px); }
+
+
+/* ============================================================
+   VISUALIZAÇÕES — wrapper comum
+============================================================ */
+
+.produtos-visualizacoes { display: flex; flex-direction: column; }
+
+/* IMPORTANTE: .produtos-grid e .produtos-lista definem "display"
+   próprio (grid/flex), o que sobrepõe o "display: none" implícito
+   do atributo [hidden]. Sem esta regra, as três visualizações
+   podem ficar visíveis ao mesmo tempo. */
+.produtos-visualizacoes [hidden] { display: none !important; }
+
+
+/* ============================================================
+   GRID
+============================================================ */
+
+.produtos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 20px;
+}
+
+
+/* ============================================================
+   CARD
+============================================================ */
+
+.produto-card {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #E7EAF0;
+    border-left: 4px solid #00C4C0;
+    box-shadow: 0 1px 3px rgba(16, 24, 64, 0.06);
+    padding: 20px;
+    cursor: pointer;
+    display: flex; flex-direction: column; gap: 14px;
+    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+.produto-card:hover {
+    box-shadow: 0 8px 20px rgba(16, 24, 64, 0.10);
+    transform: translateY(-2px);
+}
+
+.produto-card.card-estoque-baixo { border-left: 4px solid #DC2626; }
+
+
+/* ============================================================
+   TOPO DO CARD
+============================================================ */
+
+.card-topo { display: flex; justify-content: space-between; align-items: flex-start; }
+
+.card-imagem {
+    position: relative; overflow: hidden;
+    width: 90px; height: 90px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #E6FBFA 0%, #E4EEFF 100%);
+    display: flex; align-items: center; justify-content: center;
+}
+
+.card-imagem img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+
+.card-imagem i { display: none; font-size: 26px; color: #00819F; }
+
+.card-imagem.sem-imagem i { display: block; }
+
+.card-imagem.sem-imagem img { display: none; }
+
+.card-estoque-baixo .card-imagem { background: linear-gradient(135deg, #FFEDEE 0%, #FFF4E5 100%); }
+
+.card-estoque-baixo .card-imagem i { color: #DC2626; }
+
+
+/* ============================================================
+   MENU (...) — reaproveitado na grade, lista e tabela
+============================================================ */
+
+.card-opcoes-wrap { position: relative; flex-shrink: 0; }
+
+/* Eleva o card/linha/tr que tem o menu "..." aberto, para o menu
+   nunca ficar coberto pelo item vizinho (grade, lista ou tabela) */
+.produto-card:has(.menu-opcoes.aberto),
+.produto-linha:has(.menu-opcoes.aberto) {
+    position: relative;
+    z-index: 50;
+}
+
+.produtos-tabela tbody tr:has(.menu-opcoes.aberto) {
+    position: relative;
+    z-index: 50;
+}
+
+.btn-opcoes {
+    width: 34px; height: 34px;
+    border: none; border-radius: 10px;
+    background: transparent; color: #7A8399; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: .2s;
+}
+
+.btn-opcoes:hover { background: #F1F3F8; color: #002D81; }
+
+.menu-opcoes {
+    position: absolute; top: 40px; right: 0;
+    background: white;
+    border: 1px solid #E7EAF0;
+    border-radius: 12px;
+    box-shadow: 0 10px 24px rgba(16, 24, 64, 0.14);
+    min-width: 150px; padding: 6px;
+    display: none; flex-direction: column; gap: 2px;
+    z-index: 100;
+}
+
+.menu-opcoes.aberto { display: flex; }
+
+.menu-opcoes a {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 10px; border-radius: 8px;
+    font-size: 14px; font-weight: 500;
+    text-decoration: none; color: #2563EB;
+    transition: .15s;
+}
+
+.menu-opcoes a:hover { background: #E8F1FF; }
+
+.menu-opcoes a.opcao-excluir { color: #DC2626; }
+
+.menu-opcoes a.opcao-excluir:hover { background: #FFEDEE; }
+
+
+/* ============================================================
+   CORPO DO CARD
+============================================================ */
+
+.card-corpo { display: flex; flex-direction: column; gap: 4px; }
+
+.card-categoria { font-size: 12.5px; font-weight: 600; color: #00819F; }
+
+.card-nome { font-size: 18px; font-weight: 700; color: #17223B; line-height: 1.25; }
+
+/* Linha do preço: preço à esquerda, selo de genérico à direita */
+.card-preco-linha {
+    margin-top: 6px;
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 10px;
+}
+
+.card-preco { display: flex; align-items: baseline; gap: 4px; color: #002D81; }
+
+.card-preco .moeda { font-size: 13px; font-weight: 600; }
+
+.card-preco span:last-child { font-size: 24px; font-weight: 700; }
+
+
+/* ============================================================
+   SELO DE MEDICAMENTO GENÉRICO
+   Quadrado amarelo com "G" azul (padrão do genérico).
+   - padrão: card da grade (canto direito da linha do preço)
+   - .compacto: lista e tabela, ao lado do nome
+   - .pill: cabeçalho do modal
+============================================================ */
+
+.selo-generico {
+    flex-shrink: 0;
+    width: 46px; height: 46px;
+    border-radius: 10px;
+    background: #FFC800;
+    color: #1E2A8A;
+    font-size: 32px; font-weight: 900; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 3px rgba(16, 24, 64, 0.18);
+    cursor: help;
+    user-select: none;
+}
+
+.selo-generico.compacto {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    font-size: 15px;
+    box-shadow: none;
+}
+
+.selo-generico.pill {
+    width: auto; height: auto;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 11.5px; font-weight: 800; letter-spacing: .2px;
+    box-shadow: none;
+}
+
+
+/* ============================================================
+   BADGE DE TARJA (restrição de venda)
+   Aparece no card (ao lado da foto), na lista, na tabela
+   e no cabeçalho do modal. Produto isento = sem badge.
+============================================================ */
+
+.tarja-badge {
+    align-self: flex-start;
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-bottom: 4px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    color: #FFFFFF;
+    font-size: 11.5px; font-weight: 700; line-height: 1;
+    letter-spacing: .2px;
+    white-space: nowrap;
+}
+
+.tarja-badge i { font-size: 12px; }
+
+.tarja-badge[hidden] { display: none; }
+
+/* Tarja Preta */
+.tarja-preta { background: #1E293B; }
+
+/* Tarja Vermelha / Retenção de Receita */
+.tarja-vermelha { background: #EF4444; }
+
+/* Versão compacta (lista e tabela) */
+.tarja-badge.compacto {
+    margin-bottom: 0;
+    padding: 4px 8px;
+    font-size: 10.5px;
+    gap: 5px;
+}
+
+.tarja-badge.compacto i { font-size: 11px; }
+
+/* Badge ao lado da foto (topo do card): ícone em cima, texto
+   embaixo, e o texto quebra em linhas para caber no espaço
+   entre a foto e o menu (...) */
+.card-topo-esq {
+    flex: 1; min-width: 0;
+    display: flex; align-items: flex-start; gap: 12px;
+}
+
+.card-topo-esq .card-imagem { flex-shrink: 0; }
+
+.tarja-badge.ao-lado {
+    flex-shrink: 1;
+    min-width: 0;
+    flex-direction: column; align-items: flex-start; gap: 4px;
+    margin-bottom: 0;
+    padding: 7px 9px;
+    border-radius: 10px;
+    font-size: 10.5px; line-height: 1.2;
+    white-space: normal;
+}
+
+.tarja-badge.ao-lado i { font-size: 14px; }
+
+
+/* ============================================================
+   ESTOQUE (grade)
+============================================================ */
+
+.card-estoque-linha { margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+
+.estoque-info { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: #17223B; }
+
+.estoque-info.estoque-baixo { color: #DC2626; }
+
+.estoque-minimo-info { font-size: 13px; color: #8A93A6; }
+
+
+/* ============================================================
+   BOTÕES ENTRADA / SAÍDA — reaproveitados na grade e na lista
+============================================================ */
+
+.card-acoes { display: flex; gap: 10px; }
+
+.btn-acao {
+    flex: 1;
+    text-decoration: none;
+    padding: 9px 10px; border-radius: 10px;
+    font-size: 13.5px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    transition: .2s ease;
+    white-space: nowrap;
+}
+
+.btn-acao i { font-size: 14px; }
+
+.btn-entrada { background: #E7FFF5; color: #059669; border: 1px solid #A7F3D0; }
+.btn-entrada:hover { background: #D8FCEC; transform: translateY(-1px); }
+
+.btn-saida { background: #FFF4E5; color: #D97706; border: 1px solid #FCD9A5; }
+.btn-saida:hover { background: #FFE9C7; transform: translateY(-1px); }
+
+
+/* ============================================================
+   VISUALIZAÇÃO EM LISTA
+============================================================ */
+
+.produtos-lista { display: flex; flex-direction: column; gap: 12px; }
+
+.produto-linha {
+    position: relative;
+    display: flex; align-items: center; gap: 16px;
+    background: #fff;
+    border: 1px solid #E7EAF0;
+    border-left: 4px solid #00C4C0;
+    border-radius: 14px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: box-shadow .2s ease, transform .2s ease;
+}
+
+.produto-linha:hover {
+    box-shadow: 0 8px 18px rgba(16, 24, 64, 0.10);
+    transform: translateY(-1px);
+}
+
+.produto-linha.linha-estoque-baixo { border-left-color: #DC2626; }
+
+.linha-imagem {
+    position: relative; overflow: hidden; flex-shrink: 0;
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #E6FBFA 0%, #E4EEFF 100%);
+    display: flex; align-items: center; justify-content: center;
+}
+
+.linha-imagem img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+
+.linha-imagem i { display: none; font-size: 18px; color: #00819F; }
+
+.linha-imagem.sem-imagem i { display: block; }
+
+.linha-imagem.sem-imagem img { display: none; }
+
+.produto-linha.linha-estoque-baixo .linha-imagem { background: linear-gradient(135deg, #FFEDEE 0%, #FFF4E5 100%); }
+
+.produto-linha.linha-estoque-baixo .linha-imagem i { color: #DC2626; }
+
+.linha-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+
+/* Nome + selo de genérico + badge de tarja na mesma linha */
+.linha-titulo { display: flex; align-items: center; gap: 8px; min-width: 0; }
+
+.linha-nome {
+    min-width: 0;
+    font-size: 15.5px; font-weight: 700; color: #17223B;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.linha-meta { font-size: 12.5px; color: #8A93A6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.linha-preco {
+    min-width: 96px; flex-shrink: 0; text-align: right;
+    color: #002D81; font-weight: 700; font-size: 16px;
+}
+
+.linha-preco .moeda { font-size: 11px; font-weight: 700; }
+
+.linha-estoque {
+    min-width: 90px; flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+}
+
+.linha-estoque .qtd { font-size: 14px; font-weight: 700; color: #17223B; display: flex; align-items: center; gap: 4px; }
+
+.linha-estoque.baixo .qtd { color: #DC2626; }
+
+.linha-estoque .min { font-size: 11.5px; color: #8A93A6; }
+
+.linha-acoes { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+.linha-acoes .btn-acao { flex: none; padding: 8px 12px; }
+
+
+/* ============================================================
+   VISUALIZAÇÃO EM TABELA
+============================================================ */
+
+.produtos-tabela-wrap {
+    background: #fff;
+    border: 1px solid #E7EAF0;
+    border-radius: 16px;
+    overflow-x: auto;
+}
+
+.produtos-tabela { width: 100%; border-collapse: collapse; min-width: 780px; }
+
+.produtos-tabela thead th {
+    text-align: left;
+    font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
+    color: #7C879B; background: #F7F9FC;
+    padding: 14px 16px;
+    border-bottom: 1px solid #E7EAF0;
+    white-space: nowrap;
+}
+
+.produtos-tabela tbody tr {
+    cursor: pointer;
+    border-bottom: 1px solid #EEF1F6;
+    transition: background .15s ease;
+}
+
+.produtos-tabela tbody tr:last-child { border-bottom: none; }
+
+.produtos-tabela tbody tr:hover { background: #F7F9FC; }
+
+.produtos-tabela tbody tr.tr-estoque-baixo td:first-child { box-shadow: inset 4px 0 0 #DC2626; }
+
+.produtos-tabela td { padding: 12px 16px; font-size: 14px; color: #26334D; vertical-align: middle; }
+
+.td-produto { display: flex; align-items: center; gap: 12px; }
+
+.td-imagem {
+    position: relative; overflow: hidden; flex-shrink: 0;
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #E6FBFA 0%, #E4EEFF 100%);
+    display: flex; align-items: center; justify-content: center;
+}
+
+.td-imagem img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+
+.td-imagem i { display: none; font-size: 14px; color: #00819F; }
+
+.td-imagem.sem-imagem i { display: block; }
+
+.td-imagem.sem-imagem img { display: none; }
+
+.tr-estoque-baixo .td-imagem { background: linear-gradient(135deg, #FFEDEE 0%, #FFF4E5 100%); }
+
+.tr-estoque-baixo .td-imagem i { color: #DC2626; }
+
+.td-nome-produto { font-weight: 700; color: #17223B; white-space: nowrap; }
+
+.td-preco { font-weight: 700; color: #002D81; white-space: nowrap; }
+
+.td-estoque { white-space: nowrap; font-weight: 600; }
+
+.td-estoque.baixo { color: #DC2626; }
+
+.td-acoes { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+
+.btn-icone-acao {
+    width: 32px; height: 32px; flex-shrink: 0;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; font-size: 14px;
+    transition: .2s ease;
+}
+
+.btn-icone-entrada { background: #E7FFF5; color: #059669; }
+.btn-icone-entrada:hover { background: #D8FCEC; }
+
+.btn-icone-saida { background: #FFF4E5; color: #D97706; }
+.btn-icone-saida:hover { background: #FFE9C7; }
+
+
+/* ============================================================
+   ESTADO VAZIO
+============================================================ */
+
+.estado-vazio {
+    background: white;
+    border: 1px dashed #D7DCE6;
+    border-radius: 16px;
+    padding: 60px 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    color: #8A93A6;
+    text-align: center;
+}
+
+.estado-vazio[hidden] { display: none; }
+
+.estado-vazio i { font-size: 36px; color: #00C4C0; }
+
+
+/* ============================================================
+   MODAL DE DETALHES DO PRODUTO
+============================================================ */
+
+.modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15, 23, 42, 0.50);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    z-index: 999999;
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity .22s ease, visibility .22s ease;
+}
+
+.modal-overlay.visivel { opacity: 1; visibility: visible; pointer-events: auto; }
+
+.modal-produto {
+    width: 460px; max-width: 100%;
+    max-height: calc(100vh - 48px);
+    background: #FFFFFF;
+    border-radius: 22px;
+    box-shadow: 0 30px 70px rgba(16, 24, 64, 0.28), 0 8px 20px rgba(16, 24, 64, 0.12);
+    display: flex; flex-direction: column;
+    overflow: hidden; outline: none;
+    transform: scale(.94) translateY(10px);
+    opacity: 0;
+    transition: transform .22s cubic-bezier(.2, .9, .3, 1), opacity .22s ease;
+}
+
+.modal-overlay.visivel .modal-produto { transform: scale(1) translateY(0); opacity: 1; }
+
+
+/* CABEÇALHO DO MODAL */
+
+.modal-header {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+    padding: 26px 26px 22px;
+    background: linear-gradient(135deg, #F1F8FF 0%, #E6FBFA 100%);
+    border-bottom: 1px solid #E7EAF0;
+    flex-shrink: 0;
+}
+
+.modal-header-info { display: flex; align-items: center; gap: 14px; min-width: 0; }
+
+.modal-icone {
+    position: relative; overflow: hidden;
+    flex-shrink: 0;
+    width: 100px; height: 100px;
+    border-radius: 16px;
+    background: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(16, 24, 64, 0.10);
+    display: flex; align-items: center; justify-content: center;
+}
+
+.modal-icone img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
+
+.modal-icone i { display: none; font-size: 24px; color: #00819F; }
+
+.modal-icone.sem-imagem i { display: block; }
+
+.modal-header-texto { min-width: 0; }
+
+/* Espaço dos selos (genérico + tarja) no cabeçalho (some quando vazio) */
+.modal-tarja-slot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 8px; }
+
+.modal-tarja-slot:empty { display: none; }
+
+.modal-tarja-slot .tarja-badge { margin-bottom: 0; }
+
+.modal-categoria-tag {
+    display: block; margin-bottom: 4px;
+    color: #00A9A6; font-size: 12px; font-weight: 800;
+    letter-spacing: .6px; text-transform: uppercase;
+}
+
+.modal-header h2 {
+    color: #17223B; font-size: 21px; line-height: 1.25; font-weight: 700;
+    word-break: break-word;
+}
+
+.btn-fechar-modal {
+    flex-shrink: 0;
+    width: 40px; height: 40px;
+    border: none; border-radius: 12px;
+    background: #FFFFFF; color: #8490A5; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(16, 24, 64, 0.08);
+    transition: .2s ease;
+}
+
+.btn-fechar-modal:hover { background: #FFEDEE; color: #DC2626; transform: rotate(90deg); }
+
+
+/* CONTEÚDO DO MODAL */
+
+.modal-conteudo {
+    padding: 22px 26px 6px;
+    overflow-y: auto;
+    display: flex; flex-direction: column; gap: 18px;
+}
+
+.modal-conteudo::-webkit-scrollbar { width: 5px; }
+.modal-conteudo::-webkit-scrollbar-track { background: transparent; }
+.modal-conteudo::-webkit-scrollbar-thumb { background: #D5DCE8; border-radius: 10px; }
+
+
+/* AVISO DE TARJA (restrição de venda) */
+
+.modal-alerta-tarja {
+    display: flex; align-items: flex-start; gap: 10px;
+    border: 1px solid transparent;
+    border-radius: 12px; padding: 12px 14px;
+    font-size: 13px; font-weight: 600; line-height: 1.4;
+}
+
+.modal-alerta-tarja[hidden] { display: none; }
+
+.modal-alerta-tarja i { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+
+.modal-alerta-tarja.alerta-tarja-preta {
+    background: #F1F5F9; border-color: #CBD5E1; color: #1E293B;
+}
+
+.modal-alerta-tarja.alerta-tarja-vermelha {
+    background: #FEF2F2; border-color: #FECACA; color: #B91C1C;
+}
+
+
+/* ALERTA DE ESTOQUE BAIXO */
+
+.modal-alerta-estoque {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: #FFF2F2; border: 1px solid #FFD3D3; color: #B91C1C;
+    border-radius: 12px; padding: 12px 14px;
+    font-size: 13px; font-weight: 600; line-height: 1.4;
+}
+
+.modal-alerta-estoque[hidden] { display: none; }
+
+.modal-alerta-estoque i { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+
+
+/* PREÇOS E MARGEM */
+
+.modal-precos { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+.preco-box {
+    background: #F7F9FC; border: 1px solid #EEF1F6; border-radius: 14px;
+    padding: 14px 12px;
+    display: flex; flex-direction: column; gap: 6px;
+    min-width: 0;
+}
+
+.preco-box > span {
+    color: #7C879B; font-size: 11.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .3px;
+}
+
+.preco-box strong {
+    display: flex; align-items: baseline; gap: 3px;
+    color: #17223B; font-size: 19px; font-weight: 700; line-height: 1.1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.preco-box strong small { font-size: 12px; font-weight: 700; }
+
+.preco-venda { background: linear-gradient(135deg, #F1F8FF 0%, #E9FBFA 100%); border-color: #DCEEF7; }
+
+.preco-venda strong { color: #002D81; font-size: 21px; }
+
+.preco-margem strong { color: #059669; }
+
+.preco-margem.margem-negativa strong { color: #DC2626; }
+
+
+/* NÍVEL DE ESTOQUE */
+
+.modal-estoque-card {
+    background: #F7F9FC; border: 1px solid #EEF1F6; border-radius: 16px;
+    padding: 16px 16px 14px;
+    display: flex; flex-direction: column; gap: 10px;
+}
+
+.modal-estoque-topo { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+
+.modal-estoque-topo span { display: flex; align-items: center; gap: 6px; color: #536078; font-weight: 600; }
+
+.modal-estoque-topo span i { color: #00A6B5; }
+
+.modal-estoque-topo strong { color: #17223B; font-size: 15px; }
+
+.modal-estoque-barra {
+    position: relative; width: 100%; height: 10px;
+    background: #E7EAF0; border-radius: 999px; overflow: visible;
+}
+
+.modal-estoque-preenchimento { height: 100%; width: 0%; border-radius: 999px; transition: width .35s ease; }
+
+.modal-estoque-preenchimento.barra-normal { background: linear-gradient(90deg, #00C4C0, #00819F); }
+.modal-estoque-preenchimento.barra-atencao { background: linear-gradient(90deg, #FBBF24, #D97706); }
+.modal-estoque-preenchimento.barra-baixa { background: linear-gradient(90deg, #F87171, #DC2626); }
+
+.modal-estoque-marcador-minimo {
+    position: absolute; top: -3px;
+    width: 2px; height: 16px;
+    background: #17223B; opacity: .35; border-radius: 2px;
+}
+
+.modal-estoque-legenda {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; color: #8A93A6; font-weight: 600;
+}
+
+.modal-estoque-legenda strong { color: #536078; }
+
+.modal-estoque-status {
+    padding: 3px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .3px;
+}
+
+.modal-estoque-status.status-normal { background: #E6FBFA; color: #00819F; }
+.modal-estoque-status.status-atencao { background: #FFF4E5; color: #D97706; }
+.modal-estoque-status.status-baixo { background: #FFEDEE; color: #DC2626; }
+
+
+/* INFORMAÇÕES GERAIS */
+
+.modal-informacoes { display: flex; flex-direction: column; gap: 10px; padding-bottom: 4px; }
+
+.modal-info {
+    min-height: 62px; padding: 10px 12px;
+    background: #F7F9FC; border: 1px solid #EEF1F6; border-radius: 13px;
+    display: flex; align-items: center; gap: 12px;
+}
+
+.modal-info[hidden] { display: none; }
+
+.modal-info-icone {
+    flex-shrink: 0;
+    width: 38px; height: 38px;
+    border-radius: 11px;
+    background: #E6FBFA; color: #00A6B5; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.modal-info-texto { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+
+.modal-info-texto span { color: #8993A7; font-size: 12px; font-weight: 600; }
+
+.modal-info-texto strong { color: #26334D; font-size: 14px; font-weight: 700; line-height: 1.3; word-break: break-word; }
+
+
+/* DATA DE VALIDADE (situação: no prazo / perto de vencer / vencido) */
+
+.validade-status {
+    margin-left: auto; flex-shrink: 0;
+    padding: 4px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; line-height: 1.2;
+    white-space: nowrap;
+}
+
+.validade-status[hidden] { display: none; }
+
+.validade-status.validade-ok { background: #E6FBFA; color: #00819F; }
+.validade-status.validade-atencao { background: #FFF4E5; color: #D97706; }
+.validade-status.validade-vencida { background: #FFEDEE; color: #DC2626; }
+
+.modal-info.validade-ok .modal-info-icone { background: #E6FBFA; color: #00A6B5; }
+
+.modal-info.validade-atencao { background: #FFFBF3; border-color: #FCE3B8; }
+.modal-info.validade-atencao .modal-info-icone { background: #FFF4E5; color: #D97706; }
+
+.modal-info.validade-vencida { background: #FFF7F7; border-color: #FFD3D3; }
+.modal-info.validade-vencida .modal-info-icone { background: #FFEDEE; color: #DC2626; }
+.modal-info.validade-vencida .modal-info-texto strong { color: #B91C1C; }
+
+
+/* AÇÕES DO MODAL */
+
+.modal-acoes {
+    display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px;
+    padding: 18px 26px 26px;
+    flex-shrink: 0;
+}
+
+.modal-btn {
+    min-height: 52px; border-radius: 12px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    text-decoration: none; text-align: center;
+    font-size: 12px; font-weight: 700;
+    transition: .2s ease;
+}
+
+.modal-btn i { font-size: 16px; }
+
+.modal-btn-entrada { background: #E7FFF5; color: #059669; border: 1px solid #A7F3D0; }
+.modal-btn-entrada:hover { background: #D8FCEC; transform: translateY(-1px); }
+
+.modal-btn-saida { background: #FFF4E5; color: #D97706; border: 1px solid #FCD9A5; }
+.modal-btn-saida:hover { background: #FFE9C7; transform: translateY(-1px); }
+
+.modal-btn-editar { background: #E8F1FF; color: #2563EB; border: 1px solid #C7DBFF; }
+.modal-btn-editar:hover { background: #D8E7FF; transform: translateY(-1px); }
+
+.modal-btn-excluir { background: #FFEDEE; color: #DC2626; border: 1px solid #FFC9CC; }
+.modal-btn-excluir:hover { background: #FFE0E2; transform: translateY(-1px); }
+
+
+/* ============================================================
+   RESPONSIVO — TABLET
+============================================================ */
+
+@media (max-width: 900px) {
+
+    #content { padding: 25px 20px; }
+
+    .header-controls { flex-direction: column; align-items: stretch; }
+
+    .filtro-dropdown,
+    .busca-wrap,
+    .btn-cadastro { width: 100%; }
+
+    .btn-filtros { width: 100%; justify-content: space-between; }
+
+    .btn-cadastro { justify-content: center; }
+
+    .filtros-painel { left: 0; right: 0; width: 100%; max-width: none; }
+
+    .view-toggle { width: 100%; justify-content: center; }
+
+    .produtos-grid { grid-template-columns: 1fr; }
+
+    .produto-linha { flex-wrap: wrap; }
+
+    .linha-info { min-width: 140px; }
+
+    .linha-acoes { width: 100%; justify-content: flex-end; order: 5; }
+
+}
+
+
+/* ============================================================
+   RESPONSIVO — CELULAR
+============================================================ */
+
+@media (max-width: 600px) {
+
+    .modal-overlay { padding: 0; align-items: flex-end; }
+
+    .modal-produto {
+        width: 100%; max-height: 92vh;
+        border-radius: 22px 22px 0 0;
+        transform: translateY(24px);
+    }
+
+    .modal-overlay.visivel .modal-produto { transform: translateY(0); }
+
+    .modal-header { padding: 20px 20px 18px; }
+
+    .modal-header h2 { font-size: 19px; }
+
+    .modal-conteudo { padding: 18px 20px 6px; }
+
+    .modal-precos { grid-template-columns: 1fr 1fr; }
+
+    .preco-margem { grid-column: span 2; }
+
+    .modal-acoes { grid-template-columns: 1fr 1fr; padding: 16px 20px 22px; }
+
+    .produto-linha { padding: 12px; gap: 10px; }
+
+    .linha-preco { min-width: 70px; font-size: 14px; }
+
+    .linha-estoque { min-width: 70px; }
+
+    .linha-meta { display: none; }
+
+    .validade-status { font-size: 10.5px; padding: 4px 8px; }
+
+}

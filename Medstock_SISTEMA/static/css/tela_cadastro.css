@@ -1,0 +1,207 @@
+body {
+    background: linear-gradient(90deg,#002D81 0%, #00819F 50%, #00C4C0 100%);
+    height: 100vh;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+}
+
+#alerta-erro{
+margin-top: 5px;
+
+padding-bottom: 5px;
+padding-top: 5px;
+}
+
+#faz_login{
+display: flex;
+align-items: center;
+justify-content: center;
+
+    width: 100%;
+    height: 40px;
+    border-radius: 15px;
+    text-decoration: none;
+    text-decoration-style: none;
+
+    
+
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-size:16px;
+    cursor:pointer;
+    background: rgba(255, 255, 255, 0.7);
+    color: #000;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    }
+    
+    
+    #faz_login:hover{
+        background: rgba(225, 225, 225, 0.842);
+        backdrop-filter: blur(10px);
+        transform: scale(1.03);
+    }
+
+    #faz_login1{
+        text-decoration: none;
+        text-decoration-style: none;
+    }
+    #faz_login2{
+        margin-top: 20px;
+        margin-bottom: 2px;
+        font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #888;
+    font-weight: 400;
+    }
+
+.cadastro-container {
+    height: 100vh;
+}
+
+.cadastro-card {
+    background: #f1f1f1;
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%;
+    max-width: 455px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.logo {
+    width: 100px;
+    margin-bottom: 15px;
+}
+
+.form-control {
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #002D81;
+}
+
+.form-control:focus {
+    background: #0f172a;
+    border-color: #3b82f6;
+    box-shadow: none;
+    color: #fff;
+}
+
+.btn-cadastro {
+    background: linear-gradient(90deg,#002D81 0%, #00819F 50%, #00C4C0 100%);
+    border: none;
+}
+
+.btn-cadastro:hover {
+    opacity: 0.9;
+}
+
+.text-muted {
+    color: #94a3b8 !important;
+}
+
+.form-check-label{
+    display: flex;
+    justify-content: flex-start;
+    max-width: 50%;
+    
+}
+
+.link-offset-1{
+    display: flex;
+    justify-content: flex-end;
+    
+}
+
+.form-check{
+    display: flex;
+    justify-content: space-around;
+}
+
+#separador{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+#requisitos-minimos{
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+}
+
+
+#grupo1{
+    margin-bottom: 0px;
+    margin: 0;
+}
+#grupo2{
+    margin-bottom: 0px;
+    margin: 0;
+}
+#grupo2{
+    width: 300px;
+}
+
+#espaco{
+    width: 50%;
+}
+
+
+/* ================= ALERTAS PERSONALIZADOS MEDSTOCK ================= */
+
+.custom-alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 10px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 45, 129, 0.05);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+/* Alinhamento interno */
+.alert-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.alert-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #334155; /* Texto escuro suave, mais legível */
+}
+
+.alert-icon {
+    font-size: 18px;
+}
+
+/* --- Variação: Sucesso (Verde Medstock) --- */
+.custom-alert.alert-success {
+    border-left: 5px solid #00C4C0; /* Barra lateral com o ciano da sua marca */
+}
+.custom-alert.alert-success .alert-icon {
+    color: #00C4C0;
+}
+
+/* --- Variação: Erro / Perigo (Vermelho Suave) --- */
+.custom-alert.alert-danger, 
+.custom-alert.alert-error {
+    border-left: 5px solid #ef4444; 
+}
+.custom-alert.alert-danger .alert-icon,
+.custom-alert.alert-error .alert-icon {
+    color: #ef4444;
+}
+
+/* --- Variação: Informação / Avisos (Azul Medstock) --- */
+.custom-alert.alert-info {
+    border-left: 5px solid #00819F;
+}
+.custom-alert.alert-info .alert-icon {
+    color: #00819F;
+}

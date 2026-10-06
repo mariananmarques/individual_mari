@@ -1,0 +1,1102 @@
+/* ==========================================================
+   TELA DE MOVIMENTAÇÃO - MEDSTOCK
+   ========================================================== */
+
+:root {
+    --mov-teal: #17a2a2;
+    --mov-teal-dark: #128d8d;
+    --mov-teal-light: #e8f8f8;
+
+    --mov-verde: #1a8754;
+    --mov-verde-bg: #e3f7ec;
+
+    --mov-vermelho: #dc3545;
+    --mov-vermelho-bg: #fdeaec;
+
+    --mov-texto: #2f3b45;
+    --mov-texto-secundario: #52616d;
+    --mov-texto-suave: #7b8994;
+
+    --mov-borda: #e8edf1;
+    --mov-borda-hover: #dce4e9;
+
+    --mov-fundo: #ffffff;
+    --mov-fundo-suave: #f8fafb;
+
+    --mov-sombra: 0 8px 25px rgba(20, 40, 60, 0.06);
+}
+
+
+/* ==========================================================
+   RESET LOCAL
+   ========================================================== */
+
+.container {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.container *,
+.container *::before,
+.container *::after {
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================
+   CONTEÚDO PRINCIPAL
+   ========================================================== */
+
+.content {
+    width: 100%;
+    max-width: 100%;
+    padding: 30px 38px 50px;
+    margin: 0 auto;
+    color: var(--mov-texto);
+}
+
+
+/* ==========================================================
+   HEADER (mesmo padrão da tela de produtos)
+   ========================================================== */
+
+.header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header h1 {
+    margin: 0;
+    padding: 0;
+
+    color: #0B2D6B;
+
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: normal;
+}
+
+.header-icon {
+    font-size: 30px;
+    color: #00C4C0;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.header-controls button,
+.header-controls input,
+.header-controls select {
+    font-family: inherit;
+}
+
+
+/* ==========================================================
+   FILTROS (botão + painel)
+   ========================================================== */
+
+.filtro-dropdown {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.btn-filtros {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    height: 52px;
+    padding: 0 20px;
+
+    background: #EEF1F5;
+    border: 2px solid transparent;
+    border-radius: 26px;
+
+    color: #0B2D6B;
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.btn-filtros:hover {
+    background: #E3E7EE;
+}
+
+.btn-filtros:focus-visible {
+    outline: none;
+    border-color: #00C4C0;
+}
+
+/* Botão com filtro ativo */
+.btn-filtros.ativo {
+    background: #E6FBFA;
+    border-color: #00C4C0;
+}
+
+.btn-filtros i.bi-funnel-fill {
+    color: #0B2D6B;
+    font-size: 15px;
+}
+
+.btn-filtros i.bi-list {
+    color: #8A93A6;
+    font-size: 18px;
+}
+
+/* Selo com a quantidade de filtros ativos */
+.filtro-badge {
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+
+    border-radius: 999px;
+
+    background: #0B2D6B;
+    color: #fff;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filtros-painel {
+    position: absolute;
+    top: 60px;
+    left: 0;
+
+    background: #FFFFFF;
+    border: 1px solid #E7EAF0;
+    border-radius: 14px;
+    box-shadow: 0 10px 24px rgba(16, 24, 64, 0.14);
+
+    padding: 16px;
+    min-width: 300px;
+    max-width: calc(100vw - 40px);
+
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+
+    z-index: 100;
+}
+
+.filtros-painel.aberto {
+    display: flex;
+}
+
+.filtros-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.filtro-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filtro-campo > span {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #536078;
+}
+
+.filtros-form select {
+    width: 100%;
+    height: 46px;
+    padding: 0 14px;
+
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    background: #fafafa;
+
+    font-size: 14px;
+    color: #17223B;
+    text-overflow: ellipsis;
+
+    cursor: pointer;
+    transition: .3s;
+}
+
+.filtros-form select:hover {
+    border-color: #00C4C0;
+}
+
+.filtros-form select:focus {
+    outline: none;
+    border-color: #00C4C0;
+    box-shadow: 0 0 0 3px rgba(0, 196, 192, .15);
+}
+
+.btn-limpar-filtros {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    padding: 10px 14px;
+    border-radius: 10px;
+
+    background: #FFEDEE;
+    color: #DC2626;
+
+    font-size: 13.5px;
+    font-weight: 600;
+
+    text-decoration: none;
+    transition: .2s ease;
+}
+
+.btn-limpar-filtros:hover {
+    background: #FFE0E2;
+}
+
+
+/* ==========================================================
+   BUSCA
+   ========================================================== */
+
+.busca-wrap {
+    flex: 1;
+    min-width: 220px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    height: 52px;
+    padding: 0 20px;
+
+    background: #EEF1F5;
+    border-radius: 26px;
+}
+
+.busca-wrap i {
+    color: #8A93A6;
+    font-size: 16px;
+}
+
+.busca-wrap input {
+    flex: 1;
+    height: 100%;
+
+    border: none;
+    background: transparent;
+    outline: none;
+
+    font-size: 15px;
+    color: #17223B;
+}
+
+.busca-wrap input::placeholder {
+    color: #97A0B3;
+}
+
+
+/* ==========================================================
+   ALERTAS
+   ========================================================== */
+
+.custom-alert {
+    width: 100%;
+
+    margin: 0 0 18px;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    animation-duration: 0.35s;
+}
+
+.alert-content {
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 12px 16px;
+}
+
+.alert-icon {
+    flex-shrink: 0;
+    font-size: 18px;
+}
+
+.alert-text {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+/* Sucesso */
+
+.alert-success {
+    color: #176b45;
+
+    background: #edf9f3;
+
+    border: 1px solid #cceedd;
+}
+
+.alert-success .alert-icon {
+    color: var(--mov-verde);
+}
+
+
+/* Erro */
+
+.alert-danger,
+.alert-error {
+    color: #a92d3b;
+
+    background: #fff0f2;
+
+    border: 1px solid #f4cdd2;
+}
+
+.alert-danger .alert-icon,
+.alert-error .alert-icon {
+    color: var(--mov-vermelho);
+}
+
+
+/* Informação */
+
+.alert-info {
+    color: #246b75;
+
+    background: #edf9fa;
+
+    border: 1px solid #ccebed;
+}
+
+.alert-info .alert-icon {
+    color: var(--mov-teal);
+}
+
+
+/* ==========================================================
+   CARD DA TABELA
+   ========================================================== */
+
+.tabela-card {
+    width: 100%;
+
+    margin-top: 18px;
+
+    background: var(--mov-fundo);
+
+    border: 1px solid var(--mov-borda);
+
+    border-radius: 16px;
+
+    box-shadow: var(--mov-sombra);
+
+    overflow: hidden;
+}
+
+
+/* ==========================================================
+   CABEÇALHO DO CARD DA TABELA
+   ========================================================== */
+
+.tabela-card-head {
+    width: 100%;
+
+    min-height: 78px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 17px 22px;
+
+    background: #fbfdfd;
+
+    border-bottom: 1px solid var(--mov-borda);
+}
+
+
+/* Título */
+
+.tabela-titulo {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    color: var(--mov-texto);
+
+    font-size: 16px;
+    font-weight: 700;
+
+    letter-spacing: 0.1px;
+}
+
+.tabela-titulo i {
+    color: var(--mov-teal);
+
+    font-size: 19px;
+}
+
+
+/* Contador */
+
+.tabela-contador {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 36px;
+
+    padding: 6px 14px;
+
+    border-radius: 999px;
+
+    color: var(--mov-teal-dark);
+
+    background: rgba(23, 162, 162, 0.09);
+
+    border: 1px solid rgba(23, 162, 162, 0.18);
+
+    font-size: 13px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   SCROLL DA TABELA
+   ========================================================== */
+
+.tabela-scroll {
+    width: 100%;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scrollbar-width: thin;
+    scrollbar-color: #cbd6dc transparent;
+}
+
+
+/* Scrollbar Chrome */
+
+.tabela-scroll::-webkit-scrollbar {
+    height: 7px;
+}
+
+.tabela-scroll::-webkit-scrollbar-track {
+    background: #f5f7f8;
+}
+
+.tabela-scroll::-webkit-scrollbar-thumb {
+    background: #cbd6dc;
+    border-radius: 20px;
+}
+
+.tabela-scroll::-webkit-scrollbar-thumb:hover {
+    background: #aebbc3;
+}
+
+
+/* ==========================================================
+   TABELA
+   ========================================================== */
+
+.tabela-mov {
+    width: 100%;
+
+    min-width: 900px;
+
+    border-collapse: separate;
+    border-spacing: 0;
+
+    color: var(--mov-texto);
+
+    font-family: inherit;
+    font-size: 14px;
+}
+
+
+/* ==========================================================
+   CABEÇALHO DA TABELA
+   ========================================================== */
+
+.tabela-mov thead th {
+    height: 58px;
+
+    padding: 0 22px;
+
+    background: var(--mov-teal);
+
+    color: #ffffff;
+
+    font-size: 12.5px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.75px;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+    vertical-align: middle;
+
+    border: none;
+}
+
+
+/* Primeira coluna */
+
+.tabela-mov thead th:first-child {
+    padding-left: 22px;
+}
+
+
+/* Última coluna */
+
+.tabela-mov thead th:last-child {
+    padding-right: 22px;
+}
+
+
+/* ==========================================================
+   CORPO DA TABELA
+   ========================================================== */
+
+.tabela-mov tbody td {
+    height: 78px;
+
+    padding: 13px 22px;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid var(--mov-borda);
+
+    color: var(--mov-texto);
+
+    vertical-align: middle;
+}
+
+
+/* Linhas alternadas */
+
+.tabela-mov tbody tr:nth-child(even) td {
+    background: #fcfdfe;
+}
+
+
+/* Hover */
+
+.tabela-mov tbody tr {
+    transition:
+        background-color 0.15s ease;
+}
+
+.tabela-mov tbody tr:hover td {
+    background: rgba(23, 162, 162, 0.045);
+}
+
+
+/* Última linha */
+
+.tabela-mov tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* ==========================================================
+   COLUNAS
+   ========================================================== */
+
+.tabela-mov th.col-num,
+.tabela-mov td.col-num {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.tabela-mov th.col-data,
+.tabela-mov td.col-data {
+    text-align: right;
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   TEXTO DO PRODUTO
+   ========================================================== */
+
+.celula-forte {
+    color: #35434e;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   FORNECEDOR / CLIENTE
+   ========================================================== */
+
+.celula-suave {
+    max-width: 350px;
+
+    color: var(--mov-texto-suave);
+
+    font-size: 14px;
+    font-weight: 500;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* ==========================================================
+   BADGE DE TIPO
+   ========================================================== */
+
+.tipo {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    min-width: 132px;
+
+    padding: 8px 14px;
+
+    border-radius: 999px;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    white-space: nowrap;
+}
+
+.tipo i {
+    font-size: 14px;
+}
+
+
+/* Entrada */
+
+.tipo-entrada {
+    color: var(--mov-verde);
+
+    background: var(--mov-verde-bg);
+
+    border: 1px solid rgba(26, 135, 84, 0.16);
+}
+
+
+/* Saída */
+
+.tipo-saida {
+    color: var(--mov-vermelho);
+
+    background: var(--mov-vermelho-bg);
+
+    border: 1px solid rgba(220, 53, 69, 0.16);
+}
+
+
+/* ==========================================================
+   QUANTIDADE
+   ========================================================== */
+
+.qtd {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 72px;
+
+    padding: 8px 12px;
+
+    border-radius: 9px;
+
+    font-size: 15px;
+    font-weight: 800;
+
+    line-height: 1;
+
+    font-variant-numeric: tabular-nums;
+
+    white-space: nowrap;
+}
+
+
+/* Entrada */
+
+.qtd-entrada {
+    color: var(--mov-verde);
+
+    background: var(--mov-verde-bg);
+}
+
+
+/* Saída */
+
+.qtd-saida {
+    color: var(--mov-vermelho);
+
+    background: var(--mov-vermelho-bg);
+}
+
+
+/* ==========================================================
+   VALOR
+   ========================================================== */
+
+.valor {
+    color: #374650;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    font-variant-numeric: tabular-nums;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   DATA
+   ========================================================== */
+
+.data {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 36px;
+
+    padding: 7px 14px;
+
+    border-radius: 9px;
+
+    background: #f2f5f8;
+
+    color: var(--mov-texto-suave);
+
+    font-size: 15px;
+    font-weight: 700;
+
+    font-variant-numeric: tabular-nums;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   LINHA VAZIA
+   ========================================================== */
+
+.linha-vazia td {
+    height: 220px;
+
+    padding: 45px 18px !important;
+
+    color: var(--mov-texto-suave);
+
+    text-align: center !important;
+
+    background: #ffffff !important;
+}
+
+.linha-vazia td i {
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: #c3cdd6;
+
+    font-size: 34px;
+}
+
+.linha-vazia td span {
+    display: block;
+
+    color: #87949e;
+
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+/* ==========================================================
+   ANIMAÇÕES
+   ========================================================== */
+
+@keyframes movFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-flash {
+    animation: movFadeIn 0.35s ease;
+}
+
+
+/* ==========================================================
+   RESPONSIVIDADE - ATÉ 1100PX
+   ========================================================== */
+
+@media (max-width: 1100px) {
+
+    .content {
+        padding: 25px 25px 40px;
+    }
+
+}
+
+
+/* ==========================================================
+   RESPONSIVIDADE - TABLET (header igual ao de produtos)
+   ========================================================== */
+
+@media (max-width: 900px) {
+
+    .header-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filtro-dropdown,
+    .busca-wrap {
+        width: 100%;
+    }
+
+    .btn-filtros {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .filtros-painel {
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-width: none;
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .content {
+        padding: 22px 16px 35px;
+    }
+
+
+    /* Header */
+
+    .header {
+        gap: 16px;
+        margin-bottom: 22px;
+    }
+
+    .header h1 {
+        font-size: 32px;
+    }
+
+    .header-icon {
+        font-size: 26px;
+    }
+
+
+    /* Card */
+
+    .tabela-card {
+        margin-top: 16px;
+
+        border-radius: 13px;
+    }
+
+
+    /* Cabeçalho do card da tabela */
+
+    .tabela-card-head {
+        min-height: auto;
+
+        padding: 15px 17px;
+
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    .tabela-titulo {
+        font-size: 15px;
+    }
+
+    .tabela-contador {
+        min-height: 32px;
+        font-size: 12px;
+    }
+
+
+    /* Tabela */
+
+    .tabela-mov {
+        min-width: 850px;
+        font-size: 13px;
+    }
+
+    .tabela-mov thead th {
+        height: 52px;
+
+        padding: 0 15px;
+
+        font-size: 11.5px;
+    }
+
+    .tabela-mov tbody td {
+        height: 70px;
+
+        padding: 11px 15px;
+    }
+
+
+    /* Badges */
+
+    .tipo {
+        min-width: 115px;
+
+        padding: 7px 11px;
+
+        font-size: 13px;
+    }
+
+    .qtd {
+        min-width: 62px;
+
+        padding: 7px 10px;
+
+        font-size: 13px;
+    }
+
+    .data {
+        min-height: 32px;
+
+        padding: 6px 10px;
+
+        font-size: 13px;
+    }
+
+    .celula-forte,
+    .celula-suave,
+    .valor {
+        font-size: 13px;
+    }
+}
+
+
+/* ==========================================================
+   RESPONSIVIDADE - CELULAR
+   ========================================================== */
+
+@media (max-width: 480px) {
+
+    .content {
+        padding: 18px 10px 30px;
+    }
+
+    .header h1 {
+        font-size: 28px;
+    }
+
+    .header-icon {
+        font-size: 24px;
+    }
+
+    .tabela-card {
+        border-radius: 11px;
+    }
+
+    .tabela-card-head {
+        padding: 14px;
+    }
+
+    .tabela-titulo {
+        font-size: 14px;
+    }
+
+    .tabela-contador {
+        font-size: 11px;
+    }
+}
+
+
+/* ==========================================================
+   ACESSIBILIDADE
+   ========================================================== */
+
+.filtros-form select:focus-visible {
+    outline: 2px solid rgba(0, 196, 192, 0.45);
+
+    outline-offset: 2px;
+}
+
+
+/* ==========================================================
+   REDUÇÃO DE MOVIMENTO
+   ========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .tabela-mov tbody tr,
+    .btn-filtros,
+    .filtros-form select,
+    .alert-flash {
+        transition: none;
+        animation: none;
+    }
+}

@@ -1,0 +1,1609 @@
+/* =========================================================
+   ANIMAÇÃO REVEAL
+========================================================= */
+
+.reveal {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.6s ease;
+}
+
+.reveal.ativo {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular',
+        'Lucida Grande', 'Lucida Sans Unicode',
+        Geneva, Verdana, sans-serif;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+#header {
+    display: flex;
+    position: sticky;
+    height: 60px;
+    top: 0;
+    justify-content: space-between;
+    align-items: center;
+
+    background: linear-gradient(
+        90deg,
+        #002d81b7 0%,
+        #00829fc8 50%,
+        #00c4c1dd 100%
+    );
+
+    padding: 0 40px;
+    z-index: 1000;
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+
+/* LOGO */
+
+.logo img {
+    width: 200px;
+    position: absolute;
+    left: 10px;
+    top: -35px;
+}
+
+
+/* MENU */
+
+.menu a {
+    position: relative;
+    display: inline-block;
+
+    text-decoration: none;
+    color: #ffffff;
+
+    margin: 0 35px;
+    font-size: 16px;
+    font-weight: 50;
+
+    padding: 10px 2px;
+
+    transition:
+        color 0.3s ease,
+        transform 0.3s ease;
+}
+
+/* Linha inferior animada */
+.menu a::after {
+    content: "";
+
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+
+    width: 0;
+    height: 2px;
+
+    background: #A6FDCF;
+    border-radius: 10px;
+
+    transform: translateX(-50%);
+
+    box-shadow: 0 0 8px rgba(166, 253, 207, 0.7);
+
+    transition:
+        width 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+/* Hover */
+.menu a:hover {
+    color: #A6FDCF;
+
+    transform: translateY(-2px);
+
+    text-shadow:
+        0 0 8px rgba(166, 253, 207, 0.35);
+}
+
+.menu a:hover::after {
+    width: 100%;
+
+    box-shadow:
+        0 0 8px rgba(166, 253, 207, 0.7),
+        0 0 16px rgba(166, 253, 207, 0.35);
+}
+
+
+/* =========================================================
+   BOTÕES DO HEADER
+========================================================= */
+
+.botoes button {
+    padding: 8px 15px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+#login{
+    padding: 8px 15px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.botoes button {
+    position: relative;
+    overflow: hidden;
+}
+
+.botoes a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.botoes button::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.4),
+        transparent
+    );
+
+    transition: 0.5s;
+}
+
+.botoes button:hover::after {
+    left: 100%;
+}
+
+#login {
+    background: white;
+    color: #2c3e50;
+}
+
+#login:hover {
+    background: #b3d3e4;
+}
+
+.contrate {
+    background: #00819F;
+    color: white;
+}
+
+.contrate:hover {
+    background: #00C4C0;
+}
+
+
+/* =========================================================
+   BOTÃO MENU RESPONSIVO
+========================================================= */
+
+.menu-toggle {
+    display: none;
+
+    background: transparent;
+    border: none;
+
+    color: white;
+    font-size: 30px;
+
+    cursor: pointer;
+    padding: 5px;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+
+/* BANNER */
+
+.conteudo-banner_main {
+    height: 360px;
+
+    background: #2A7B9B;
+
+    background: linear-gradient(
+        90deg,
+        #002D81 0%,
+        #00819F 50%,
+        #00C4C0 100%
+    );
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 10px 15px;
+}
+
+
+/* MAIN DENTRO DO BANNER */
+
+.banner_main {
+    display: flex;
+    gap: 30px;
+}
+
+
+/* LADO ESQUERDO */
+
+.lado-esquerdo_main {
+    margin-left: 75px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* CAIXA */
+
+.botoes_main {
+    width: 80%;
+    max-width: 120px;
+    min-width: 300px;
+
+    height: 20px;
+
+    color: #02569b;
+
+    padding: 5px;
+    border-radius: 15px;
+}
+
+
+/* TEXTO */
+
+.caixa1_main {
+    background: rgba(255, 255, 255, 0.85);
+
+    backdrop-filter: blur(10px);
+
+    border-radius: 20px;
+
+    padding: 20px;
+
+    margin-right: 40px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.caixa1_main h1 {
+    font-family: 'Times New Roman', Times, serif;
+
+    color: #00819F;
+
+    margin-top: 20px;
+}
+
+.caixa1_main p {
+    font-size: 17px;
+
+    line-height: 1.6;
+
+    margin: 10px 0;
+}
+
+
+/* =========================================================
+   INPUT E BOTÃO DO BANNER
+========================================================= */
+
+.botoes_main {
+    width: 360px;
+
+    display: flex;
+
+    margin-top: 10px;
+
+    gap: 10px;
+}
+
+.botoes_main input {
+    width: 48%;
+
+    padding: 20px;
+
+    border-radius: 20px;
+
+    border: 1px solid rgb(20, 232, 236);
+}
+
+.botoes_main button {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    width: 48%;
+
+    padding: 20px;
+
+    border-radius: 20px;
+
+    border: 1px solid rgb(111, 255, 238);
+
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+.botoes_main button:hover {
+    background: #b3f8d3;
+
+    color: #002D81;
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
+
+.botoes_main button {
+    position: relative;
+    overflow: hidden;
+}
+
+.botoes_main button::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -100%;
+
+    width: 100%;
+    height: 100%;
+
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.4),
+        transparent
+    );
+
+    transition: 0.5s;
+}
+
+.botoes_main button:hover::after {
+    left: 100%;
+}
+
+
+/* =========================================================
+   IMAGEM
+========================================================= */
+
+.imagem_main img {
+    height: 340px;
+
+    border-radius: 20px;
+
+    margin-right: 80px;
+
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+
+    transition: 0.3s;
+}
+
+
+/* =========================================================
+   SOLUÇÕES
+========================================================= */
+
+.box1_solu {
+    display: flex;
+
+    flex-direction: column;
+
+    flex-wrap: wrap;
+
+    width: 30%;
+}
+
+.box1_solu h2 {
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+.box2_solu h2 {
+    margin-bottom: 5px;
+    margin-top: 20px;
+}
+
+.box2_solu {
+    width: 30%;
+
+    margin: 10px;
+}
+
+#img_solucoes img {
+    width: 80%;
+
+    display: block;
+
+    margin: 0 auto;
+
+    margin-top: 40px;
+}
+
+#img_solucoes {
+    width: 20%;
+
+    background: linear-gradient(
+        270deg,
+        #0f3c88,
+        #1bb3a9
+    );
+
+    background-size: 400% 400%;
+
+    border-radius: 30px;
+
+    animation: moverGradiente 5s ease infinite;
+}
+
+@keyframes moverGradiente {
+
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+
+}
+
+body {
+    background-color: #f1f1f1;
+}
+
+#solucoes h1 {
+    color: #00819F;
+
+    margin-left: 40%;
+
+    margin-top: 20px;
+}
+
+#card-solu {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    justify-content: space-around;
+
+    margin: 30px;
+}
+
+
+/* =========================================================
+   DEPOIMENTOS
+========================================================= */
+
+#depoimentos {
+    background: linear-gradient(
+        90deg,
+        #002D81 0%,
+        #00819F 50%,
+        #00C4C0 100%
+    );
+
+    margin-top: 20px;
+}
+
+#espaco_depo {
+    margin-bottom: 20px;
+}
+
+.card-depo {
+    text-align: center;
+
+    align-items: center;
+
+    width: 250px;
+
+    background-color: #f1f1f1;
+
+    margin: 20px;
+
+    border-radius: 10%;
+}
+
+.depoimento {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    justify-content: space-around;
+
+    margin: 30px;
+}
+
+.usuario img {
+    display: block;
+
+    margin: 20px auto 0;
+
+    width: 75px;
+}
+
+.estrelas img {
+    display: block;
+
+    margin: 0 auto;
+
+    width: 150px;
+
+    margin-bottom: 15px;
+}
+
+h1 {
+    color: #A6FDCF;
+
+    margin-left: 40px;
+
+    margin-top: 50px;
+}
+
+.card-depo h3 {
+    color: #00819F;
+}
+
+.card-depo p {
+    color: rgb(125, 124, 124);
+}
+
+
+/* =========================================================
+   PLANOS
+========================================================= */
+
+.comeco {
+    margin: 30px;
+
+    color: #00819F;
+}
+
+.nossosplanos-container {
+    text-align: center;
+}
+
+.cards {
+    display: flex;
+
+    gap: 40px;
+
+    justify-content: center;
+
+    margin-bottom: 30px;
+}
+
+.card {
+    padding: 40px;
+
+    width: 340px;
+
+    border-radius: 25px;
+
+    text-align: left;
+
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+
+    background: linear-gradient(
+        90deg,
+        #002D81 0%,
+        #00819F 50%,
+        #00C4C0 100%
+    );
+
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.03);
+}
+
+.card h2 {
+    color: #A6FDCF;
+
+    font-size: 32px;
+
+    margin-bottom: 20px;
+}
+
+.descricao {
+    font-size: 18px;
+
+    margin-bottom: 20px;
+}
+
+hr {
+    border: none;
+
+    border-top: 1px solid #999;
+
+    margin: 20px 0;
+}
+
+.preco-texto {
+    margin-bottom: 10px;
+}
+
+.preco {
+    color: #A6FDCF;
+
+    font-size: 32px;
+
+    margin-bottom: 20px;
+}
+
+
+/* BOTÃO PLANOS */
+
+#botao-planos {
+    width: 100%;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+    margin-top: 20px;
+
+    background: rgba(255, 255, 255, 0.7);
+
+    color: #000;
+
+    padding: 12px 30px;
+
+    border-radius: 30px;
+
+    border: none;
+
+    backdrop-filter: blur(5px);
+
+    transition: all 0.3s ease;
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+#botao-planos::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: -100%;
+
+    width: 100%;
+
+    height: 100%;
+
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.4),
+        transparent
+    );
+
+    transition: 0.5s;
+}
+
+#botao-planos:hover::after {
+    left: 100%;
+}
+
+#botao-planos:hover {
+    background: rgba(255, 255, 255, 0.85);
+
+    backdrop-filter: blur(10px);
+
+    transform: scale(1.03);
+}
+
+.descricao,
+.testetexto,
+.preco-texto {
+    color: #f1f1f1;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+#footer {
+    bottom: 0;
+}
+
+#container-footer {
+    background-color: rgb(244, 244, 244);
+
+    border-top-left-radius: 20px;
+
+    border-top-right-radius: 20px;
+
+    padding-top: 15px;
+}
+
+
+/* FOOTER 1 */
+
+#footer1 {
+    margin-left: 20%;
+
+    margin-right: 20%;
+
+    height: 100px;
+
+    display: flex;
+
+    flex-direction: row;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 90px;
+}
+
+#footer1 img {
+    width: 100px;
+
+    height: auto;
+}
+
+
+/* DIVISÃO */
+
+#divisao-footer1 {
+    margin-left: 20%;
+
+    margin-right: 20%;
+
+    height: 2px;
+
+    width: 60%;
+
+    background-color: lightgrey;
+
+    margin-top: 10px;
+
+    border-radius: 100%;
+}
+
+
+/* FOOTER 2 */
+
+#navegacao-footer {
+    margin-top: 15px;
+
+    height: 150px;
+
+    display: flex;
+
+    flex-direction: row;
+}
+
+#footer2 {
+    margin-left: 10%;
+}
+
+#lista-footer {
+    display: flex;
+
+    flex-direction: row;
+
+    list-style: none;
+
+    gap: 25px;
+
+    font-size: 17px;
+
+    width: 30%;
+}
+
+#primeira-linha-footer {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+#segunda-linha-footer {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+#lista-footer a {
+    transition: 0.1s;
+
+    transform: scale(1);
+
+    color: inherit;
+
+    text-decoration: none;
+}
+
+#lista-footer a:hover {
+    cursor: pointer;
+
+    transition: 0.2s;
+
+    transform: scale(1.1);
+}
+
+#lista2-footer {
+    display: flex;
+
+    flex-direction: column;
+
+    list-style: none;
+
+    gap: 14px;
+
+    font-size: 17px;
+
+    width: 30%;
+}
+
+#lista2-footer a {
+    color: rgb(1, 147, 113);
+}
+
+
+/* =========================================================
+   FORMULÁRIO FOOTER
+========================================================= */
+
+#form-footer {
+    display: flex;
+
+    width: 100%;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin-bottom: 20px;
+}
+
+#caixa-texto-footer {
+    align-items: center;
+
+    margin-left: 25px;
+
+    margin-top: 20px;
+}
+
+#input-footer {
+    text-align: center;
+
+    border-radius: 20px;
+
+    border: none;
+
+    height: 40px;
+
+    width: 250px;
+}
+
+#form-footer button {
+    border-radius: 20px;
+
+    border: none;
+
+    height: 40px;
+
+    width: 80px;
+
+    background-color: rgb(61, 203, 170);
+
+    transition: 0.2s;
+
+    transform: scale(1);
+
+    cursor: pointer;
+
+    margin-left: 10px;
+}
+
+#h1-footer {
+    display: flex;
+
+    color: #00819F;
+
+    justify-content: center;
+
+    margin-left: 0;
+}
+
+#form-footer button:hover {
+    transition: 0.2s;
+
+    transform: scale(1.1);
+
+    color: #fff;
+}
+
+#home-footer {
+    font-weight: bold;
+
+    color: rgb(61, 203, 170);
+
+    font-size: 18px;
+
+    list-style: none;
+
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   FOOTER 3
+========================================================= */
+
+#footer3 {
+    display: flex;
+
+    margin-left: 20%;
+
+    margin-right: 20%;
+
+    margin-bottom: 8px;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 60px;
+}
+
+#footer-apps {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+#footer-contorno {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 30px;
+
+    height: 30px;
+
+    border-radius: 50%;
+
+    transition: 0.3s;
+
+    transform: scale(1);
+}
+
+#footer-contorno:hover {
+    transition: 0.3s;
+
+    transform: scale(1.2);
+
+    background-color: rgb(61, 203, 170);
+
+    cursor: pointer;
+}
+
+#footer3 img {
+    width: 25px;
+
+    height: auto;
+}
+
+
+/* =========================================================
+   MENU RESPONSIVO
+========================================================= */
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    #header {
+        padding: 0 20px;
+    }
+
+    .menu a {
+        margin: 0 15px;
+
+        font-size: 15px;
+    }
+
+    .lado-esquerdo_main {
+        margin-left: 20px;
+    }
+
+    .imagem_main img {
+        margin-right: 20px;
+
+        max-width: 100%;
+
+        object-fit: cover;
+    }
+
+    .cards {
+        flex-wrap: wrap;
+    }
+
+    #footer1 {
+        margin-left: 10%;
+
+        margin-right: 10%;
+    }
+
+    #footer3 {
+        margin-left: 10%;
+
+        margin-right: 10%;
+    }
+
+}
+
+
+/* =========================================================
+   CELULAR
+========================================================= */
+
+@media (max-width: 900px) {
+
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
+
+    #header {
+        position: sticky;
+
+        top: 0;
+
+        padding: 5px 20px;
+
+        min-height: 70px;
+    }
+
+    .logo img {
+        width: 60px;
+    }
+
+
+    /* BOTÃO ☰ */
+
+    .menu-toggle {
+        display: block;
+
+        z-index: 1100;
+    }
+
+
+    /* MENU */
+
+    .menu {
+        display: none;
+
+        position: absolute;
+
+        top: 100%;
+
+        left: 0;
+
+        width: 100%;
+
+        background: linear-gradient(
+            180deg,
+            #002D81 0%,
+            #00819F 50%,
+            #00C4C0 100%
+        );
+
+        padding: 15px 0;
+
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+
+    /* MENU ABERTO */
+
+    .menu.active {
+        display: block;
+    }
+
+    .menu a {
+        display: block;
+
+        margin: 0;
+
+        padding: 15px 25px;
+
+        text-align: center;
+
+        font-size: 17px;
+    }
+
+
+    /* ESCONDE LOGIN E CONTRATE */
+
+    .botoes {
+        display: none;
+    }
+
+
+    /* =====================================================
+       BANNER
+    ===================================================== */
+
+    .conteudo-banner_main {
+        height: auto;
+
+        min-height: 360px;
+
+        padding: 30px 15px;
+    }
+
+    .banner_main {
+        width: 100%;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 25px;
+    }
+
+    .lado-esquerdo_main {
+        width: 100%;
+
+        margin-left: 0;
+
+        align-items: center;
+    }
+
+    .caixa1_main {
+        width: 90%;
+
+        margin-right: 0;
+
+        box-sizing: border-box;
+    }
+
+    .caixa1_main p {
+        font-size: 15px;
+    }
+
+    .botoes_main {
+        width: 90%;
+
+        min-width: 0;
+
+        height: auto;
+
+        box-sizing: border-box;
+    }
+
+    .botoes_main input,
+    .botoes_main button {
+        width: 50%;
+
+        padding: 15px;
+
+        box-sizing: border-box;
+    }
+
+    .imagem_main {
+        width: 90%;
+    }
+
+    .imagem_main img {
+        width: 100%;
+
+        height: auto;
+
+        max-height: 340px;
+
+        margin-right: 0;
+
+        object-fit: cover;
+    }
+
+
+    /* =====================================================
+       SOLUÇÕES
+    ===================================================== */
+
+    #solucoes h1 {
+        margin-left: 0;
+
+        text-align: center;
+
+        font-size: 28px;
+    }
+
+    #card-solu {
+        flex-direction: column;
+
+        align-items: center;
+
+        margin: 20px;
+    }
+
+    .box1_solu,
+    .box2_solu {
+        width: 90%;
+
+        margin: 10px 0;
+    }
+
+    #img_solucoes {
+        width: 60%;
+
+        min-height: 150px;
+    }
+
+
+    /* =====================================================
+       DEPOIMENTOS
+    ===================================================== */
+
+    #depoimentos h1 {
+        margin-left: 0;
+
+        text-align: center;
+
+        padding: 20px 15px 0;
+
+        font-size: 28px;
+    }
+
+    .depoimento {
+        margin: 20px 10px;
+
+        justify-content: center;
+    }
+
+    .card-depo {
+        width: 280px;
+
+        max-width: 90%;
+    }
+
+
+    /* =====================================================
+       PLANOS
+    ===================================================== */
+
+    .comeco {
+        margin: 30px 0;
+
+        font-size: 28px;
+
+        text-align: center;
+    }
+
+    .cards {
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 25px;
+    }
+
+    .card {
+        width: 85%;
+
+        max-width: 340px;
+
+        box-sizing: border-box;
+
+        padding: 30px;
+    }
+
+
+    /* =====================================================
+       FORMULÁRIO
+    ===================================================== */
+
+    #h1-footer {
+        text-align: center;
+
+        padding: 0 15px;
+
+        font-size: 27px;
+    }
+
+    #form-footer {
+        flex-direction: column;
+    }
+
+    #caixa-texto-footer {
+        width: 90%;
+
+        margin: 10px 0;
+
+        text-align: center;
+    }
+
+    #input-footer {
+        width: 90%;
+
+        max-width: 300px;
+    }
+
+    #form-footer button {
+        margin-left: 5px;
+
+        margin-top: 10px;
+    }
+
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+
+    #footer1 {
+        height: auto;
+
+        margin: 0;
+
+        padding: 20px;
+
+        flex-direction: column;
+
+        gap: 15px;
+
+        text-align: center;
+    }
+
+    #divisao-footer1 {
+        width: 80%;
+
+        margin-left: 10%;
+
+        margin-right: 10%;
+    }
+
+    #navegacao-footer {
+        height: auto;
+
+        flex-direction: column;
+
+        align-items: center;
+    }
+
+    #footer2 {
+        margin-left: 0;
+    }
+
+    #lista-footer,
+    #lista2-footer {
+        width: auto;
+
+        justify-content: center;
+
+        text-align: center;
+    }
+
+    #lista-footer {
+        margin-bottom: 25px;
+    }
+
+    #footer3 {
+        margin: 30px 15px 10px;
+
+        flex-direction: column;
+
+        gap: 20px;
+
+        text-align: center;
+    }
+
+    #footer-apps {
+        justify-content: center;
+    }
+
+}
+
+
+/* =========================================================
+   CELULARES PEQUENOS
+========================================================= */
+
+@media (max-width: 500px) {
+
+    #header {
+        padding: 5px 15px;
+    }
+
+    .logo img {
+        width: 55px;
+    }
+
+    .menu-toggle {
+        font-size: 27px;
+    }
+
+
+    /* CAIXA PRINCIPAL */
+
+    .caixa1_main {
+        padding: 15px;
+    }
+
+    .caixa1_main h1 {
+        font-size: 25px;
+    }
+
+    .caixa1_main p {
+        font-size: 14px;
+
+        line-height: 1.5;
+    }
+
+
+    /* BOTÕES */
+
+    .botoes_main {
+        flex-direction: column;
+
+        width: 90%;
+    }
+
+    .botoes_main input,
+    .botoes_main button {
+        width: 100%;
+
+        padding: 14px;
+    }
+
+
+    /* SOLUÇÕES */
+
+    #img_solucoes {
+        width: 80%;
+    }
+
+    .box1_solu h2,
+    .box2_solu h2 {
+        font-size: 21px;
+    }
+
+    .box1_solu p,
+    .box2_solu p {
+        font-size: 14px;
+    }
+
+
+    /* PLANOS */
+
+    .card {
+        width: 90%;
+
+        padding: 25px;
+    }
+
+    .card h2 {
+        font-size: 25px;
+    }
+
+    .descricao {
+        font-size: 16px;
+    }
+
+
+    /* FOOTER */
+
+    #lista-footer {
+        gap: 15px;
+
+        font-size: 15px;
+    }
+
+    #lista2-footer {
+        font-size: 15px;
+    }
+
+
+
+
+    /* =========================================================
+    ACESSIBILIDADE - FOCO DO TECLADO
+    ========================================================= */
+ 
+ a:focus-visible,
+ button:focus-visible,
+ input:focus-visible,
+ textarea:focus-visible,
+ select:focus-visible {
+     outline: 3px solid #A6FDCF;
+     outline-offset: 3px;
+ }
+ 
+ .menu a:focus-visible {
+     outline: 3px solid #A6FDCF;
+     outline-offset: 4px;
+ }
+ 
+ .menu-toggle:focus-visible {
+     outline: 3px solid #A6FDCF;
+     outline-offset: 4px;
+ }
+ 
+ .botoes button:focus-visible,
+ .botoes_main button:focus-visible,
+ #botao-planos:focus-visible,
+ #form-footer button:focus-visible {
+     outline: 3px solid #A6FDCF;
+     outline-offset: 4px;
+ }
+ 
+ .botoes_main input:focus-visible,
+ #input-footer:focus-visible {
+     outline: 3px solid #A6FDCF;
+     outline-offset: 4px;
+ }
+ 
+ .skip-link {
+     position: absolute;
+     left: -9999px;
+     top: 10px;
+     z-index: 9999;
+     padding: 12px 18px;
+     background: #002D81;
+     color: #ffffff;
+     text-decoration: none;
+     border-radius: 8px;
+ }
+ 
+ .skip-link:focus {
+     left: 10px;
+     top: 10px;
+ }
+
+
+}

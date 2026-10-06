@@ -1,0 +1,466 @@
+body {
+    background: linear-gradient(90deg,#002D81 0%, #00819F 50%, #00C4C0 100%);
+    height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+.cadastro-card {
+    background: #f1f1f1;
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%;
+    max-width: 600px;
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-top: 20px;
+    align-items: center;
+    grid-template-columns: 1fr 1fr;
+
+}
+
+.logo {
+    width: 100px;
+    margin-bottom: 15px;
+}
+
+.form-control {
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #002D81;
+}
+
+.form-control:focus {
+    background: #0f172a;
+    border-color: #3b82f6;
+    box-shadow: none;
+    color: #fff;
+}
+
+.btn-cadastro {
+    background: linear-gradient(90deg,#002D81 0%, #00819F 50%, #00C4C0 100%);
+    border: none;
+}
+
+.btn-cadastro:hover {
+    opacity: 0.9;
+}
+
+.text-muted {
+    color: #94a3b8 !important;
+}
+
+
+
+.link-offset-1{
+    display: flex;
+    justify-content: flex-end;
+
+}
+
+.form-check{
+    display: flex;
+    justify-content: space-around;
+}
+
+.box{
+    display: inline-block;
+    width: 45%;
+}
+
+#cadastro-form{
+    align-items: center;
+    grid-template-columns: 1fr 1fr;
+
+
+}
+
+#linha{
+    display: flex;
+    flex-direction: row;
+}
+
+/* =========================================================
+   PREÇO DE CUSTO / PREÇO DE VENDA (MARGEM AUTOMÁTICA)
+========================================================= */
+
+/* Linha do rótulo: título à esquerda, badge à direita */
+.label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 26px;
+    margin-bottom: 0.5rem;
+}
+
+.label-row .form-label {
+    margin-bottom: 0;
+}
+
+/* Badge com a porcentagem de margem */
+.margem-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 3px 10px;
+
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+
+    background: #e6f7f9;
+    color: #00819f;
+
+    border: 1px solid #bfe6ec;
+    border-radius: 999px;
+
+    transition:
+        background-color 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.margem-badge i {
+    font-size: 11px;
+}
+
+/* Sem custo informado ainda */
+.margem-badge.vazia {
+    background: #f1f5f9;
+    color: #64748b;
+    border-color: #e2e8f0;
+}
+
+/* Preço editado manualmente */
+.margem-badge.manual {
+    background: #fff7e6;
+    color: #b45309;
+    border-color: #fde3b0;
+}
+
+/* Venda abaixo do custo */
+.margem-badge.negativa {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #fecaca;
+}
+
+/* Texto de ajuda abaixo do campo */
+.preco-hint {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    margin-top: 6px;
+
+    font-size: 12px;
+    color: #64748b;
+}
+
+.preco-hint i {
+    color: #00819f;
+}
+
+/* Botão "Restaurar 60%" */
+.btn-restaurar {
+    display: none;
+
+    padding: 0;
+    margin-left: 2px;
+
+    background: none;
+    border: none;
+
+    font-size: 12px;
+    font-weight: 600;
+    color: #00819f;
+
+    text-decoration: underline;
+    cursor: pointer;
+
+    transition: color 0.25s ease;
+}
+
+.btn-restaurar i {
+    color: inherit;
+}
+
+.btn-restaurar.visivel {
+    display: inline;
+}
+
+.btn-restaurar:hover {
+    color: #002D81;
+}
+
+/* =========================================================
+   FOTO DO PRODUTO
+========================================================= */
+
+.foto-produto {
+    width: 100%;
+    margin-top: 4px;
+}
+
+
+/* TÍTULO */
+
+.foto-produto > label:first-child {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    color: #27364a;
+    margin-bottom: 8px;
+}
+
+
+/* ÁREA DE UPLOAD */
+
+.upload-area {
+    width: 100%;
+    min-height: 105px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 18px 20px;
+
+    background: #ffffff;
+
+    border: 2px dashed #b8c9d8;
+    border-radius: 12px;
+
+    color: #64748b;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.25s ease,
+        background-color 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+
+    box-sizing: border-box;
+}
+
+
+/* ÍCONE */
+
+.upload-area i {
+    font-size: 28px;
+
+    color: #00819f;
+
+    transition:
+        color 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+/* TEXTO PRINCIPAL */
+
+.upload-area span {
+    font-size: 14px;
+    font-weight: 500;
+
+    color: #334155;
+
+    text-align: center;
+
+    max-width: 100%;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* FORMATOS */
+
+.upload-area small {
+    font-size: 11px;
+
+    color: #94a3b8;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+}
+
+
+/* HOVER */
+
+.upload-area:hover {
+    background: #f7fcfd;
+
+    border-color: #00a6b8;
+
+    box-shadow:
+        0 6px 18px rgba(0, 129, 159, 0.10);
+
+    transform: translateY(-1px);
+}
+
+
+.upload-area:hover i {
+    color: #00a6b8;
+
+    transform: translateY(-3px);
+}
+
+
+/* QUANDO O INPUT ESTÁ FOCADO */
+
+#imagem:focus + .upload-area {
+    border-color: #00819f;
+
+    box-shadow:
+        0 0 0 4px rgba(0, 129, 159, 0.12);
+}
+
+
+/* =========================================================
+   ARQUIVO SELECIONADO
+========================================================= */
+
+.upload-area.arquivo-selecionado {
+    border-color: #00a6b8;
+
+    border-style: solid;
+
+    background: #f0fbfc;
+}
+
+
+.upload-area.arquivo-selecionado i {
+    color: #00a6b8;
+}
+
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .upload-area {
+        min-height: 100px;
+        padding: 16px;
+    }
+
+    .upload-area i {
+        font-size: 25px;
+    }
+
+    .upload-area span {
+        font-size: 13px;
+    }
+
+}
+
+/* =========================================
+   BOTÃO VOLTAR - ESTILO MEDSTOCK
+   ========================================= */
+
+#btn-voltar {
+    position: absolute;
+    top: 25px;
+    left: 30px;
+    z-index: 20;
+}
+
+#btn-voltar a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-width: 105px;
+    height: 42px;
+
+    padding: 0 17px;
+
+    background: #ffffff;
+    color: #002D81;
+
+    border: 1px solid #dce8f2;
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+
+    box-shadow: 0 4px 14px rgba(0, 45, 129, 0.08);
+
+    transition:
+        background-color 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+/* Ícone */
+#btn-voltar a i {
+    font-size: 18px;
+    line-height: 1;
+
+    transition: transform 0.25s ease;
+}
+
+/* Hover */
+#btn-voltar a:hover {
+
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(0, 45, 129, 0.18);
+}
+
+/* Movimento da seta */
+#btn-voltar a:hover i {
+    transform: translateX(-4px);
+}
+
+/* Clique */
+#btn-voltar a:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 8px rgba(0, 45, 129, 0.12);
+}
+
+/* =========================================
+   RESPONSIVO
+   ========================================= */
+
+@media (max-width: 768px) {
+    #btn-voltar {
+        top: 18px;
+        left: 18px;
+    }
+
+    #btn-voltar a {
+        min-width: 44px;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border-radius: 12px;
+    }
+
+    #btn-voltar a span {
+        display: none;
+    }
+
+    #btn-voltar a i {
+        font-size: 20px;
+    }
+}

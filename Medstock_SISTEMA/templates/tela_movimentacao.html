@@ -1,0 +1,314 @@
+{% extends 'tela_home.html' %}
+
+{% block conteudo %}
+
+<title>Histórico</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tabela_movimentacao.css') }}">
+
+{# Quantidade de filtros ativos (usada no selo do botão) #}
+{% set filtros_ativos = (1 if produto_selecionado else 0)
+                      + (1 if tipo_selecionado else 0)
+                      + (1 if fornecedor_selecionado else 0) %}
+
+<div class="container">
+    <main class="content">
+
+        <!-- ================= HEADER ================= -->
+
+        <div class="header">
+
+            <div class="header-title">
+                <h1>Movimentação</h1>
+                <i class="header-icon bi bi-arrow-left-right"></i>
+            </div>
+
+            <div class="header-controls">
+
+                <!-- FILTROS -->
+                <div class="filtro-dropdown">
+
+                    <button type="button"
+                            class="btn-filtros {% if filtros_ativos %}ativo{% endif %}"
+                            id="btnFiltros"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            aria-controls="filtrosPainel">
+                        <i class="bi bi-funnel-fill"></i>
+                        <span>Filtros</span>
+                        {% if filtros_ativos %}
+                        <span class="filtro-badge">{{ filtros_ativos }}</span>
+                        {% endif %}
+                        <i class="bi bi-list"></i>
+                    </button>
+
+                    <div class="filtros-painel" id="filtrosPainel">
+
+                        <form method="GET" action="{{ url_for('tela_movimentacao') }}" class="filtros-form">
+
+                            <label class="filtro-campo">
+                                <span>Produto</span>
+                                <select name="produto" onchange="this.form.submit()">
+                                    <option value="">Todos os produtos</option>
+                                    {% for produto in produtos_filtro %}
+                                    <option value="{{ produto.produto }}"
+                                        {% if produto_selecionado == produto.produto %}selected{% endif %}>
+                                        {{ produto.produto }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+
+                            <label class="filtro-campo">
+                                <span>Tipo</span>
+                                <select name="tipo" onchange="this.form.submit()">
+                                    <option value="">Todos os tipos</option>
+                                    <option value="ENTRADA" {% if tipo_selecionado == 'ENTRADA' %}selected{% endif %}>
+                                        📥 Entrada
+                                    </option>
+                                    <option value="SAIDA" {% if tipo_selecionado == 'SAIDA' %}selected{% endif %}>
+                                        📤 Saída
+                                    </option>
+                                </select>
+                            </label>
+
+                            <label class="filtro-campo">
+                                <span>Fornecedor / Cliente</span>
+                                <select name="fornecedor" onchange="this.form.submit()">
+                                    <option value="">Todos os fornecedores/clientes</option>
+                                    {% for item in fornecedores_filtro %}
+                                    <option value="{{ item.nome }}"
+                                        {% if fornecedor_selecionado == item.nome %}selected{% endif %}>
+                                        {{ item.nome }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+
+                        </form>
+
+                        {% if filtros_ativos %}
+                        <a href="{{ url_for('tela_movimentacao') }}" class="btn-limpar-filtros">
+                            <i class="bi bi-x-circle"></i>
+                            Limpar filtros
+                        </a>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                <!-- BUSCA -->
+                <div class="busca-wrap">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="inputBusca" placeholder="Pesquisar">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= ALERTAS ================= -->
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+        {% for categoria, msg in mensagens %}
+        <div class="custom-alert alert-{{ categoria }} alert-flash animate__animated animate__fadeIn" role="alert">
+            <div class="alert-content">
+                {% if categoria == 'success' %}
+                <i class="bi bi-check-circle-fill alert-icon"></i>
+                {% elif categoria == 'danger' or categoria == 'error' %}
+                <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
+                {% else %}
+                <i class="bi bi-info-circle-fill alert-icon"></i>
+                {% endif %}
+                <span class="alert-text">{{ msg }}</span>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+
+        <!-- ================= TABELA ================= -->
+
+        <div class="tabela-card">
+
+            <div class="tabela-card-head">
+                <div class="tabela-titulo">
+                    <i class="bi bi-arrow-left-right"></i>
+                    <span>Histórico de movimentações</span>
+                </div>
+                <span class="tabela-contador">
+                    {{ movimentacoes|length }} registro{{ 's' if movimentacoes|length != 1 else '' }}
+                </span>
+            </div>
+
+            <div class="tabela-scroll">
+                <table class="tabela-mov">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Produto</th>
+                            <th>Fornecedor/Cliente</th>
+                            <th class="col-num">Quantidade</th>
+                            <th class="col-num">Valor</th>
+                            <th class="col-data">Data de Processamento</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tabelaDados">
+                        {% for item in movimentacoes %}
+                        <tr>
+                            <!-- TIPO -->
+                            <td>
+                                {% if item.tipo == 'ENTRADA' %}
+                                <span class="tipo tipo-entrada">
+                                    <i class="bi bi-arrow-down-left"></i> Entrada
+                                </span>
+                                {% else %}
+                                <span class="tipo tipo-saida">
+                                    <i class="bi bi-arrow-up-right"></i> Saída
+                                </span>
+                                {% endif %}
+                            </td>
+
+                            <!-- PRODUTO -->
+                            <td class="celula-forte">{{ item.produto }}</td>
+
+                            <!-- FORNECEDOR / CLIENTE -->
+                            <td class="celula-suave">
+                                {% if item.fornecedor %}{{ item.fornecedor }}{% else %}{{ item.cliente }}{% endif %}
+                            </td>
+
+                            <!-- QUANTIDADE -->
+                            <td class="col-num">
+                                {% if item.tipo == 'ENTRADA' %}
+                                <span class="qtd qtd-entrada">+{{ item.quantidade }}</span>
+                                {% else %}
+                                <span class="qtd qtd-saida">-{{ item.quantidade }}</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- VALOR -->
+                            <td class="col-num valor">R$ {{ item.valor_total }}</td>
+
+                            <!-- DATA -->
+                            <td class="col-data">
+                                <span class="data">{{ item.data_mov.strftime('%d/%m/%Y') }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                        {% if not movimentacoes %}
+                        <tr class="linha-vazia">
+                            <td colspan="6">
+                                <i class="bi bi-inbox"></i>
+                                <span>Nenhuma movimentação encontrada</span>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </main>
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* ========================================================
+       PAINEL DE FILTROS (abrir / fechar)
+    ======================================================== */
+
+    const btnFiltros = document.getElementById("btnFiltros");
+    const filtrosPainel = document.getElementById("filtrosPainel");
+
+    function fecharFiltros() {
+        if (!filtrosPainel) return;
+        filtrosPainel.classList.remove("aberto");
+        btnFiltros.setAttribute("aria-expanded", "false");
+    }
+
+    if (btnFiltros && filtrosPainel) {
+
+        btnFiltros.addEventListener("click", function (e) {
+            e.stopPropagation();
+
+            const aberto = filtrosPainel.classList.toggle("aberto");
+            btnFiltros.setAttribute("aria-expanded", aberto ? "true" : "false");
+        });
+
+        /* Cliques dentro do painel não fecham o painel */
+        filtrosPainel.addEventListener("click", function (e) {
+            e.stopPropagation();
+        });
+
+    }
+
+    /* Clique fora fecha o painel */
+    document.addEventListener("click", fecharFiltros);
+
+    /* ESC fecha o painel */
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") fecharFiltros();
+    });
+
+
+    /* ========================================================
+       BUSCA (mantém o texto ao trocar de filtro)
+    ======================================================== */
+
+    const inputBusca = document.getElementById("inputBusca");
+    const CHAVE_BUSCA = "medstock_busca_movimentacao";
+
+    function aplicarBusca() {
+
+        const filtro = (inputBusca.value || "").toLowerCase().trim();
+
+        document.querySelectorAll("#tabelaDados tr").forEach(function (linha) {
+
+            if (linha.classList.contains("linha-vazia")) return;
+
+            const produto = linha.cells[1].textContent.toLowerCase();
+            const cliFor = linha.cells[2].textContent.toLowerCase();
+
+            linha.style.display = (produto.includes(filtro) || cliFor.includes(filtro)) ? "" : "none";
+
+        });
+
+    }
+
+    if (inputBusca) {
+
+        try {
+            const salva = sessionStorage.getItem(CHAVE_BUSCA);
+            if (salva) {
+                inputBusca.value = salva;
+                aplicarBusca();
+            }
+        } catch (err) { /* sessionStorage indisponível */ }
+
+        inputBusca.addEventListener("input", function () {
+
+            try {
+                sessionStorage.setItem(CHAVE_BUSCA, this.value);
+            } catch (err) { /* ignora */ }
+
+            aplicarBusca();
+
+        });
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,1139 @@
+/* ================= RESET & BASE ================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #f4f4f4;
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar {
+    background: linear-gradient(90deg, #002d818a 0%, #00829f8a 50%, #00c4c1a9 100%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    position: fixed;
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+#cabecalho{
+    position: fixed;
+}
+
+/* LADO ESQUERDO */
+.left-navbar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* BOTÃO MENU */
+.btn-menu {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    margin-left: 20px;
+    transition: color 0.2s ease-in-out;
+}
+
+.btn-menu:hover {
+    color: #00C4C0;
+}
+
+/* LOGO */
+.logo {
+    display: flex;
+    align-items: center;
+    
+}
+
+.logo img {
+    width: 190px;
+    margin-right: 8px;
+    margin-left: 20px;
+    
+}
+
+#h1-logo {
+    color: white;
+    font-size: 22px;
+    margin-top: 8px;
+}
+
+/* MENU SUPERIOR */
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.menu li a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    position: relative;
+    display: inline-block;
+    transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.menu li a:hover {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.menu li a::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 20%;
+    width: 60%; 
+    height: 2px;
+    background-color: #00C4C0;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu li a:hover::after {
+    transform: scaleX(1);
+}
+
+/* ================= ÍCONES E PERFIL NAVBAR ================= */
+
+.icones {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-right: -400px;
+}
+
+.btn-icon-nav, .btn-perfil-nav {
+    background: transparent;
+    border: none;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-icon-nav i {
+    font-size: 19px;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-icon-nav:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.btn-icon-nav:hover i {
+    transform: rotate(15deg);
+}
+
+.btn-perfil-nav {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+.btn-perfil-nav i {
+    font-size: 18px;
+}
+
+.btn-perfil-nav:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 196, 192, 0.2);
+}
+
+.btn-icon-nav:active, .btn-perfil-nav:active {
+    transform: scale(0.95);
+}
+
+/* ================= SIDEBAR PRO ================= */
+
+.sidebar {
+    height: 100vh;
+    width: 250px;
+    background: linear-gradient(180deg, #002d81da 0%, #00829fcb 50%, #00c4c1e0 100%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    color: #fff;
+    z-index: 999;
+    box-shadow: 4px 0 24px rgba(0, 45, 129, .18);
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding-top: 70px;
+    transition: width .35s cubic-bezier(.4,0,.2,1);
+    will-change: width;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,.25) transparent;
+}
+
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,.22);
+    border-radius: 10px;
+}
+
+/* Linha de brilho na borda direita */
+.sidebar::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 1px; height: 100%;
+    background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,0));
+}
+
+.sidebar.close { width: 80px; }
+
+/* --------- MARCA INTERNA --------- */
+.sb-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 22px 16px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+.sb-brand img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,.25));
+}
+
+.sb-brand-text {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    white-space: nowrap;
+}
+
+/* --------- TÍTULO DE SEÇÃO --------- */
+.sb-section {
+    margin: 16px 0 6px;
+    padding: 0 22px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.55);
+    white-space: nowrap;
+    transition: opacity .2s ease;
+}
+
+/* --------- MENU --------- */
+.sb-menu {
+    list-style: none;
+    padding: 0 12px;
+    margin: 0;
+}
+
+.sb-menu li { margin-bottom: 4px; }
+
+.sb-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 11px 14px;
+    color: rgba(255,255,255,.82);
+    text-decoration: none;
+    font-size: 14.5px;
+    font-weight: 500;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    transition: color .2s ease, background-color .2s ease, transform .15s ease;
+}
+
+.sb-menu li a i {
+    font-size: 19px;
+    min-width: 26px;
+    text-align: center;
+    color: rgba(255,255,255,.85);
+    transition: transform .25s cubic-bezier(.4,0,.2,1), color .2s ease;
+}
+
+.sb-menu li a span {
+    white-space: nowrap;
+    transition: opacity .2s ease, visibility .2s ease;
+}
+
+/* Barrinha lateral (hover + ativo) */
+.sb-menu li a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 22px;
+    width: 3px;
+    margin-top: -11px;
+    background: #00F0D8;
+    border-radius: 0 4px 4px 0;
+    transform: scaleY(0);
+    transition: transform .22s cubic-bezier(.4,0,.2,1);
+}
+
+.sb-menu li a:hover {
+    color: #fff;
+    background-color: rgba(255,255,255,.12);
+    transform: translateX(2px);
+}
+
+.sb-menu li a:hover i { color: #00F0D8; transform: scale(1.08); }
+.sb-menu li a:hover::before { transform: scaleY(1); }
+
+/* --------- ESTADO ATIVO (aba selecionada) --------- */
+.sb-menu li a.active {
+    color: #fff;
+    font-weight: 600;
+    background: linear-gradient(90deg, rgba(255,255,255,.24) 0%, rgba(255,255,255,.06) 100%);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.18),
+                0 6px 16px rgba(0, 0, 0, .12);
+}
+
+.sb-menu li a.active::before {
+    transform: scaleY(1);
+    height: 26px;
+    margin-top: -13px;
+    background: #00F0D8;
+    box-shadow: 0 0 12px rgba(0, 240, 216, .85);
+}
+
+.sb-menu li a.active i {
+    color: #00F0D8;
+    filter: drop-shadow(0 0 6px rgba(0,240,216,.5));
+}
+
+/* Pontinho indicador à direita quando ativo */
+.sb-menu li a.active::after {
+    content: '';
+    position: absolute;
+    right: 12px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #00F0D8;
+    box-shadow: 0 0 8px rgba(0,240,216,.9);
+    animation: sbPulse 2s ease-in-out infinite;
+}
+
+@keyframes sbPulse {
+    0%, 100% { opacity: 1;   transform: scale(1); }
+    50%      { opacity: .45; transform: scale(.8); }
+}
+
+/* Bolinhas de entrada/saída */
+.sb-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-left: auto;
+    margin-right: 14px;
+    flex-shrink: 0;
+}
+.sb-dot.in  { background: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,.7); }
+.sb-dot.out { background: #fbbf24; box-shadow: 0 0 8px rgba(251,191,36,.7); }
+
+/* --------- RODAPÉ --------- */
+.sb-footer {
+    margin-top: auto;
+    padding: 14px 12px 18px;
+    border-top: 1px solid rgba(255,255,255,.12);
+}
+
+.sb-logout {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    color: rgba(255,255,255,.85);
+    text-decoration: none;
+    font-size: 14.5px;
+    font-weight: 500;
+    transition: background-color .2s ease, color .2s ease;
+}
+
+.sb-logout i { font-size: 19px; min-width: 26px; text-align: center; }
+
+.sb-logout:hover {
+    background: rgba(239, 68, 68, .28);
+    color: #fff;
+}
+
+.sb-version {
+    display: block;
+    text-align: center;
+    margin-top: 8px;
+    font-size: 11px;
+    letter-spacing: .5px;
+    color: rgba(255,255,255,.45);
+}
+
+/* ================= ESTADO COLAPSADO ================= */
+
+/* Esconde textos, versões e dots mantendo display none para zerar o espaço ocupado */
+.sidebar.close .sb-brand-text,
+.sidebar.close .sb-menu li a span,
+.sidebar.close .sb-logout span,
+.sidebar.close .sb-version,
+.sidebar.close .sb-dot {
+    display: none !important;
+}
+
+.sidebar.close .sb-section {
+    opacity: 0;
+    height: 12px;
+    margin: 6px 0;
+    overflow: hidden;
+}
+
+.sidebar.close .sb-brand { 
+    justify-content: center; 
+    padding: 0 0 16px; 
+}
+
+.sidebar.close .sb-menu {
+    padding: 0 8px; /* Ajusta o padding interno do container da lista */
+}
+
+/* Alinha o container do link exatamente no centro dos 80px */
+.sidebar.close .sb-menu li a,
+.sidebar.close .sb-logout {
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 12px 0 !important;
+    gap: 0 !important;
+    width: 100% !important;
+    transform: none !important;
+}
+
+/* Garante alinhamento centralizado e sem margens dos ícones */
+.sidebar.close .sb-menu li a i,
+.sidebar.close .sb-logout i {
+    min-width: unset !important;
+    margin: 0 !important;
+    text-align: center !important;
+}
+
+/* Garante o correto enquadramento do destaque ATIVO */
+.sidebar.close .sb-menu li a.active {
+    margin: 0;
+}
+
+/* Corrige a barrinha lateral ciano para o elemento fechado */
+.sidebar.close .sb-menu li a::before {
+    left: 0;
+}
+
+/* Esconde a barrinha em todos os links da barra colapsada por padrão */
+.sidebar.close .sb-menu li a::before {
+    transform: scaleY(0) !important;
+}
+
+/* Exibe a barrinha APENAS no item ativo (ou no hover) */
+.sidebar.close .sb-menu li a.active::before,
+.sidebar.close .sb-menu li a:hover::before {
+    left: 0 !important;
+    top: 50% !important;
+    margin-top: 0 !important;
+    transform: translateY(-50%) scaleY(1) !important;
+    height: 22px !important;
+    border-radius: 0 4px 4px 0 !important;
+}
+
+.sidebar.close .sb-menu li a.active::after { 
+    display: none !important; 
+}
+
+/* Tooltip quando colapsada */
+.sidebar.close .sb-menu li a[data-tip]:hover::after,
+.sidebar.close .sb-logout[data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: calc(100% + 12px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: #002D81;
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 7px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+    box-shadow: 0 8px 20px rgba(0,0,0,.25);
+    z-index: 1200;
+    animation: sbTipIn .18s ease-out;
+}
+
+@keyframes sbTipIn {
+    from { opacity: 0; transform: translate(-6px, -50%); }
+    to   { opacity: 1; transform: translate(0, -50%); }
+}
+
+.sidebar.close .sb-menu li a,
+.sidebar.close .sb-logout { 
+    overflow: visible; 
+}
+/* ================= CONTEÚDO MAIN ================= */
+
+.conteudo {
+    margin-top: 60px; /* altura da navbar */
+    margin-left: 250px;
+    padding: 25px;
+    transition: margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ALTERADO: Estado base padrão inicializado como expandido (80px) */
+.conteudo.expand {
+    margin-top: 60px;
+    margin-left: 80px;
+}
+
+
+
+
+/* ================= ANIMAÇÃO DE TRANSIÇÃO DE TELAS ================= */
+
+/* Criando o efeito de surgimento profissional */
+@keyframes fadeInPage {
+    0% {
+        opacity: 0;
+        transform: translateY(8px); /* Começa um pouco abaixo */
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0); /* Termina na posição perfeita */
+    }
+}
+
+/* Aplicando na tag main que guarda todo o conteúdo dinâmico */
+.conteudo {
+    /* 0.4 segundos é o tempo perfeito para dar fluidez sem parecer lento */
+    animation: fadeInPage 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    
+    /* Garante estabilidade visual enquanto renderiza */
+    will-change: transform, opacity; 
+}
+
+
+/* TESTE*/
+
+/* ================= ALERTAS PERSONALIZADOS MEDSTOCK ================= */
+
+.custom-alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 45, 129, 0.05);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+/* Alinhamento interno */
+.alert-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.alert-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #334155; /* Texto escuro suave, mais legível */
+}
+
+.alert-icon {
+    font-size: 18px;
+}
+
+/* --- Variação: Sucesso (Verde Medstock) --- */
+.custom-alert.alert-success {
+    border-left: 5px solid #00C4C0; /* Barra lateral com o ciano da sua marca */
+}
+.custom-alert.alert-success .alert-icon {
+    color: #00C4C0;
+}
+
+/* --- Variação: Erro / Perigo (Vermelho Suave) --- */
+.custom-alert.alert-danger, 
+.custom-alert.alert-error {
+    border-left: 5px solid #ef4444; 
+}
+.custom-alert.alert-danger .alert-icon,
+.custom-alert.alert-error .alert-icon {
+    color: #ef4444;
+}
+
+/* --- Variação: Informação / Avisos (Azul Medstock) --- */
+.custom-alert.alert-info {
+    border-left: 5px solid #00819F;
+}
+.custom-alert.alert-info .alert-icon {
+    color: #00819F;
+}
+
+.icones{
+    position: relative;
+}
+
+.painel-notificacao{
+    position: absolute;
+
+    top: 55px;
+    right: 50px;
+
+    width: 320px;
+
+    background: #fff;
+
+    border-radius: 16px;
+
+    padding: 15px;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,.15);
+
+    display: none;
+
+    z-index: 9999;
+}
+
+.painel-notificacao.ativo{
+    display: block;
+}
+
+.painel-notificacao h5{
+    color: #002D81;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.notificacao-item{
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.notificacao-item:last-child{
+    border-bottom: none;
+}
+
+/**/
+.painel-notificacao{
+    position: absolute;
+    top: 60px;
+    right: 20px;
+
+    width: 420px;
+    max-height: 450px;
+
+    overflow-y: auto;
+
+    background: white;
+    border-radius: 20px;
+
+    padding: 15px;
+
+    box-shadow: 0 15px 35px rgba(0,0,0,.15);
+
+    display: none;
+    z-index: 9999;
+}
+
+.painel-notificacao.ativo{
+    display: block;
+}
+
+.noti-card{
+    background: #f8fafc;
+
+    border-radius: 16px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 15px;
+
+    margin-bottom: 12px;
+
+    transition: .3s;
+}
+
+.noti-card:hover{
+    background: #eef2f7;
+}
+
+.circulo-vermelho,
+.circulo-amarelo,
+.circulo-azul{
+    width: 45px;
+    height: 45px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+    font-size: 20px;
+}
+
+.circulo-vermelho{
+    background: #ef4444;
+}
+
+.circulo-amarelo{
+    background: #facc15;
+}
+
+.circulo-azul{
+    background: #3b82f6;
+}
+
+.fora-estoque h5{
+    color: #ef4444;
+    margin: 0;
+    font-size: 15px;
+}
+
+.alerta h5{
+    color: #ca8a04;
+    margin: 0;
+    font-size: 15px;
+}
+
+.atencao h5{
+    color: #2563eb;
+    margin: 0;
+    font-size: 15px;
+}
+
+.fora-estoque p,
+.alerta p,
+.atencao p{
+    margin: 2px 0 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* ============================================================
+   BOTÃO DE NOTIFICAÇÃO
+============================================================ */
+
+.btn-icon-nav {
+    position: relative;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 25px;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+
+/* ============================================================
+   CONTADOR DE NOTIFICAÇÕES
+============================================================ */
+
+.contador-notificacao {
+    position: absolute;
+
+    top: 2px;
+    right: 0px;
+
+    min-width: 19px;
+    height: 19px;
+
+    padding: 0 5px;
+
+    background: #ef4444;
+    color: white;
+
+    border-radius: 50%;
+
+    border: 2px solid white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    box-sizing: border-box;
+}
+
+/* ============================================================
+   CABEÇALHO DAS NOTIFICAÇÕES
+============================================================ */
+
+.notificacao-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 5px 5px 15px 5px;
+
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 12px;
+}
+
+.notificacao-header h4 {
+    margin: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: #002D81;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+
+/* ============================================================
+   BOTÃO LIMPAR
+============================================================ */
+
+.btn-limpar-notificacoes {
+    border: none;
+    background: transparent;
+
+    color: #64748b;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 7px 9px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition: all .2s ease;
+}
+
+.btn-limpar-notificacoes:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.btn-limpar-notificacoes i {
+    font-size: 14px;
+}
+
+
+/* ============================================================
+   CONTADOR
+============================================================ */
+
+.contador-notificacao {
+    position: absolute;
+
+    top: 1px;
+    right: -2px;
+
+    min-width: 19px;
+    height: 19px;
+
+    padding: 0 4px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #ef4444;
+    color: white;
+
+    border: 2px solid white;
+    border-radius: 50%;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    line-height: 1;
+}
+
+
+/* ============================================================
+   PAINEL
+============================================================ */
+
+.painel-notificacao {
+    position: absolute;
+
+    top: 60px;
+    right: 20px;
+
+    width: 420px;
+    max-height: 450px;
+
+    overflow-y: auto;
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 15px;
+
+    box-shadow: 0 15px 35px rgba(0, 0, 0, .15);
+
+    display: none;
+
+    z-index: 9999;
+}
+
+.painel-notificacao.ativo {
+    display: block;
+}
+
+
+/* ============================================================
+   CARD
+============================================================ */
+
+.noti-card {
+    background: #f8fafc;
+
+    border-radius: 16px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 15px;
+
+    margin-bottom: 12px;
+
+    transition: .3s;
+}
+
+.noti-card:hover {
+    background: #eef2f7;
+}
+
+
+/* ============================================================
+   ÍCONES
+============================================================ */
+
+.circulo-vermelho,
+.circulo-amarelo,
+.circulo-azul {
+    width: 45px;
+    height: 45px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+
+    font-size: 20px;
+}
+
+.circulo-vermelho {
+    background: #ef4444;
+}
+
+.circulo-amarelo {
+    background: #facc15;
+}
+
+.circulo-azul {
+    background: #3b82f6;
+}
+
+
+/* ============================================================
+   TEXTO
+============================================================ */
+
+.noti-conteudo {
+    flex: 1;
+}
+
+.noti-conteudo h5 {
+    margin: 0;
+
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.noti-conteudo p {
+    margin: 3px 0 0;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+
+/* CORES DOS TÍTULOS */
+
+.fora-estoque h5 {
+    color: #ef4444;
+}
+
+.alerta h5 {
+    color: #ca8a04;
+}
+
+.atencao h5 {
+    color: #2563eb;
+}
+
+
+/* ============================================================
+   NOTIFICAÇÃO VAZIA
+============================================================ */
+
+.notificacao-vazia {
+    margin-bottom: 0;
+}
+
+/* ================= USUÁRIO NA NAVBAR ================= */
+
+.user-nav{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 6px 4px 12px;
+    border-radius: 999px;
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    transition: background .2s ease, border-color .2s ease, transform .15s ease;
+    max-width: 240px;
+    margin-right: 20px;
+}
+
+.user-nav:hover{
+    background: rgba(255,255,255,.18);
+    border-color: rgba(255,255,255,.35);
+    color: #fff;
+}
+
+.user-nav:active{ transform: scale(.98); }
+
+.user-nav-info{
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    text-align: right;
+    min-width: 0;
+}
+
+.user-nav-hello{
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.7);
+}
+
+.user-nav-name{
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    max-width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Avatar (ícone ou foto) */
+.user-nav-avatar{
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 18px;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.25);
+}
+
+.user-nav-avatar img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Em telas pequenas, esconde só o texto e mantém o avatar */
+@media (max-width: 768px){
+    .user-nav{
+        padding: 2px;
+        background: transparent;
+        border-color: transparent;
+    }
+    .user-nav-info{ display: none; }
+}

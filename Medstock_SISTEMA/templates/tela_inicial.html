@@ -1,0 +1,212 @@
+{% extends 'tela_home.html' %}
+
+{% block conteudo %}
+
+<title>Início | MEDSTOCK</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tela_inicial.css') }}">
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+      
+<div class="dashboard-welcome">
+
+    <!-- ================= MENSAGENS FLASH ================= -->
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+            <div class="flash-area">
+                {% for categoria, msg in mensagens %}
+                    <div class="flash-msg flash-{{ categoria }}">
+                        {% if categoria == 'success' %}
+                            <i class="bi bi-check-circle-fill"></i>
+                        {% elif categoria == 'danger' or categoria == 'error' %}
+                            <i class="bi bi-exclamation-octagon-fill"></i>
+                        {% else %}
+                            <i class="bi bi-info-circle-fill"></i>
+                        {% endif %}
+                        <span>{{ msg }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- ================= CABEÇALHO / HERO ================= -->
+    <header class="welcome-header reveal" style="--delay: .05s">
+        <div class="welcome-brand">
+            <div class="welcome-logo-box">
+                <img class="welcome-logo"
+                     src="{{ url_for('static', filename='img/medstock_logo_sf.png') }}"
+                     alt="Logotipo MEDSTOCK">
+            </div>
+
+            <div class="welcome-title-group">
+                <span class="welcome-eyebrow">
+                    <span class="pulse-dot"></span> Sistema on-line
+                </span>
+                <h1 class="welcome-title">
+                    <span>Bem-vindo à</span>
+                    <strong>MEDSTOCK</strong>
+                </h1>
+                <p class="welcome-text">
+                    Sistema Inteligente de Gestão de Estoque Hospitalar e Clínico
+                </p>
+            </div>
+
+            <div class="welcome-meta">
+                <span class="meta-label">Acesso</span>
+                <strong class="meta-value">Painel Geral</strong>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= INDICADORES ================= -->
+    <section class="cards-dashboard">
+        <div class="card-info reveal" style="--delay: .12s">
+            <div class="card-icone"><i class="bi bi-capsule"></i></div>
+            <div class="card-dados">
+                <span class="card-titulo">Produtos cadastrados</span>
+                <h2>{{ slc_prod | default(0) }}</h2>
+                <span class="card-hint">Catálogo de insumos</span>
+            </div>
+        </div>
+
+        <div class="card-info reveal" style="--delay: .18s">
+            <div class="card-icone"><i class="bi bi-box-arrow-in-down"></i></div>
+            <div class="card-dados">
+                <span class="card-titulo">Entradas em espera</span>
+                <h2>{{ entradas_pendentes | default(0) }}</h2>
+                <span class="card-hint">Pedidos a confirmar</span>
+            </div>
+        </div>
+
+        <div class="card-info reveal" style="--delay: .24s">
+            <div class="card-icone"><i class="bi bi-box-arrow-up"></i></div>
+            <div class="card-dados">
+                <span class="card-titulo">Saídas em espera</span>
+                <h2>{{ saidas_pendentes | default(0) }}</h2>
+                <span class="card-hint">Pedidos a faturar</span>
+            </div>
+        </div>
+    </section>
+
+<div class="reveal dashboard-link-wrapper" style="--delay: .24s">
+    <p>
+        <a href="{{ url_for('tela_dashboard') }}" class="dashboard-link">
+            Ver dashboard completo
+        </a>
+    </p>
+</div>
+
+    <!-- ================= AÇÕES RÁPIDAS ================= -->
+    <section class="quick-actions-section">
+
+        <div class="section-head reveal" style="--delay: .28s">
+            <h2 class="section-subtitle">O que você deseja fazer agora?</h2>
+            <span class="section-line"></span>
+        </div>
+
+        <div class="welcome-buttons-grid">
+
+            <a href="{{ url_for('tela_dashboard') }}"
+            class="welcome-card-btn reveal" style="--delay: .32s">
+             <span class="card-icon-wrapper"><i class="bi bi-speedometer2"></i></span>
+             <span class="card-text-wrapper">
+                 <span class="card-title">DashBoard</span>
+                 <span class="card-description">
+                     Informações Uteis e rápidas sobre o Estoque.
+                 </span>
+             </span>
+             <i class="bi bi-arrow-right arrow-action"></i>
+         </a>
+
+            <a href="{{ url_for('tela_historico_de_fornecedor') }}"
+               class="welcome-card-btn reveal" style="--delay: .32s">
+                <span class="card-icon-wrapper"><i class="bi bi-truck"></i></span>
+                <span class="card-text-wrapper">
+                    <span class="card-title">Gerenciar Fornecedores</span>
+                    <span class="card-description">
+                        Cadastre novos parceiros e visualize históricos de pedidos.
+                    </span>
+                </span>
+                <i class="bi bi-arrow-right arrow-action"></i>
+            </a>
+
+            <a href="{{ url_for('tela_historico_de_cliente') }}"
+               class="welcome-card-btn reveal" style="--delay: .38s">
+                <span class="card-icon-wrapper"><i class="bi bi-people-fill"></i></span>
+                <span class="card-text-wrapper">
+                    <span class="card-title">Cadastrar Novo Cliente</span>
+                    <span class="card-description">
+                        Adicione novos clientes para saídas de medicamentos e faturamento.
+                    </span>
+                </span>
+                <i class="bi bi-arrow-right arrow-action"></i>
+            </a>
+
+            <a href="{{ url_for('tela_cadastro_produto') }}"
+               class="welcome-card-btn reveal" style="--delay: .44s">
+                <span class="card-icon-wrapper"><i class="bi bi-box-seam"></i></span>
+                <span class="card-text-wrapper">
+                    <span class="card-title">Cadastrar Novo Produto</span>
+                    <span class="card-description">
+                        Adicione novos itens ao catálogo de insumos médicos.
+                    </span>
+                </span>
+                <i class="bi bi-arrow-right arrow-action"></i>
+            </a>
+
+            <a href="{{ url_for('tela_produtos') }}"
+               class="welcome-card-btn reveal" style="--delay: .50s">
+                <span class="card-icon-wrapper"><i class="bi bi-capsule-pill"></i></span>
+                <span class="card-text-wrapper">
+                    <span class="card-title">Produtos</span>
+                    <span class="card-description">
+                        Todos os medicamentos cadastrados.
+                    </span>
+                </span>
+                <i class="bi bi-arrow-right arrow-action"></i>
+            </a>
+
+            <a href="{{ url_for('tela_entrada') }}"
+               class="welcome-card-btn reveal" style="--delay: .56s">
+                <span class="card-icon-wrapper"><i class="bi bi-cart-plus-fill"></i></span>
+                <span class="card-text-wrapper">
+                    <span class="card-title">Pedidos de Entrada</span>
+                    <span class="card-description">
+                        Pedidos de Entrada em espera.
+                    </span>
+                </span>
+                <i class="bi bi-arrow-right arrow-action"></i>
+            </a>
+
+            <a href="{{ url_for('tela_saida') }}"
+               class="welcome-card-btn reveal" style="--delay: .62s">
+                <span class="card-icon-wrapper"><i class="bi bi-cart-check-fill"></i></span>
+                <span class="card-text-wrapper">
+                    <span class="card-title">Pedidos de Saída</span>
+                    <span class="card-description">
+                        Pedidos de Saída em espera.
+                    </span>
+                </span>
+                <i class="bi bi-arrow-right arrow-action"></i>
+            </a>
+
+            <a href="{{ url_for('tela_movimentacao') }}"
+               class="welcome-card-btn reveal" style="--delay: .68s">
+                <span class="card-icon-wrapper"><i class="bi bi-arrow-left-right"></i></span>
+                <span class="card-text-wrapper">
+                    <span class="card-title">Movimentações</span>
+                    <span class="card-description">
+                        Registros das entradas e saídas.
+                    </span>
+                </span>
+                <i class="bi bi-arrow-right arrow-action"></i>
+            </a>
+
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

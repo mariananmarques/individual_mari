@@ -1,0 +1,209 @@
+/* ================= CONTAINERS & ESTRUTURA ================= */
+.profile-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 100px);
+    padding: 20px;
+}
+
+.profile-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 580px;
+    border-radius: 20px;
+    box-shadow: 0 12px 32px rgba(0, 45, 129, 0.08);
+    border: 1px solid rgba(0, 45, 129, 0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-card:hover {
+    box-shadow: 0 16px 40px rgba(0, 45, 129, 0.12);
+}
+
+/* ================= CABEÇALHO COM GRADIENTE ================= */
+.profile-header {
+    background: linear-gradient(135deg, #002D81 0%, #00829F 50%, #00C4C0 100%);
+    height: 120px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.profile-avatar-container {
+    position: absolute;
+    bottom: -45px;
+}
+
+.profile-avatar {
+    width: 95px;
+    height: 95px;
+    border-radius: 50%;
+    border: 4px solid #ffffff;
+    object-fit: cover;
+    background-color: #f8fafc;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.status-indicator {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 15px;
+    height: 15px;
+    background-color: #00C4C0;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+}
+
+/* ================= CORPO DO PERFIL ================= */
+.profile-body {
+    padding: 60px 32px 32px 32px;
+}
+
+.user-name {
+    color: #002D81;
+    font-weight: 700;
+    font-size: 22px;
+    margin-bottom: 6px;
+}
+
+.user-role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: rgba(0, 196, 192, 0.12);
+    color: #00829F;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+/* ================= GRID DE INFORMAÇÕES ================= */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+}
+
+@media (max-width: 576px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    border-radius: 12px;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.info-item:hover {
+    border-color: #00C4C0;
+    background-color: #ffffff;
+}
+
+.info-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(0, 45, 129, 0.08) 0%, rgba(0, 196, 192, 0.12) 100%);
+    color: #00829F;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.info-content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.info-content label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    margin: 0;
+}
+
+.info-content p {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-divider {
+    border: 0;
+    height: 1px;
+    background: #e2e8f0;
+    margin: 28px 0 20px 0;
+}
+
+/* ================= BOTÕES DE AÇÃO ================= */
+.action-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+@media (max-width: 480px) {
+    .action-buttons {
+        flex-direction: column;
+    }
+}
+
+.btn-medstock {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.btn-switch {
+    background-color: rgba(0, 130, 159, 0.1);
+    color: #00829F;
+    border: 1px solid rgba(0, 130, 159, 0.2);
+}
+
+.btn-switch:hover {
+    background-color: #00829F;
+    color: #ffffff;
+    border-color: #00829F;
+}
+
+.btn-logout {
+    background-color: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.btn-logout:hover {
+    background-color: #ef4444;
+    color: #ffffff;
+    border-color: #ef4444;
+}
+

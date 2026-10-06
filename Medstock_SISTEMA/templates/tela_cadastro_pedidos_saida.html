@@ -1,0 +1,122 @@
+{% extends 'tela_home.html' %}
+
+{% block conteudo %}
+    <title>Pedidos</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tela_cadastro_pedidos.css') }}">
+    <div id="btn-voltar">
+        <a href="{{ url_for('tela_produtos') }}" aria-label="Voltar para produtos">
+            <i class="bi bi-arrow-left"></i>
+            <span>Voltar</span>
+        </a>
+    </div>
+
+
+
+    <!-- Conteúdo principal -->
+    <form action="{{ url_for('salvar_pedido_saida', produto_id = produto.id) }}" method="POST">
+        <input type="hidden" name="produto_id" value="{{ produto.id }}">
+       <!-- <input type="hidden" name="fornecedor_id" value="{{ produto.fornecedor_id }}">-->
+        <input type="hidden" name="tipo" value="{{ tipo }}">
+        <div class="conteudo_c">
+
+            <div class="card">
+
+                <h1>Pedido Cliente</h1>
+                <div class="produto-info">
+
+                    <div class="info-item">
+                        <span class="titulo">Produto</span>
+                        <span class="valor">{{ produto.nome }}</span>
+                    </div>
+                
+                    <div class="info-item">
+                        <span class="titulo">Fornecedor</span>
+                        <span class="valor">
+                            {{ produto.nome_fornecedor }}
+                        </span>
+                    </div>
+                
+                    <div class="info-item {% if produto.quantidade_estoque <= produto.estoque_minimo %}estoque-baixo{% endif %}">
+                        <span class="titulo">Estoque Atual</span>
+                        <span class="valor">{% if produto.quantidade_estoque <= produto.estoque_minimo %}
+                            ⚠ {{ produto.quantidade_estoque }}
+                        {% else %}
+                            {{ produto.quantidade_estoque }}
+                        {% endif %}</span>
+                    </div>
+                
+                    <div class="info-item">
+                        <span class="titulo">Estoque Mínimo</span>
+                        <span class="valor">{{ produto.estoque_minimo }}</span>
+                    </div>
+                
+                </div>
+
+
+                <div class="linha">
+                    <div>
+                        <label>Quantidade</label>
+                        <input type="number" name="quantidade_pedido" required>
+                    </div>
+
+                    <div>
+                        <label for="data_pedido">Data Do Pedido</label>
+                        <input type="datetime-local" name="data_pedido"
+                            value="{{ pedido.data_pedido if pedido else '' }}">
+                    </div>
+
+                </div>
+
+                <div class="linha" id="line_valor">
+                <label class="form-label">Cliente</label>
+                <select name="clientes_cadastro_id" class="form-select" required>
+                    <option value="">Selecione um cliente</option>
+            
+                    {% for c in clientes_cadastro %}
+                    <option value="{{ c.id }}"
+                        {% if produto and produto.clientes_cadastro_id == c.id %}
+                            selected
+                        {% endif %}>
+                        {{ c.nome }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+
+                <div class="linha" id="line_valor">
+                    <div>
+                        <label>Observação</label>
+                        <input type="text" name="observacao" value="{{ pedido.observacao if pedido else '' }}">
+                    </div>
+
+                </div>
+                
+
+                {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}
+                {% for categoria, msg in mensagens %}
+                <div class="custom-alert alert-{{ categoria }} alert-flash animate__animated animate__fadeIn"
+                    role="alert">
+                    <div class="alert-content">
+                        {% if categoria == 'success' %}
+                        <i class="bi bi-check-circle-fill alert-icon"></i>
+                        {% elif categoria == 'danger' or categoria == 'error' %}
+                        <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
+                        {% else %}
+                        <i class="bi bi-info-circle-fill alert-icon"></i>
+                        {% endif %}
+                        <span class="alert-text">{{ msg }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <button type="submit">Adicionar</button>
+            </div>
+        </div>
+    </form>
+    {% endblock %}

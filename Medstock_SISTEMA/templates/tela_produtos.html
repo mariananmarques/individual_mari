@@ -1,0 +1,1828 @@
+{% extends 'tela_home.html' %}
+
+{% block conteudo %}
+
+<link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tela_produtos.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+{# ------------------------------------------------------------
+   CATEGORIAS AGRUPADAS (usadas no filtro de categoria)
+   Mantenha igual à lista do formulário de cadastro.
+------------------------------------------------------------ #}
+{% set categoria_grupos = [
+    ('Medicamentos frequentes', [
+        'Analgésicos', 'Anti-inflamatórios', 'Antibióticos', 'Antialérgicos',
+        'Antifúngicos e Antivirais', 'Gastrointestinais', 'Cardiovasculares',
+        'Anti-hipertensivos', 'Antidiabéticos', 'Respiratórios', 'Dermatológicos',
+        'Corticoides', 'Psiquiatria e Neurologia', 'Medicamentos Controlados'
+    ]),
+    ('Especialidades e saúde específica', [
+        'Ginecologia e Saúde da Mulher', 'Oftalmológicos e Otológicos',
+        'Endocrinologia', 'Fitoterápicos', 'Vacinas'
+    ]),
+    ('Suplementos, higiene e utilidades', [
+        'Vitaminas e Suplementos', 'Higiene e Cuidados Pessoais',
+        'Dermocosméticos', 'Infantil e Bebês'
+    ]),
+    ('Materiais de apoio e hospitalares', [
+        'Materiais Hospitalares', 'First Aid e Curativos', 'EPIs', 'Outros'
+    ])
+] %}
+
+{% set categoria_icones = {
+    'Analgésicos': 'bi-capsule-pill',
+    'Anti-inflamatórios': 'bi-capsule',
+    'Antibióticos': 'bi-virus',
+    'Antialérgicos': 'bi-bandaid',
+    'Antifúngicos e Antivirais': 'bi-virus2',
+    'Gastrointestinais': 'bi-cup-hot',
+    'Cardiovasculares': 'bi-heart-pulse',
+    'Anti-hipertensivos': 'bi-activity',
+    'Antidiabéticos': 'bi-droplet',
+    'Respiratórios': 'bi-lungs-fill',
+    'Dermatológicos': 'bi-eyedropper',
+    'Corticoides': 'bi-prescription2',
+    'Psiquiatria e Neurologia': 'bi-lightning-charge',
+    'Medicamentos Controlados': 'bi-shield-lock',
+    'Ginecologia e Saúde da Mulher': 'bi-gender-female',
+    'Oftalmológicos e Otológicos': 'bi-eye',
+    'Endocrinologia': 'bi-thermometer-half',
+    'Fitoterápicos': 'bi-flower1',
+    'Vacinas': 'bi-shield-check',
+    'Vitaminas e Suplementos': 'bi-heart',
+    'Higiene e Cuidados Pessoais': 'bi-droplet-half',
+    'Dermocosméticos': 'bi-stars',
+    'Infantil e Bebês': 'bi-emoji-smile',
+    'Materiais Hospitalares': 'bi-hospital',
+    'First Aid e Curativos': 'bi-bandaid-fill',
+    'EPIs': 'bi-person-badge'
+} %}
+
+{# ------------------------------------------------------------
+   TARJAS / RESTRIÇÃO DE VENDA
+   Valores aceitos em produto.tarja: 'preta' ou 'vermelha'.
+   Qualquer outro valor (ou vazio) = isento, sem badge.
+   Se o produto ainda não tem o campo "tarja", usa um padrão
+   pela categoria (tarja_por_categoria).
+------------------------------------------------------------ #}
+{% set tarjas = {
+    'preta': {
+        'texto': 'Tarja Preta',
+        'icone': 'bi-file-earmark-lock2-fill',
+        'aviso': 'Medicamento controlado: exige receita com retenção. Confira a receita antes de dar saída.'
+    },
+    'vermelha': {
+        'texto': 'Retenção de Receita',
+        'icone': 'bi-file-earmark-medical-fill',
+        'aviso': 'Venda somente com prescrição médica e retenção da receita. Confira a receita antes de dar saída.'
+    }
+} %}
+
+{% set tarja_por_categoria = {
+    'Medicamentos Controlados': 'preta',
+    'Antibióticos': 'vermelha'
+} %}
+
+{# ------------------------------------------------------------
+   TIPO DE RECEITA
+   Valores aceitos em produto.tipo_receita: 'branca', 'azul' ou 'amarela'.
+   Se o produto ainda não tem o campo, usa o padrão da categoria
+   (antibióticos exigem receita branca, 2 vias, com retenção).
+------------------------------------------------------------ #}
+{% set tipo_receita_por_categoria = {
+    'Antibióticos': 'branca'
+} %}
+
+{# Quantidade de filtros do servidor ativos (fornecedor + estoque) #}
+{% set filtros_ativos = (1 if fornecedor_selecionado else 0) + (1 if estoque_selecionado else 0) %}
+
+<div id="container">
+
+    <main id="content">
+
+        <!-- ================= HEADER ================= -->
+
+        <div id="header">
+
+            <div class="header-title">
+                <h1>Produtos</h1>
+                <i id="icon" class="bi bi-capsule-pill"></i>
+            </div>
+
+            <div class="header-controls">
+
+                <!-- FILTROS -->
+                <div class="filtro-dropdown">
+
+                    <button type="button"
+                            class="btn-filtros {% if filtros_ativos %}ativo{% endif %}"
+                            id="btnFiltros"
+                            data-servidor="{{ filtros_ativos }}"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            aria-controls="filtrosPainel">
+                        <i class="bi bi-funnel-fill"></i>
+                        <span>Filtros</span>
+                        <span class="filtro-badge" id="filtroBadge" {% if not filtros_ativos %}hidden{% endif %}>{{ filtros_ativos }}</span>
+                        <i class="bi bi-list"></i>
+                    </button>
+
+                    <div class="filtros-painel" id="filtrosPainel">
+
+                        <!-- Filtros processados no servidor -->
+                        <form method="GET" action="{{ url_for('tela_produtos') }}" class="filtros-form">
+
+                            <label class="filtro-campo">
+                                <span>Fornecedor</span>
+                                <select name="fornecedor_id" onchange="this.form.submit()">
+                                    <option value="">Todos os fornecedores</option>
+                                    {% for fornecedor in fornecedores %}
+                                    <option value="{{ fornecedor.id }}"
+                                        {% if fornecedor_selecionado == fornecedor.id|string %}selected{% endif %}>
+                                        {{ fornecedor.nome_fornecedor }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+
+                            <label class="filtro-campo">
+                                <span>Estoque</span>
+                                <select name="estoque" onchange="this.form.submit()">
+                                    <option value="">Todos os produtos</option>
+                                    <option value="baixo" {% if estoque_selecionado == 'baixo' %}selected{% endif %}>
+                                        ⚠ Estoque baixo
+                                    </option>
+                                    <option value="normal" {% if estoque_selecionado == 'normal' %}selected{% endif %}>
+                                        ✅ Estoque normal
+                                    </option>
+                                </select>
+                            </label>
+
+                        </form>
+
+                        <!-- Categoria (filtro instantâneo, sem recarregar a página) -->
+                        <label class="filtro-campo">
+                            <span>Categoria</span>
+                            <select id="filtroCategoria" class="filtro-select">
+                                <option value="">Todas as categorias</option>
+                                {% for grupo, itens in categoria_grupos %}
+                                <optgroup label="{{ grupo }}">
+                                    {% for c in itens %}
+                                    <option value="{{ c }}">{{ c }}</option>
+                                    {% endfor %}
+                                </optgroup>
+                                {% endfor %}
+                            </select>
+                        </label>
+
+                        <!-- ===== SANITÁRIOS E REGULATÓRIOS ===== -->
+                        <div class="filtro-secao-titulo">
+                            <i class="bi bi-shield-check"></i>
+                            Sanitários e Regulatórios
+                        </div>
+
+                        <!-- Status de validade -->
+                        <div class="filtro-grupo">
+                            <span class="filtro-rotulo">Status de validade</span>
+                            <div class="chips" data-filtro="validade">
+                                <button type="button" class="chip ativo" data-valor="" aria-pressed="true">Todos</button>
+                                <button type="button" class="chip chip-perigo" data-valor="vencidos" aria-pressed="false">
+                                    <i class="bi bi-exclamation-octagon-fill"></i> Vencidos
+                                </button>
+                                <button type="button" class="chip chip-atencao" data-valor="30" aria-pressed="false">
+                                    A vencer em 30 dias
+                                </button>
+                                <button type="button" class="chip chip-aviso" data-valor="90" aria-pressed="false">
+                                    A vencer em 90 dias
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Retenção de receita -->
+                        <div class="filtro-grupo">
+                            <span class="filtro-rotulo">Exige retenção de receita</span>
+                            <div class="chips" data-filtro="retencao">
+                                <button type="button" class="chip ativo" data-valor="" aria-pressed="true">Todos</button>
+                                <button type="button" class="chip" data-valor="sim" aria-pressed="false">Sim</button>
+                                <button type="button" class="chip" data-valor="nao" aria-pressed="false">Não</button>
+                            </div>
+                        </div>
+
+                        
+
+                        <!-- Tipo de medicamento -->
+                        <div class="filtro-grupo">
+                            <span class="filtro-rotulo">Tipo de medicamento</span>
+                            <div class="chips" data-filtro="tipoMed">
+                                <button type="button" class="chip ativo" data-valor="" aria-pressed="true">Todos</button>
+                                <button type="button" class="chip" data-valor="generico" aria-pressed="false">Genérico</button>
+                                <button type="button" class="chip" data-valor="referencia" aria-pressed="false">Referência</button>
+                                <button type="button" class="chip" data-valor="similar" aria-pressed="false">Similar</button>
+                                <button type="button" class="chip" data-valor="biologico" aria-pressed="false">Biológico</button>
+                                <button type="button" class="chip" data-valor="fitoterapico" aria-pressed="false">Fitoterápico</button>
+                            </div>
+                        </div>
+
+                        <a href="{{ url_for('tela_produtos') }}" class="btn-limpar-filtros" id="btnLimparFiltros"
+                           {% if not filtros_ativos %}hidden{% endif %}>
+                            <i class="bi bi-x-circle"></i>
+                            Limpar filtros
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <!-- BUSCA -->
+                <div class="busca-wrap">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="inputBusca" placeholder="Pesquisar">
+                </div>
+
+                <!-- ALTERNÂNCIA DE VISUALIZAÇÃO -->
+                <div class="view-toggle" role="tablist" aria-label="Alternar visualização dos produtos">
+
+                    <button type="button" class="view-btn ativo" data-view="grid"
+                            role="tab" aria-pressed="true" aria-label="Visualização em grade" title="Grade">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
+                    </button>
+
+                    <button type="button" class="view-btn" data-view="lista"
+                            role="tab" aria-pressed="false" aria-label="Visualização em lista" title="Lista">
+                        <i class="bi bi-list-ul"></i>
+                    </button>
+
+                    <button type="button" class="view-btn" data-view="tabela"
+                            role="tab" aria-pressed="false" aria-label="Visualização em tabela" title="Tabela">
+                        <i class="bi bi-table"></i>
+                    </button>
+
+                </div>
+
+                <!-- CADASTRAR -->
+                <a href="{{ url_for('tela_cadastro_produto') }}" class="btn-cadastro">
+                    <i class="bi bi-plus-lg"></i>
+                    Cadastrar Novo Produto
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= MENSAGENS ================= -->
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% if mensagens %}
+                {% for categoria, msg in mensagens %}
+                <div class="custom-alert alert-{{ categoria }} alert-flash" role="alert">
+                    <div class="alert-content">
+                        {% if categoria == 'success' %}
+                            <i class="bi bi-check-circle-fill alert-icon"></i>
+                        {% elif categoria == 'danger' or categoria == 'error' %}
+                            <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
+                        {% else %}
+                            <i class="bi bi-info-circle-fill alert-icon"></i>
+                        {% endif %}
+                        <span class="alert-text">{{ msg }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+
+        <!-- Resumo do que está sendo exibido (aparece quando há busca/filtro) -->
+        <div class="resultados-info" id="resultadosInfo" hidden>
+            <i class="bi bi-funnel"></i>
+            <span id="resultadosTexto"></span>
+        </div>
+
+
+        <!-- ================= VISUALIZAÇÕES ================= -->
+
+        <div class="produtos-visualizacoes">
+
+            <!-- ----- GRADE (padrão, renderizada pelo Jinja) ----- -->
+
+            <div class="produtos-grid" id="produtosGrid">
+
+                {% for produto in produtos %}
+
+                {% set icone = categoria_icones.get(produto.categoria, 'bi-box-seam') %}
+                {% set estoque_baixo = produto.quantidade_estoque <= produto.estoque_minimo %}
+
+                {# Tarja: campo do produto ou padrão da categoria #}
+                {% set tarja_tipo = (produto.tarja or tarja_por_categoria.get(produto.categoria, ''))|lower|trim %}
+                {% set tarja = tarjas.get(tarja_tipo) %}
+
+                {# Tipo de receita: campo do produto ou padrão da categoria #}
+                {% set receita_raw = (produto.tipo_receita or tipo_receita_por_categoria.get(produto.categoria, ''))|lower|trim %}
+                {% set receita_tipo = receita_raw if receita_raw in ['branca', 'azul', 'amarela'] else '' %}
+
+                {# Exige retenção = tem tarja ou tem tipo de receita #}
+                {% set exige_retencao = (tarja is not none) or (receita_tipo != '') %}
+
+                {# Tipo do medicamento normalizado (sem acentos): generico, referencia, similar, biologico, fitoterapico, outros #}
+                {% set tipo_med = (produto.tipo_medicamento or '')|lower|trim|replace('é', 'e')|replace('ê', 'e')|replace('ó', 'o')|replace('á', 'a') %}
+                {% set eh_generico = (tipo_med == 'generico') %}
+
+                {# Validade em formato ISO (AAAA-MM-DD), aceita date/datetime ou texto #}
+                {% set validade_iso = '' %}
+                {% if produto.data_validade %}
+                    {% if produto.data_validade.strftime is defined %}
+                        {% set validade_iso = produto.data_validade.strftime('%Y-%m-%d') %}
+                    {% else %}
+                        {% set validade_iso = (produto.data_validade|string)[:10] %}
+                    {% endif %}
+                {% endif %}
+
+                <div class="produto-item produto-card {% if estoque_baixo %}card-estoque-baixo{% endif %}"
+                    data-id="{{ produto.id }}"
+                    data-nome="{{ produto.nome }}"
+                    data-fornecedor="{{ produto.fornecedor.nome_fornecedor if produto.fornecedor else '' }}"
+                    data-categoria="{{ produto.categoria }}"
+                    data-tarja="{{ tarja_tipo if tarja else '' }}"
+                    data-generico="{{ '1' if eh_generico else '0' }}"
+                    data-tipo-med="{{ tipo_med }}"
+                    data-retencao="{{ '1' if exige_retencao else '0' }}"
+                    data-receita="{{ receita_tipo }}"
+                    data-validade="{{ validade_iso }}"
+                    data-icone="{{ icone }}"
+                    data-estoque="{{ produto.quantidade_estoque }}"
+                    data-minimo="{{ produto.estoque_minimo }}"
+                    data-preco="{{ '%.2f'|format(produto.preco_venda) }}"
+                    data-custo="{{ '%.2f'|format(produto.preco_custo) if produto.preco_custo is not none else '0.00' }}"
+                    data-entrada="{{ url_for('novo_pedido', tipo='entrada', id=produto.id) }}"
+                    data-saida="{{ url_for('novo_pedido_saida', tipo='saida', id=produto.id) }}"
+                    data-editar="{{ url_for('editar_produto', id=produto.id) }}"
+                    data-excluir="{{ url_for('excluir_produto', id=produto.id) }}"
+                    data-imagem="{% if produto.imagem %}{% if produto.imagem.startswith('http://') or produto.imagem.startswith('https://') %}{{ produto.imagem }}{% else %}{{ url_for('static', filename='uploads/produtos/' + produto.imagem) }}{% endif %}{% endif %}">
+
+                    <!-- TOPO -->
+                    <div class="card-topo">
+
+                      <div class="card-topo-esq">
+
+                        <div class="card-imagem {% if not produto.imagem %}sem-imagem{% endif %}">
+
+                            {% if produto.imagem %}
+                                {% if produto.imagem.startswith('http://') or produto.imagem.startswith('https://') %}
+                                    <img src="{{ produto.imagem }}" alt="{{ produto.nome }}" loading="lazy"
+                                         onerror="this.parentElement.classList.add('sem-imagem');">
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='uploads/produtos/' + produto.imagem) }}"
+                                         alt="{{ produto.nome }}" loading="lazy"
+                                         onerror="this.parentElement.classList.add('sem-imagem');">
+                                {% endif %}
+                            {% endif %}
+
+                            <i class="bi {{ icone }}"></i>
+
+                        </div>
+
+                        <!-- BADGE DE TARJA (ao lado da foto) -->
+                        {% if tarja %}
+                        <span class="tarja-badge tarja-{{ tarja_tipo }} ao-lado" title="{{ tarja.aviso }}">
+                            <i class="bi {{ tarja.icone }}"></i>
+                            <span class="tarja-texto">{{ tarja.texto }}</span>
+                        </span>
+                        {% endif %}
+
+                      </div>
+
+                        <!-- MENU (...) -->
+                        <div class="card-opcoes-wrap">
+
+                            <button type="button" class="btn-opcoes" aria-label="Mais opções">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+
+                            <div class="menu-opcoes">
+                                <a href="{{ url_for('editar_produto', id=produto.id) }}">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                                <a href="{{ url_for('excluir_produto', id=produto.id) }}" class="opcao-excluir">
+                                    <i class="bi bi-trash3-fill"></i> Excluir
+                                </a>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- CORPO -->
+                    <div class="card-corpo">
+
+                        <span class="card-categoria">{{ produto.categoria }}</span>
+
+                        <h3 class="card-nome">{{ produto.nome }}</h3>
+
+                        <!-- PREÇO + SELO DE GENÉRICO -->
+                        <div class="card-preco-linha">
+
+                            <div class="card-preco">
+                                <span class="moeda">R$</span>
+                                <span>{{ '%.2f'|format(produto.preco_venda) }}</span>
+                            </div>
+
+                            {% if eh_generico %}
+                            <span class="selo-generico" title="Medicamento genérico" aria-label="Medicamento genérico">G</span>
+                            {% endif %}
+
+                        </div>
+
+                        <div class="card-estoque-linha">
+
+                            <div class="estoque-info {% if estoque_baixo %}estoque-baixo{% endif %}">
+                                {% if estoque_baixo %}
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                {% endif %}
+                                <span>{{ produto.quantidade_estoque }} un.</span>
+                            </div>
+
+                            <div class="estoque-minimo-info">
+                                <span>mín. {{ produto.estoque_minimo }}</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- BOTÕES -->
+                    <div class="card-acoes">
+
+                        <a class="btn-acao btn-entrada"
+                           href="{{ url_for('novo_pedido', tipo='entrada', id=produto.id) }}">
+                            <i class="bi bi-box-arrow-in-down"></i> Entrada
+                        </a>
+
+                        <a class="btn-acao btn-saida"
+                           href="{{ url_for('novo_pedido_saida', tipo='saida', id=produto.id) }}">
+                            <i class="bi bi-box-arrow-up"></i> Saída
+                        </a>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <!-- ----- LISTA (compacta, montada via JS a partir da grade) ----- -->
+
+            <div class="produtos-lista" id="produtosLista" hidden></div>
+
+            <!-- ----- TABELA (montada via JS a partir da grade) ----- -->
+
+            <div class="produtos-tabela-wrap" id="produtosTabelaWrap" hidden>
+                <table class="produtos-tabela" id="produtosTabela">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Categoria</th>
+                            <th>Fornecedor</th>
+                            <th>Preço</th>
+                            <th>Estoque</th>
+                            <th>Mínimo</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="produtosTabelaBody"></tbody>
+                </table>
+            </div>
+
+        </div>
+
+
+        <!-- ================= ESTADO VAZIO ================= -->
+
+        {% if not produtos %}
+        <div class="estado-vazio">
+            <i class="bi bi-capsule"></i>
+            <p>Nenhum produto encontrado para os filtros selecionados.</p>
+            {% if filtros_ativos %}
+            <a href="{{ url_for('tela_produtos') }}" class="btn-limpar-filtros">
+                <i class="bi bi-x-circle"></i>
+                Limpar filtros
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Aparece quando a busca/filtros escondem todos os itens da visualização atual -->
+        <div class="estado-vazio" id="semResultadosBusca" hidden>
+            <i class="bi bi-search"></i>
+            <p>Nenhum produto corresponde à sua pesquisa ou aos filtros selecionados.</p>
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- =============================================================
+     MODAL DE DETALHES DO PRODUTO
+     O JavaScript move o overlay para o BODY para que o modal
+     fique sempre centralizado na janela.
+============================================================= -->
+
+<div id="modalOverlay" class="modal-overlay" aria-hidden="true">
+
+    <div id="modalProduto" class="modal-produto" role="dialog" aria-modal="true"
+         aria-labelledby="modalNome" tabindex="-1">
+
+        <!-- CABEÇALHO -->
+        <div class="modal-header">
+
+            <div class="modal-header-info">
+
+                <div class="modal-icone" id="modalIcone">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+
+                <div class="modal-header-texto">
+                    <div class="modal-tarja-slot" id="modalTarjaSlot"></div>
+                    <span class="modal-categoria-tag" id="modalCategoria">Categoria</span>
+                    <h2 id="modalNome">Produto</h2>
+                </div>
+
+            </div>
+
+            <button type="button" id="fecharModal" class="btn-fechar-modal" aria-label="Fechar">
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+        </div>
+
+        <!-- CONTEÚDO -->
+        <div class="modal-conteudo">
+
+            <div class="modal-alerta-tarja" id="modalAlertaTarja" hidden>
+                <i id="modalAlertaTarjaIcone" class="bi bi-file-earmark-medical-fill"></i>
+                <span id="modalAlertaTarjaTexto"></span>
+            </div>
+
+            <div class="modal-alerta-estoque" id="modalAlertaEstoque" hidden>
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span>Estoque abaixo do mínimo recomendado. Considere repor este produto o quanto antes.</span>
+            </div>
+
+            <div class="modal-info">
+                <div class="modal-info-icone"><i class="bi bi-truck"></i></div>
+                <div class="modal-info-texto">
+                    <span>Fornecedor</span>
+                    <strong id="modalFornecedor">-</strong>
+                </div>
+            </div>
+
+            <!-- PREÇOS E MARGEM -->
+            <div class="modal-precos">
+
+                <div class="preco-box preco-venda">
+                    <span>Preço de venda</span>
+                    <strong><small>R$</small><span id="modalPreco">0,00</span></strong>
+                </div>
+
+                <div class="preco-box preco-custo">
+                    <span>Preço de custo</span>
+                    <strong><small>R$</small><span id="modalCusto">0,00</span></strong>
+                </div>
+
+                <div class="preco-box preco-margem" id="modalMargemBox">
+                    <span>Margem de lucro</span>
+                    <strong id="modalMargem">0%</strong>
+                </div>
+
+            </div>
+
+            <!-- NÍVEL DE ESTOQUE -->
+            <div class="modal-estoque-card">
+
+                <div class="modal-estoque-topo">
+                    <span><i class="bi bi-box-seam"></i> Nível de estoque</span>
+                    <strong id="modalEstoqueTexto">0 un.</strong>
+                </div>
+
+                <div class="modal-estoque-barra">
+                    <div class="modal-estoque-marcador-minimo" id="modalMarcadorMinimo"></div>
+                    <div class="modal-estoque-preenchimento" id="modalEstoqueBarra"></div>
+                </div>
+
+                <div class="modal-estoque-legenda">
+                    <span>Mínimo recomendado: <strong id="modalMinimoLegenda">0</strong> un.</span>
+                    <span class="modal-estoque-status" id="modalEstoqueStatus">Estoque normal</span>
+                </div>
+
+            </div>
+
+            <!-- INFORMAÇÕES GERAIS -->
+            <div class="modal-informacoes">
+
+                <!-- DATA DE VALIDADE -->
+                <div class="modal-info" id="modalValidadeBox">
+                    <div class="modal-info-icone"><i class="bi bi-calendar-event"></i></div>
+                    <div class="modal-info-texto">
+                        <span>Data de validade</span>
+                        <strong id="modalValidade">-</strong>
+                    </div>
+                    <span class="validade-status" id="modalValidadeStatus" hidden></span>
+                </div>
+
+                <!-- TIPO DO MEDICAMENTO -->
+                <div class="modal-info">
+                    <div class="modal-info-icone"><i class="bi bi-tag"></i></div>
+                    <div class="modal-info-texto">
+                        <span>Tipo do medicamento</span>
+                        <strong id="modalTipo">-</strong>
+                    </div>
+                </div>
+
+                <!-- RECEITA EXIGIDA (só aparece quando o produto tem tipo de receita) -->
+                <div class="modal-info" id="modalReceitaBox" hidden>
+                    <div class="modal-info-icone"><i class="bi bi-file-earmark-text"></i></div>
+                    <div class="modal-info-texto">
+                        <span>Receita exigida</span>
+                        <strong id="modalReceita">-</strong>
+                    </div>
+                </div>
+
+                <div class="modal-info">
+                    <div class="modal-info-icone"><i class="bi bi-hash"></i></div>
+                    <div class="modal-info-texto">
+                        <span>Código do produto</span>
+                        <strong id="modalId">#0</strong>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- AÇÕES -->
+        <div class="modal-acoes">
+
+            <a id="modalEntrada" href="#" class="modal-btn modal-btn-entrada">
+                <i class="bi bi-box-arrow-in-down"></i> Entrada
+            </a>
+
+            <a id="modalSaida" href="#" class="modal-btn modal-btn-saida">
+                <i class="bi bi-box-arrow-up"></i> Saída
+            </a>
+
+            <a id="modalEditar" href="#" class="modal-btn modal-btn-editar">
+                <i class="bi bi-pencil-square"></i> Editar
+            </a>
+
+            <a id="modalExcluir" href="#" class="modal-btn modal-btn-excluir">
+                <i class="bi bi-trash3-fill"></i> Excluir
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* Move o overlay para o BODY (evita prender o modal em containers) */
+    const overlay = document.getElementById("modalOverlay");
+
+    if (overlay && overlay.parentElement !== document.body) {
+        document.body.appendChild(overlay);
+    }
+
+    /* Declarados aqui em cima porque definirView() já precisa deles
+       logo na inicialização */
+    const inputBusca = document.getElementById("inputBusca");
+    const semResultadosBusca = document.getElementById("semResultadosBusca");
+    const resultadosInfo = document.getElementById("resultadosInfo");
+    const resultadosTexto = document.getElementById("resultadosTexto");
+    const CHAVE_BUSCA = "medstock_busca_produtos";
+    const CHAVE_FILTROS = "medstock_filtros_produtos";
+
+    /* Estado dos filtros instantâneos (categoria + sanitários/regulatórios) */
+    const filtros = {
+        categoria: "",
+        validade: "",   /* "", "vencidos", "30", "90" */
+        retencao: "",   /* "", "sim", "nao" */
+        receita: "",    /* "", "branca", "azul", "amarela" */
+        tipoMed: ""     /* "", "generico", "referencia", "similar", "biologico", "fitoterapico" */
+    };
+
+    /* Configuração das tarjas (vem do Jinja, fonte única) */
+    const TARJAS = {{ tarjas|tojson }};
+
+    /* Rótulos usados na busca e no modal */
+    const TIPOS_MED = {
+        generico: "Genérico",
+        referencia: "Referência",
+        similar: "Similar",
+        biologico: "Biológico",
+        fitoterapico: "Fitoterápico",
+        outros: "Outros"
+    };
+
+    const RECEITAS = {
+        branca: "Branca (controle especial)",
+        azul: "Azul (notificação B)",
+        amarela: "Amarela (notificação A)"
+    };
+
+
+    /* ========================================================
+       BADGE DE TARJA (usado na lista, na tabela e no modal)
+    ======================================================== */
+
+    function criarBadgeTarja(tipo, compacto) {
+
+        const t = TARJAS[tipo];
+
+        if (!t) return null;
+
+        const el = document.createElement("span");
+        el.className = "tarja-badge tarja-" + tipo + (compacto ? " compacto" : "");
+        el.title = t.aviso;
+
+        const iconeEl = document.createElement("i");
+        iconeEl.className = "bi " + t.icone;
+
+        el.append(iconeEl, document.createTextNode(t.texto));
+
+        return el;
+
+    }
+
+
+    /* ========================================================
+       SELO DE GENÉRICO (usado na lista, na tabela e no modal)
+       variante: "compacto" (lista/tabela) ou "pill" (modal)
+    ======================================================== */
+
+    function criarSeloGenerico(variante) {
+
+        const el = document.createElement("span");
+        el.className = "selo-generico" + (variante ? " " + variante : "");
+        el.title = "Medicamento genérico";
+        el.setAttribute("aria-label", "Medicamento genérico");
+        el.textContent = variante === "pill" ? "Genérico" : "G";
+
+        return el;
+
+    }
+
+
+    /* ========================================================
+       DATA DE VALIDADE (formatação e situação)
+       O atributo data-validade vem em AAAA-MM-DD
+    ======================================================== */
+
+    function partesData(iso) {
+        return /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || "");
+    }
+
+    function formatarDataBR(iso) {
+        const m = partesData(iso);
+        return m ? m[3] + "/" + m[2] + "/" + m[1] : "";
+    }
+
+    function diasParaVencer(iso) {
+
+        const m = partesData(iso);
+
+        if (!m) return null;
+
+        const validade = new Date(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10));
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+
+        return Math.round((validade - hoje) / 86400000);
+
+    }
+
+
+    /* ========================================================
+       PAINEL DE FILTROS (abrir / fechar)
+    ======================================================== */
+
+    const btnFiltros = document.getElementById("btnFiltros");
+    const filtrosPainel = document.getElementById("filtrosPainel");
+
+    function fecharFiltros() {
+        if (!filtrosPainel) return;
+        filtrosPainel.classList.remove("aberto");
+        btnFiltros.setAttribute("aria-expanded", "false");
+    }
+
+    if (btnFiltros && filtrosPainel) {
+
+        btnFiltros.addEventListener("click", function (e) {
+            e.stopPropagation();
+
+            const aberto = filtrosPainel.classList.toggle("aberto");
+            btnFiltros.setAttribute("aria-expanded", aberto ? "true" : "false");
+        });
+
+        /* Cliques dentro do painel não fecham o painel */
+        filtrosPainel.addEventListener("click", function (e) {
+            e.stopPropagation();
+        });
+
+    }
+
+
+    /* ========================================================
+       FILTROS: CATEGORIA + SANITÁRIOS E REGULATÓRIOS
+       Funcionam nas três visualizações, sem recarregar a página,
+       e combinam com a busca por texto e com os filtros do
+       servidor (fornecedor / estoque).
+    ======================================================== */
+
+    const selectCategoria = document.getElementById("filtroCategoria");
+    const gruposChips = document.querySelectorAll(".chips");
+    const filtroBadge = document.getElementById("filtroBadge");
+    const btnLimparFiltros = document.getElementById("btnLimparFiltros");
+    const FILTROS_SERVIDOR = parseInt((btnFiltros && btnFiltros.dataset.servidor) || "0", 10);
+
+    function contarFiltrosCliente() {
+        return Object.keys(filtros).filter(function (k) { return filtros[k] !== ""; }).length;
+    }
+
+    function passaFiltros(item) {
+
+        const d = item.dataset;
+
+        if (filtros.categoria && d.categoria !== filtros.categoria) return false;
+
+        if (filtros.validade) {
+
+            const dias = diasParaVencer(d.validade);
+
+            if (dias === null) return false;
+
+            if (filtros.validade === "vencidos" && !(dias < 0)) return false;
+            if (filtros.validade === "30" && !(dias >= 0 && dias <= 30)) return false;
+            if (filtros.validade === "90" && !(dias >= 0 && dias <= 90)) return false;
+
+        }
+
+        if (filtros.retencao === "sim" && d.retencao !== "1") return false;
+        if (filtros.retencao === "nao" && d.retencao === "1") return false;
+
+        if (filtros.receita && d.receita !== filtros.receita) return false;
+
+        if (filtros.tipoMed && d.tipoMed !== filtros.tipoMed) return false;
+
+        return true;
+
+    }
+
+    /* Reflete o estado dos filtros nos controles (chips, select, badge) */
+    function sincronizarControles() {
+
+        /* Tipo de receita não faz sentido quando "não exige retenção" */
+        const receitaDesativada = filtros.retencao === "nao";
+
+        if (receitaDesativada) filtros.receita = "";
+
+        if (selectCategoria) selectCategoria.value = filtros.categoria;
+
+        gruposChips.forEach(function (grupo) {
+
+            const chave = grupo.dataset.filtro;
+            const desativar = chave === "receita" && receitaDesativada;
+
+            grupo.classList.toggle("desativado", desativar);
+
+            grupo.querySelectorAll(".chip").forEach(function (chip) {
+                const ativo = chip.dataset.valor === filtros[chave];
+                chip.classList.toggle("ativo", ativo);
+                chip.setAttribute("aria-pressed", ativo ? "true" : "false");
+                chip.disabled = desativar;
+            });
+
+        });
+
+        const total = FILTROS_SERVIDOR + contarFiltrosCliente();
+
+        if (filtroBadge) {
+            filtroBadge.textContent = total;
+            filtroBadge.hidden = total === 0;
+        }
+
+        if (btnFiltros) btnFiltros.classList.toggle("ativo", total > 0);
+        if (btnLimparFiltros) btnLimparFiltros.hidden = total === 0;
+
+    }
+
+    function salvarFiltros() {
+        try { sessionStorage.setItem(CHAVE_FILTROS, JSON.stringify(filtros)); } catch (err) { /* indisponível */ }
+    }
+
+    function carregarFiltros() {
+        try {
+            const salvo = JSON.parse(sessionStorage.getItem(CHAVE_FILTROS) || "null");
+            if (salvo) {
+                Object.keys(filtros).forEach(function (k) {
+                    if (typeof salvo[k] === "string") filtros[k] = salvo[k];
+                });
+            }
+        } catch (err) { /* ignora */ }
+    }
+
+    function alterarFiltro(chave, valor) {
+        filtros[chave] = valor;
+        sincronizarControles();
+        salvarFiltros();
+        aplicarBusca();
+    }
+
+    if (selectCategoria) {
+        selectCategoria.addEventListener("change", function () {
+            alterarFiltro("categoria", this.value);
+        });
+    }
+
+    gruposChips.forEach(function (grupo) {
+
+        grupo.addEventListener("click", function (e) {
+
+            const chip = e.target.closest(".chip");
+
+            if (!chip || chip.disabled) return;
+
+            alterarFiltro(grupo.dataset.filtro, chip.dataset.valor);
+
+        });
+
+    });
+
+    if (btnLimparFiltros) {
+
+        btnLimparFiltros.addEventListener("click", function (e) {
+
+            Object.keys(filtros).forEach(function (k) { filtros[k] = ""; });
+            salvarFiltros();
+
+            /* Sem filtros do servidor: limpa aqui mesmo, sem recarregar.
+               Com filtros do servidor: deixa o link recarregar a página limpa. */
+            if (FILTROS_SERVIDOR === 0) {
+                e.preventDefault();
+                sincronizarControles();
+                aplicarBusca();
+            }
+
+        });
+
+    }
+
+
+    /* ========================================================
+       ALTERNÂNCIA DE VISUALIZAÇÃO (Grade / Lista / Tabela)
+    ======================================================== */
+
+    const CHAVE_VIEW = "medstock_view_produtos";
+
+    const containers = {
+        grid: document.getElementById("produtosGrid"),
+        lista: document.getElementById("produtosLista"),
+        tabela: document.getElementById("produtosTabelaWrap")
+    };
+
+    const botoesView = document.querySelectorAll(".view-btn");
+
+    let viewAtual = "grid";
+
+    function definirView(view) {
+
+        if (!containers[view]) view = "grid";
+
+        viewAtual = view;
+
+        Object.keys(containers).forEach(function (chave) {
+            containers[chave].hidden = chave !== view;
+        });
+
+        botoesView.forEach(function (btn) {
+            const ativo = btn.dataset.view === view;
+            btn.classList.toggle("ativo", ativo);
+            btn.setAttribute("aria-pressed", ativo ? "true" : "false");
+        });
+
+        try { localStorage.setItem(CHAVE_VIEW, view); } catch (err) { /* indisponível */ }
+
+        atualizarEstadoVazioBusca();
+
+    }
+
+    botoesView.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            definirView(btn.dataset.view);
+        });
+    });
+
+
+    /* ========================================================
+       MONTAGEM DAS VISUALIZAÇÕES DE LISTA E TABELA
+       (a partir dos mesmos dados dos cards da grade)
+    ======================================================== */
+
+    function formatarPrecoBR(valor) {
+        return parseFloat(valor || 0).toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    function criarImagemOuIcone(container, imagem, icone, nome) {
+
+        container.classList.toggle("sem-imagem", !imagem);
+
+        if (imagem) {
+            const img = document.createElement("img");
+            img.src = imagem;
+            img.alt = nome;
+            img.loading = "lazy";
+            img.onerror = function () {
+                container.classList.add("sem-imagem");
+                img.remove();
+            };
+            container.appendChild(img);
+        }
+
+        const iconeEl = document.createElement("i");
+        iconeEl.className = "bi " + icone;
+        container.appendChild(iconeEl);
+
+    }
+
+    function criarMenuOpcoes(d) {
+
+        const wrap = document.createElement("div");
+        wrap.className = "card-opcoes-wrap";
+
+        const botao = document.createElement("button");
+        botao.type = "button";
+        botao.className = "btn-opcoes";
+        botao.setAttribute("aria-label", "Mais opções");
+        botao.innerHTML = '<i class="bi bi-three-dots-vertical"></i>';
+
+        const menu = document.createElement("div");
+        menu.className = "menu-opcoes";
+
+        const linkEditar = document.createElement("a");
+        linkEditar.href = d.editar || "#";
+        linkEditar.innerHTML = '<i class="bi bi-pencil-square"></i> Editar';
+
+        const linkExcluir = document.createElement("a");
+        linkExcluir.href = d.excluir || "#";
+        linkExcluir.className = "opcao-excluir";
+        linkExcluir.innerHTML = '<i class="bi bi-trash3-fill"></i> Excluir';
+
+        menu.append(linkEditar, linkExcluir);
+        wrap.append(botao, menu);
+
+        return wrap;
+
+    }
+
+    function criarLinha(card) {
+
+        const d = card.dataset;
+        const estoque = parseInt(d.estoque || "0", 10);
+        const minimo = parseInt(d.minimo || "0", 10);
+        const estoqueBaixo = estoque <= minimo;
+
+        const linha = document.createElement("div");
+        linha.className = "produto-item produto-linha" + (estoqueBaixo ? " linha-estoque-baixo" : "");
+        Object.assign(linha.dataset, d);
+
+        const imagemDiv = document.createElement("div");
+        imagemDiv.className = "linha-imagem";
+        criarImagemOuIcone(imagemDiv, d.imagem, d.icone, d.nome);
+
+        const infoDiv = document.createElement("div");
+        infoDiv.className = "linha-info";
+
+        /* Título = nome + selo de genérico + badge de tarja (quando houver) */
+        const tituloDiv = document.createElement("div");
+        tituloDiv.className = "linha-titulo";
+
+        const nomeEl = document.createElement("strong");
+        nomeEl.className = "linha-nome";
+        nomeEl.textContent = d.nome;
+
+        tituloDiv.appendChild(nomeEl);
+
+        if (d.generico === "1") tituloDiv.appendChild(criarSeloGenerico("compacto"));
+
+        const badgeTarja = criarBadgeTarja(d.tarja, true);
+        if (badgeTarja) tituloDiv.appendChild(badgeTarja);
+
+        const metaEl = document.createElement("span");
+        metaEl.className = "linha-meta";
+        metaEl.textContent = d.categoria + (d.fornecedor ? " • " + d.fornecedor : "");
+
+        infoDiv.append(tituloDiv, metaEl);
+
+        const precoDiv = document.createElement("div");
+        precoDiv.className = "linha-preco";
+        const moedaEl = document.createElement("span");
+        moedaEl.className = "moeda";
+        moedaEl.textContent = "R$ ";
+        precoDiv.append(moedaEl, document.createTextNode(formatarPrecoBR(d.preco)));
+
+        const estoqueDiv = document.createElement("div");
+        estoqueDiv.className = "linha-estoque" + (estoqueBaixo ? " baixo" : "");
+
+        const qtdEl = document.createElement("span");
+        qtdEl.className = "qtd";
+        if (estoqueBaixo) {
+            qtdEl.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i> ';
+        }
+        qtdEl.append(document.createTextNode(estoque + " un."));
+
+        const minEl = document.createElement("span");
+        minEl.className = "min";
+        minEl.textContent = "mín. " + minimo;
+
+        estoqueDiv.append(qtdEl, minEl);
+
+        const acoesDiv = document.createElement("div");
+        acoesDiv.className = "linha-acoes";
+
+        const btnEntrada = document.createElement("a");
+        btnEntrada.href = d.entrada || "#";
+        btnEntrada.className = "btn-acao btn-entrada";
+        btnEntrada.innerHTML = '<i class="bi bi-box-arrow-in-down"></i> Entrada';
+
+        const btnSaida = document.createElement("a");
+        btnSaida.href = d.saida || "#";
+        btnSaida.className = "btn-acao btn-saida";
+        btnSaida.innerHTML = '<i class="bi bi-box-arrow-up"></i> Saída';
+
+        acoesDiv.append(btnEntrada, btnSaida, criarMenuOpcoes(d));
+
+        linha.append(imagemDiv, infoDiv, precoDiv, estoqueDiv, acoesDiv);
+
+        return linha;
+
+    }
+
+    function criarLinhaTabela(card) {
+
+        const d = card.dataset;
+        const estoque = parseInt(d.estoque || "0", 10);
+        const minimo = parseInt(d.minimo || "0", 10);
+        const estoqueBaixo = estoque <= minimo;
+
+        const tr = document.createElement("tr");
+        tr.className = "produto-item" + (estoqueBaixo ? " tr-estoque-baixo" : "");
+        Object.assign(tr.dataset, d);
+
+        /* Produto (imagem/ícone + nome + selo de genérico + badge de tarja) */
+        const tdProduto = document.createElement("td");
+        const wrapProduto = document.createElement("div");
+        wrapProduto.className = "td-produto";
+
+        const imagemDiv = document.createElement("div");
+        imagemDiv.className = "td-imagem";
+        criarImagemOuIcone(imagemDiv, d.imagem, d.icone, d.nome);
+
+        const nomeEl = document.createElement("span");
+        nomeEl.className = "td-nome-produto";
+        nomeEl.textContent = d.nome;
+
+        wrapProduto.append(imagemDiv, nomeEl);
+
+        if (d.generico === "1") wrapProduto.appendChild(criarSeloGenerico("compacto"));
+
+        const badgeTarja = criarBadgeTarja(d.tarja, true);
+        if (badgeTarja) wrapProduto.appendChild(badgeTarja);
+
+        tdProduto.appendChild(wrapProduto);
+
+        /* Categoria */
+        const tdCategoria = document.createElement("td");
+        tdCategoria.textContent = d.categoria || "-";
+
+        /* Fornecedor */
+        const tdFornecedor = document.createElement("td");
+        tdFornecedor.textContent = d.fornecedor || "-";
+
+        /* Preço */
+        const tdPreco = document.createElement("td");
+        tdPreco.className = "td-preco";
+        tdPreco.textContent = "R$ " + formatarPrecoBR(d.preco);
+
+        /* Estoque */
+        const tdEstoque = document.createElement("td");
+        tdEstoque.className = "td-estoque" + (estoqueBaixo ? " baixo" : "");
+        if (estoqueBaixo) {
+            tdEstoque.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i> ';
+        }
+        tdEstoque.append(document.createTextNode(estoque + " un."));
+
+        /* Mínimo */
+        const tdMinimo = document.createElement("td");
+        tdMinimo.textContent = minimo + " un.";
+
+        /* Ações */
+        const tdAcoes = document.createElement("td");
+        const wrapAcoes = document.createElement("div");
+        wrapAcoes.className = "td-acoes";
+
+        const btnEntrada = document.createElement("a");
+        btnEntrada.href = d.entrada || "#";
+        btnEntrada.className = "btn-icone-acao btn-icone-entrada";
+        btnEntrada.title = "Entrada";
+        btnEntrada.innerHTML = '<i class="bi bi-box-arrow-in-down"></i>';
+
+        const btnSaida = document.createElement("a");
+        btnSaida.href = d.saida || "#";
+        btnSaida.className = "btn-icone-acao btn-icone-saida";
+        btnSaida.title = "Saída";
+        btnSaida.innerHTML = '<i class="bi bi-box-arrow-up"></i>';
+
+        wrapAcoes.append(btnEntrada, btnSaida, criarMenuOpcoes(d));
+        tdAcoes.appendChild(wrapAcoes);
+
+        tr.append(tdProduto, tdCategoria, tdFornecedor, tdPreco, tdEstoque, tdMinimo, tdAcoes);
+
+        return tr;
+
+    }
+
+    function montarListaETabela() {
+
+        const listaContainer = containers.lista;
+        const tabelaBody = document.getElementById("produtosTabelaBody");
+
+        if (!listaContainer || !tabelaBody) return;
+
+        listaContainer.innerHTML = "";
+        tabelaBody.innerHTML = "";
+
+        document.querySelectorAll("#produtosGrid > .produto-card").forEach(function (card) {
+
+            const linha = criarLinha(card);
+            const tr = criarLinhaTabela(card);
+
+            listaContainer.appendChild(linha);
+            tabelaBody.appendChild(tr);
+
+            configurarItem(linha);
+            configurarItem(tr);
+
+        });
+
+    }
+
+    montarListaETabela();
+
+    let viewSalva = "grid";
+    try { viewSalva = localStorage.getItem(CHAVE_VIEW) || "grid"; } catch (err) { /* indisponível */ }
+    definirView(viewSalva);
+
+
+    /* ========================================================
+       BUSCA + FILTROS (funciona nas três visualizações; mantém
+       o texto e os filtros ao trocar de visualização ou recarregar)
+       A busca também encontra pela tarja (ex.: "tarja preta",
+       "receita"), por "genérico" e pelo tipo do medicamento
+    ======================================================== */
+
+    function itensDaViewAtiva() {
+        if (viewAtual === "lista") return containers.lista.querySelectorAll(".produto-item");
+        if (viewAtual === "tabela") return document.getElementById("produtosTabelaBody").querySelectorAll(".produto-item");
+        return containers.grid.querySelectorAll(".produto-item");
+    }
+
+    function atualizarEstadoVazioBusca() {
+
+        const itens = itensDaViewAtiva();
+        const total = itens.length;
+        let visiveis = 0;
+
+        itens.forEach(function (item) {
+            if (item.style.display !== "none") visiveis++;
+        });
+
+        if (semResultadosBusca) {
+            semResultadosBusca.hidden = !(total > 0 && visiveis === 0);
+        }
+
+        if (resultadosInfo && resultadosTexto) {
+
+            const filtrando = contarFiltrosCliente() > 0 ||
+                (inputBusca && inputBusca.value.trim() !== "");
+
+            resultadosInfo.hidden = !(filtrando && total > 0);
+
+            resultadosTexto.textContent =
+                "Exibindo " + visiveis + " de " + total + (total === 1 ? " produto" : " produtos");
+
+        }
+
+    }
+
+    function aplicarBusca() {
+
+        const filtro = (inputBusca.value || "").toLowerCase().trim();
+        const todosItens = document.querySelectorAll(".produto-item");
+
+        todosItens.forEach(function (item) {
+
+            const d = item.dataset;
+            const tarja = TARJAS[d.tarja];
+
+            const texto = [
+                d.nome,
+                d.fornecedor,
+                d.categoria,
+                tarja ? tarja.texto : "",
+                d.generico === "1" ? "genérico generico" : "",
+                TIPOS_MED[d.tipoMed] || ""
+            ].join(" ").toLowerCase();
+
+            const passaBusca = texto.includes(filtro);
+
+            item.style.display = (passaBusca && passaFiltros(item)) ? "" : "none";
+
+        });
+
+        atualizarEstadoVazioBusca();
+
+    }
+
+    if (inputBusca) {
+
+        try {
+            const salva = sessionStorage.getItem(CHAVE_BUSCA);
+            if (salva) inputBusca.value = salva;
+        } catch (err) { /* sessionStorage indisponível */ }
+
+        inputBusca.addEventListener("input", function () {
+
+            try {
+                sessionStorage.setItem(CHAVE_BUSCA, this.value);
+            } catch (err) { /* ignora */ }
+
+            aplicarBusca();
+
+        });
+
+    }
+
+    /* Estado inicial: restaura filtros salvos e aplica tudo de uma vez */
+    carregarFiltros();
+    sincronizarControles();
+    aplicarBusca();
+
+
+    /* ========================================================
+       ELEMENTOS DO MODAL
+    ======================================================== */
+
+    const modal = document.getElementById("modalProduto");
+    const fecharModal = document.getElementById("fecharModal");
+    const modalIcone = document.getElementById("modalIcone");
+    const modalNome = document.getElementById("modalNome");
+    const modalId = document.getElementById("modalId");
+    const modalFornecedor = document.getElementById("modalFornecedor");
+    const modalCategoria = document.getElementById("modalCategoria");
+    const modalTarjaSlot = document.getElementById("modalTarjaSlot");
+    const modalAlertaTarja = document.getElementById("modalAlertaTarja");
+    const modalAlertaTarjaIcone = document.getElementById("modalAlertaTarjaIcone");
+    const modalAlertaTarjaTexto = document.getElementById("modalAlertaTarjaTexto");
+    const modalAlertaEstoque = document.getElementById("modalAlertaEstoque");
+    const modalEstoqueTexto = document.getElementById("modalEstoqueTexto");
+    const modalMinimoLegenda = document.getElementById("modalMinimoLegenda");
+    const modalEstoqueBarra = document.getElementById("modalEstoqueBarra");
+    const modalMarcadorMinimo = document.getElementById("modalMarcadorMinimo");
+    const modalEstoqueStatus = document.getElementById("modalEstoqueStatus");
+    const modalPreco = document.getElementById("modalPreco");
+    const modalCusto = document.getElementById("modalCusto");
+    const modalMargem = document.getElementById("modalMargem");
+    const modalMargemBox = document.getElementById("modalMargemBox");
+    const modalValidadeBox = document.getElementById("modalValidadeBox");
+    const modalValidade = document.getElementById("modalValidade");
+    const modalValidadeStatus = document.getElementById("modalValidadeStatus");
+    const modalTipo = document.getElementById("modalTipo");
+    const modalReceitaBox = document.getElementById("modalReceitaBox");
+    const modalReceita = document.getElementById("modalReceita");
+    const modalEntrada = document.getElementById("modalEntrada");
+    const modalSaida = document.getElementById("modalSaida");
+    const modalEditar = document.getElementById("modalEditar");
+    const modalExcluir = document.getElementById("modalExcluir");
+
+    let produtoAtual = null;
+    let ultimoElementoFocado = null;
+
+
+    /* ========================================================
+       PREENCHER MODAL (funciona com dados de card, linha ou tr,
+       pois todos compartilham os mesmos atributos data-*)
+    ======================================================== */
+
+    function preencherModal(item) {
+
+        const nome = item.dataset.nome || "Produto";
+        const categoria = item.dataset.categoria || "-";
+        const icone = item.dataset.icone || "bi-box-seam";
+        const estoque = parseInt(item.dataset.estoque || "0", 10);
+        const minimo = parseInt(item.dataset.minimo || "0", 10);
+        const preco = parseFloat(item.dataset.preco || "0");
+        const custo = parseFloat(item.dataset.custo || "0");
+        const imagem = item.dataset.imagem || "";
+        const tipoTarja = item.dataset.tarja || "";
+        const generico = item.dataset.generico === "1";
+        const validade = item.dataset.validade || "";
+        const tipoMed = item.dataset.tipoMed || "";
+        const receita = item.dataset.receita || "";
+
+
+        /* ----- Cabeçalho (imagem ou ícone) ----- */
+
+        modalIcone.innerHTML = "";
+
+        const iconeEl = document.createElement("i");
+        iconeEl.className = "bi " + icone;
+
+        if (imagem) {
+
+            modalIcone.classList.remove("sem-imagem");
+
+            const img = document.createElement("img");
+            img.src = imagem;
+            img.alt = nome;
+            img.onerror = function () {
+                modalIcone.classList.add("sem-imagem");
+                img.remove();
+            };
+
+            modalIcone.appendChild(img);
+
+        } else {
+
+            modalIcone.classList.add("sem-imagem");
+
+        }
+
+        modalIcone.appendChild(iconeEl);
+
+        modalNome.textContent = nome;
+        modalCategoria.textContent = categoria;
+
+
+        /* ----- Selos do cabeçalho (genérico + tarja) e aviso de tarja ----- */
+
+        modalTarjaSlot.innerHTML = "";
+
+        if (generico) {
+            modalTarjaSlot.appendChild(criarSeloGenerico("pill"));
+        }
+
+        const tarja = TARJAS[tipoTarja];
+
+        if (tarja) {
+
+            modalTarjaSlot.appendChild(criarBadgeTarja(tipoTarja, false));
+
+            modalAlertaTarja.className = "modal-alerta-tarja alerta-tarja-" + tipoTarja;
+            modalAlertaTarjaIcone.className = "bi " + tarja.icone;
+            modalAlertaTarjaTexto.textContent = tarja.aviso;
+            modalAlertaTarja.hidden = false;
+
+        } else {
+
+            modalAlertaTarja.hidden = true;
+
+        }
+
+
+        /* ----- ID / Fornecedor ----- */
+
+        modalId.textContent = "#" + (item.dataset.id || "0");
+        modalFornecedor.textContent = item.dataset.fornecedor || "-";
+
+
+        /* ----- Tipo do medicamento e receita exigida ----- */
+
+        modalTipo.textContent = TIPOS_MED[tipoMed] || "Não informado";
+
+        if (RECEITAS[receita]) {
+
+            modalReceita.innerHTML = "";
+
+            const ponto = document.createElement("span");
+            ponto.className = "dot-receita receita-" + receita;
+
+            modalReceita.append(ponto, document.createTextNode(RECEITAS[receita]));
+            modalReceitaBox.hidden = false;
+
+        } else {
+
+            modalReceitaBox.hidden = true;
+
+        }
+
+
+        /* ----- Data de validade ----- */
+
+        modalValidadeBox.classList.remove("validade-ok", "validade-atencao", "validade-vencida");
+        modalValidadeStatus.className = "validade-status";
+        modalValidadeStatus.hidden = true;
+
+        const validadeBR = formatarDataBR(validade);
+
+        if (validadeBR) {
+
+            modalValidade.textContent = validadeBR;
+
+            const dias = diasParaVencer(validade);
+
+            if (dias !== null) {
+
+                let situacao;
+                let classe;
+
+                if (dias < 0) {
+                    situacao = "Vencido há " + Math.abs(dias) + (Math.abs(dias) === 1 ? " dia" : " dias");
+                    classe = "validade-vencida";
+                } else if (dias === 0) {
+                    situacao = "Vence hoje";
+                    classe = "validade-vencida";
+                } else if (dias <= 30) {
+                    situacao = "Vence em " + dias + (dias === 1 ? " dia" : " dias");
+                    classe = "validade-atencao";
+                } else {
+                    situacao = "Dentro do prazo";
+                    classe = "validade-ok";
+                }
+
+                modalValidadeBox.classList.add(classe);
+                modalValidadeStatus.classList.add(classe);
+                modalValidadeStatus.textContent = situacao;
+                modalValidadeStatus.hidden = false;
+
+            }
+
+        } else {
+
+            modalValidade.textContent = "Não informada";
+
+        }
+
+
+        /* ----- Preço, custo e margem ----- */
+
+        modalPreco.textContent = formatarPrecoBR(preco);
+        modalCusto.textContent = formatarPrecoBR(custo);
+
+        if (custo > 0 && preco > 0) {
+
+            const margem = ((preco - custo) / preco) * 100;
+
+            modalMargem.textContent = margem.toFixed(1).replace(".", ",") + "%";
+            modalMargemBox.classList.toggle("margem-negativa", margem < 0);
+
+        } else {
+
+            modalMargem.textContent = "—";
+            modalMargemBox.classList.remove("margem-negativa");
+
+        }
+
+
+        /* ----- Estoque ----- */
+
+        modalAlertaEstoque.hidden = !(estoque <= minimo);
+        modalEstoqueTexto.textContent = estoque + " un.";
+        modalMinimoLegenda.textContent = minimo;
+
+        const escalaMaxima = Math.max(estoque, minimo * 2, 1);
+
+        modalEstoqueBarra.style.width =
+            Math.min(100, Math.round((estoque / escalaMaxima) * 100)) + "%";
+
+        modalMarcadorMinimo.style.left =
+            Math.min(100, Math.round((minimo / escalaMaxima) * 100)) + "%";
+
+        modalEstoqueBarra.classList.remove("barra-baixa", "barra-atencao", "barra-normal");
+        modalEstoqueStatus.classList.remove("status-baixo", "status-atencao", "status-normal");
+
+        if (estoque <= minimo) {
+
+            modalEstoqueBarra.classList.add("barra-baixa");
+            modalEstoqueStatus.classList.add("status-baixo");
+            modalEstoqueStatus.textContent = "Abaixo do mínimo";
+
+        } else if (estoque <= minimo * 1.5) {
+
+            modalEstoqueBarra.classList.add("barra-atencao");
+            modalEstoqueStatus.classList.add("status-atencao");
+            modalEstoqueStatus.textContent = "Estoque em atenção";
+
+        } else {
+
+            modalEstoqueBarra.classList.add("barra-normal");
+            modalEstoqueStatus.classList.add("status-normal");
+            modalEstoqueStatus.textContent = "Estoque normal";
+
+        }
+
+
+        /* ----- Links de ação ----- */
+
+        modalEntrada.href = item.dataset.entrada || "#";
+        modalSaida.href = item.dataset.saida || "#";
+        modalEditar.href = item.dataset.editar || "#";
+        modalExcluir.href = item.dataset.excluir || "#";
+
+    }
+
+
+    /* ========================================================
+       ABRIR / FECHAR MODAL
+    ======================================================== */
+
+    function abrirModal(item) {
+
+        produtoAtual = item;
+        ultimoElementoFocado = document.activeElement;
+
+        preencherModal(item);
+
+        overlay.classList.add("visivel");
+        overlay.setAttribute("aria-hidden", "false");
+        document.body.classList.add("modal-aberto");
+
+        requestAnimationFrame(function () {
+            modal.focus();
+        });
+
+    }
+
+    function fecharDetalhes() {
+
+        overlay.classList.remove("visivel");
+        overlay.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("modal-aberto");
+
+        produtoAtual = null;
+
+        if (ultimoElementoFocado) {
+            ultimoElementoFocado.focus();
+        }
+
+    }
+
+
+    /* ========================================================
+       CONFIRMAÇÃO DE EXCLUSÃO (botão do modal)
+    ======================================================== */
+
+    modalExcluir.addEventListener("click", function (e) {
+
+        const nome = modalNome.textContent || "este produto";
+
+        if (!window.confirm('Tem certeza que deseja excluir "' + nome + '"? Esta ação não pode ser desfeita.')) {
+            e.preventDefault();
+        }
+
+    });
+
+
+    /* ========================================================
+       CONFIGURAÇÃO DE CADA ITEM (grade, lista ou tabela)
+       — clique abre o modal, "..." abre o menu, exclusão confirma —
+       Cada item recebe seus próprios listeners, então o
+       stopPropagation() do botão "..." já evita que o clique feche
+       o próprio menu que acabou de abrir.
+    ======================================================== */
+
+    function configurarItem(item) {
+
+        /* Clique no item abre o modal, exceto em links e no menu (...) */
+        item.addEventListener("click", function (e) {
+
+            if (e.target.closest("a") || e.target.closest(".card-opcoes-wrap")) {
+                return;
+            }
+
+            abrirModal(item);
+
+        });
+
+        /* Botão "..." abre/fecha o menu deste item */
+        const botaoOpcoes = item.querySelector(".btn-opcoes");
+
+        if (botaoOpcoes) {
+
+            botaoOpcoes.addEventListener("click", function (e) {
+
+                e.stopPropagation();
+
+                const menu = this.nextElementSibling;
+                const jaAberto = menu.classList.contains("aberto");
+
+                document.querySelectorAll(".menu-opcoes").forEach(function (m) {
+                    m.classList.remove("aberto");
+                });
+
+                fecharFiltros();
+
+                if (!jaAberto) {
+                    menu.classList.add("aberto");
+                }
+
+            });
+
+        }
+
+        /* Confirmação antes de excluir, direto no link "Excluir" do item */
+        const linkExcluir = item.querySelector(".opcao-excluir");
+
+        if (linkExcluir) {
+
+            linkExcluir.addEventListener("click", function (e) {
+
+                const nome = item.dataset.nome || "este produto";
+
+                if (!window.confirm('Tem certeza que deseja excluir "' + nome + '"? Esta ação não pode ser desfeita.')) {
+                    e.preventDefault();
+                }
+
+            });
+
+        }
+
+    }
+
+    /* Aplica a configuração a todos os cards já renderizados pelo Jinja */
+    document.querySelectorAll("#produtosGrid > .produto-card").forEach(configurarItem);
+
+
+    /* ========================================================
+       FECHAR MODAL
+    ======================================================== */
+
+    if (fecharModal) {
+
+        fecharModal.addEventListener("click", function (e) {
+            e.stopPropagation();
+            fecharDetalhes();
+        });
+
+    }
+
+    overlay.addEventListener("click", function (e) {
+        if (e.target === overlay) {
+            fecharDetalhes();
+        }
+    });
+
+
+    /* ========================================================
+       CLIQUE FORA: fecha menus abertos e o painel de filtros
+    ======================================================== */
+
+    document.addEventListener("click", function () {
+
+        document.querySelectorAll(".menu-opcoes").forEach(function (menu) {
+            menu.classList.remove("aberto");
+        });
+
+        fecharFiltros();
+
+    });
+
+
+    /* ========================================================
+       ESC: fecha modal e painel de filtros
+    ======================================================== */
+
+    document.addEventListener("keydown", function (e) {
+
+        if (e.key !== "Escape") return;
+
+        if (produtoAtual) {
+            fecharDetalhes();
+        } else {
+            fecharFiltros();
+        }
+
+    });
+
+});
+
+</script>
+
+{% endblock %}
