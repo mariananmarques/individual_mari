@@ -1,0 +1,266 @@
+{% extends 'tela_home.html' %}
+
+{% block conteudo %}
+<title>Pedido Fornecedor</title>
+<link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tela_cadastro_pedidos.css') }}">
+
+<div id="btn-voltar">
+    <a href="{{ url_for('tela_produtos') }}" aria-label="Voltar para produtos">
+        <i class="bi bi-arrow-left"></i>
+        <span>Voltar</span>
+    </a>
+</div>
+
+<form action="{{ url_for('salvar_pedido', produto_id=produto.id) }}" method="POST" id="form-pedido">
+    <input type="hidden" name="produto_id" value="{{ produto.id }}">
+    <input type="hidden" name="fornecedor_id" value="{{ produto.fornecedor_id }}">
+    <input type="hidden" name="tipo" value="{{ tipo }}">
+    <input type="hidden" name="valor_total" id="valor_total" value="0">
+
+    <div class="conteudo_c">
+        <div class="card card-pedido"
+             id="card-pedido"
+             data-preco="{{ produto.preco_custo or 0 }}"
+             data-estoque="{{ produto.quantidade_estoque or 0 }}"
+             data-minimo="{{ produto.estoque_minimo or 0 }}"
+             data-validade="{{ produto.data_validade or '' }}">
+
+            <div class="card-header">
+                <h1>Pedido Fornecedor</h1>
+                <span class="card-subtitle">Solicite a reposição de produtos ao fornecedor</span>
+            </div>
+
+            <div class="pedido-grid">
+
+                <!-- ========== COLUNA ESQUERDA: PRODUTO ========== -->
+                <aside class="produto-painel">
+
+                    <div class="produto-imagem">
+                        {% if produto.imagem %}
+                                {% if produto.imagem.startswith('http://') or produto.imagem.startswith('https://') %}
+                                    <img src="{{ produto.imagem }}" alt="{{ produto.nome }}" loading="lazy"
+                                         onerror="this.parentElement.classList.add('sem-imagem');">
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='uploads/produtos/' + produto.imagem) }}"
+                                         alt="{{ produto.nome }}" loading="lazy"
+                                         onerror="this.parentElement.classList.add('sem-imagem');">
+                                {% endif %}
+                            {% endif %}
+                    </div>
+
+                    <h2 class="produto-nome">{{ produto.nome }}</h2>
+                    <p class="produto-marca">
+                        <i class="bi bi-tag"></i>
+                        {{ produto.marca or 'Marca não informada' }}
+                    </p>
+
+                    <div class="badges">
+                        {% if produto.quantidade_estoque <= 0 %}
+                        <span class="badge badge-danger"><i class="bi bi-x-circle-fill"></i> Sem estoque</span>
+                        {% elif produto.quantidade_estoque <= produto.estoque_minimo %}
+                        <span class="badge badge-warning"><i class="bi bi-exclamation-triangle-fill"></i> Reposição necessária</span>
+                        {% else %}
+                        <span class="badge badge-success"><i class="bi bi-check-circle-fill"></i> Estoque normal</span>
+                        {% endif %}
+                        <span class="badge" id="badge-validade" style="display:none;"></span>
+                    </div>
+
+                    <div class="produto-info">
+                        <div class="info-item">
+                            <span class="titulo">Preço de custo</span>
+                            <span class="valor" id="info-preco">—</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="titulo">Validade</span>
+                            <span class="valor" id="info-validade">—</span>
+                        </div>
+
+                        <div class="info-item info-wide">
+                            <span class="titulo">Fornecedor</span>
+                            <span class="valor">{{ produto.nome_fornecedor or '—' }}</span>
+                        </div>
+
+                        <div class="info-item {% if produto.quantidade_estoque <= produto.estoque_minimo %}estoque-baixo{% endif %}">
+                            <span class="titulo">Estoque atual</span>
+                            <span class="valor">
+                                {% if produto.quantidade_estoque <= produto.estoque_minimo %}⚠ {% endif %}{{ produto.quantidade_estoque }}
+                            </span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="titulo">Estoque mínimo</span>
+                            <span class="valor">{{ produto.estoque_minimo }}</span>
+                        </div>
+
+                        <div class="info-item info-wide">
+                            <span class="titulo">Após a entrada</span>
+                            <span class="valor" id="info-restante">{{ produto.quantidade_estoque }}</span>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- ========== COLUNA DIREITA: FORMULÁRIO ========== -->
+                <section class="pedido-form">
+
+                    <div class="linha">
+                        <div>
+                            <label for="quantidade_pedido">Quantidade</label>
+                            <input type="number" id="quantidade_pedido" name="quantidade_pedido"
+                                   min="1" placeholder="0" required>
+                            <small class="campo-aviso" id="aviso-qtd"></small>
+                        </div>
+
+                        <div>
+                            <label for="data_pedido">Data do pedido</label>
+                            <input type="datetime-local" id="data_pedido" name="data_pedido"
+                                   value="{{ pedido.data_pedido if pedido else '' }}">
+                        </div>
+                    </div>
+
+                    <div class="linha bloco">
+                        <div>
+                            <label for="observacao">Observação</label>
+                            <input type="text" id="observacao" name="observacao"
+                                   placeholder="Ex.: prazo de entrega, condição de pagamento..."
+                                   value="{{ pedido.observacao if pedido else '' }}">
+                        </div>
+                    </div>
+
+                    <!-- Resumo do pedido -->
+                    <div class="resumo">
+                        <h3><i class="bi bi-receipt"></i> Resumo do pedido</h3>
+
+                        <div class="resumo-linha">
+                            <span>Preço de custo unitário</span>
+                            <strong id="resumo-unitario">R$ 0,00</strong>
+                        </div>
+                        <div class="resumo-linha">
+                            <span>Quantidade</span>
+                            <strong id="resumo-qtd">0</strong>
+                        </div>
+                        <div class="resumo-linha">
+                            <span>Estoque após a entrada</span>
+                            <strong id="resumo-estoque">{{ produto.quantidade_estoque }}</strong>
+                        </div>
+                        <div class="resumo-total">
+                            <span>Total estimado</span>
+                            <strong id="resumo-total">R$ 0,00</strong>
+                        </div>
+                    </div>
+
+                    {% with mensagens = get_flashed_messages(with_categories=true) %}
+                    {% if mensagens %}
+                    {% for categoria, msg in mensagens %}
+                    <div class="custom-alert alert-{{ categoria }} alert-flash animate__animated animate__fadeIn" role="alert">
+                        <div class="alert-content">
+                            {% if categoria == 'success' %}
+                            <i class="bi bi-check-circle-fill alert-icon"></i>
+                            {% elif categoria == 'danger' or categoria == 'error' %}
+                            <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
+                            {% else %}
+                            <i class="bi bi-info-circle-fill alert-icon"></i>
+                            {% endif %}
+                            <span class="alert-text">{{ msg }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+
+                    <button type="submit" id="btn-enviar">
+                        <i class="bi bi-plus-circle"></i> Adicionar pedido
+                    </button>
+                </section>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+(function () {
+    const card      = document.getElementById('card-pedido');
+    const preco     = parseFloat(card.dataset.preco) || 0;
+    const estoque   = parseInt(card.dataset.estoque) || 0;
+    const minimo    = parseInt(card.dataset.minimo) || 0;
+    const validade  = card.dataset.validade;
+
+    const inputQtd   = document.getElementById('quantidade_pedido');
+    const inputData  = document.getElementById('data_pedido');
+    const aviso      = document.getElementById('aviso-qtd');
+    const btn        = document.getElementById('btn-enviar');
+    const inputTotal = document.getElementById('valor_total');
+
+    const brl = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    // Preço de custo
+    document.getElementById('info-preco').textContent = brl(preco);
+    document.getElementById('resumo-unitario').textContent = brl(preco);
+
+    // Data do pedido = agora, se estiver vazia
+    if (!inputData.value) {
+        const d = new Date();
+        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+        inputData.value = d.toISOString().slice(0, 16);
+    }
+
+    // Validade
+    (function () {
+        const info  = document.getElementById('info-validade');
+        const badge = document.getElementById('badge-validade');
+        if (!validade) { info.textContent = 'Não informada'; return; }
+
+        const dt = new Date(validade.slice(0, 10) + 'T00:00:00');
+        if (isNaN(dt)) { info.textContent = validade; return; }
+
+        info.textContent = dt.toLocaleDateString('pt-BR');
+
+        const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+        const dias = Math.ceil((dt - hoje) / 86400000);
+
+        badge.style.display = 'inline-flex';
+        if (dias < 0) {
+            badge.className = 'badge badge-danger';
+            badge.innerHTML = '<i class="bi bi-x-octagon-fill"></i> Vencido';
+        } else if (dias <= 90) {
+            badge.className = 'badge badge-warning';
+            badge.innerHTML = '<i class="bi bi-hourglass-split"></i> Vence em ' + dias + ' dia(s)';
+        } else {
+            badge.className = 'badge badge-success';
+            badge.innerHTML = '<i class="bi bi-calendar-check"></i> Validade ok';
+        }
+    })();
+
+    // Cálculo ao digitar a quantidade
+    function atualizar() {
+        const qtd = parseInt(inputQtd.value) || 0;
+        const total = qtd * preco;
+        const novoEstoque = estoque + qtd;
+
+        document.getElementById('resumo-qtd').textContent = qtd;
+        document.getElementById('resumo-total').textContent = brl(total);
+        document.getElementById('resumo-estoque').textContent = novoEstoque;
+        inputTotal.value = total.toFixed(2);
+
+        const elRest = document.getElementById('info-restante');
+        elRest.textContent = novoEstoque;
+        elRest.parentElement.classList.toggle('estoque-baixo', novoEstoque <= minimo);
+
+        aviso.className = 'campo-aviso';
+        aviso.textContent = '';
+
+        if (qtd > 0 && novoEstoque <= minimo) {
+            aviso.textContent = 'Atenção: mesmo com este pedido, o estoque continuará abaixo do mínimo.';
+            aviso.classList.add('alerta');
+        } else if (qtd > 0 && novoEstoque > minimo && estoque <= minimo) {
+            aviso.textContent = 'Este pedido normaliza o estoque.';
+            aviso.classList.add('ok');
+        }
+    }
+
+    inputQtd.addEventListener('input', atualizar);
+    atualizar();
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends 'tela_home.html' %}
+
+{% block conteudo %}
+<title>Fornecedores | MEDSTOCK</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tela_historico_de_fornecedor.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<div class="container">
+    <main class="content">
+
+        <div class="header">
+            <div class="header-left">
+                <h1>Fornecedores</h1>
+                <span class="contador" id="contador">{{ fornecedores|length }} cadastrados</span>
+            </div>
+
+            <div class="header-right">
+                <div class="search-wrapper">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" id="inputBusca" placeholder="Buscar fornecedor..." autocomplete="off">
+                </div>
+                <a href="{{ url_for('tela_cadastro_de_fornecedor') }}" class="btn btn-cadastro">
+                    <i class="bi bi-plus-lg me-2"></i> Cadastrar Novo Fornecedor
+                </a>
+            </div>
+        </div>
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+        {% for categoria, msg in mensagens %}
+        <div class="custom-alert alert-{{ categoria }} alert-flash animate__animated animate__fadeIn" role="alert">
+            <div class="alert-content">
+                {% if categoria == 'success' %}
+                <i class="bi bi-check-circle-fill alert-icon"></i>
+                {% elif categoria == 'danger' or categoria == 'error' %}
+                <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
+                {% else %}
+                <i class="bi bi-info-circle-fill alert-icon"></i>
+                {% endif %}
+                <span class="alert-text">{{ msg }}</span>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CNPJ</th>
+                        <th>Email</th>
+                        <th class="col-acao">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaDados">
+                    {% for fornecedor in fornecedores %}
+                    {% set cnpj = (fornecedor.cnpj or '')|string %}
+                    <tr>
+                        <td>
+                            <div class="fornecedor-nome">
+                                <span class="avatar">{{ fornecedor.nome_fornecedor[:1]|upper }}</span>
+                                <span>{{ fornecedor.nome_fornecedor }}</span>
+                            </div>
+                        </td>
+                        <td class="nowrap">
+                            {% if cnpj|length == 14 and cnpj.isdigit() %}{{ cnpj[:2] }}.{{ cnpj[2:5] }}.{{ cnpj[5:8] }}/{{ cnpj[8:12] }}-{{ cnpj[12:] }}{% else %}{{ cnpj }}{% endif %}
+                        </td>
+                        <td class="email">{{ fornecedor.email }}</td>
+                        <td class="acoes">
+                            <div class="acoes-grupo">
+                                <a class="btn-acao btn-editar"
+                                   href="{{ url_for('editar_fornecedor', id=fornecedor.id) }}">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                                <a class="btn-acao btn-pedido"
+                                   href="{{ url_for('tela_produtos') }}">
+                                    <i class="bi bi-cart-plus"></i> Pedido
+                                </a>
+                                <a class="btn-acao btn-ver"
+                                   href="{{ url_for('tela_pedidos_fornecedor', fornecedor_id=fornecedor.id) }}">
+                                    <i class="bi bi-clipboard-data"></i> Pedidos
+                                </a>
+                                <a class="btn-acao btn-excluir"
+                                   href="{{ url_for('excluir_fornecedor', id=fornecedor.id) }}"
+                                   onclick="return confirm('Excluir o fornecedor {{ fornecedor.nome_fornecedor|e }}? Esta ação não pode ser desfeita.')">
+                                    <i class="bi bi-trash"></i> Excluir
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr id="linhaVazia" class="linha-vazia" {% if fornecedores %}style="display:none"{% endif %}>
+                        <td colspan="4">
+                            <i class="bi bi-building-x"></i>
+                            <p>Nenhum fornecedor encontrado</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+
+<script>
+    const inputBusca = document.getElementById("inputBusca");
+    const linhas = document.querySelectorAll("#tabelaDados tr:not(#linhaVazia)");
+    const linhaVazia = document.getElementById("linhaVazia");
+    const contador = document.getElementById("contador");
+
+    function somenteDigitos(texto) {
+        return texto.replace(/\D/g, "");
+    }
+
+    inputBusca.addEventListener("input", function () {
+        const filtro = this.value.toLowerCase().trim();
+        const filtroDigitos = somenteDigitos(filtro);
+        let visiveis = 0;
+
+        linhas.forEach(function (linha) {
+            // nome, CNPJ e email
+            let texto = "";
+            for (let i = 0; i < 3; i++) {
+                texto += " " + linha.cells[i].textContent.toLowerCase();
+            }
+
+            // permite buscar o CNPJ com ou sem pontuação
+            const corresponde =
+                texto.includes(filtro) ||
+                (filtroDigitos.length > 0 && somenteDigitos(texto).includes(filtroDigitos));
+
+            linha.style.display = corresponde ? "" : "none";
+            if (corresponde) visiveis++;
+        });
+
+        linhaVazia.style.display = visiveis === 0 ? "" : "none";
+        contador.textContent = visiveis + (visiveis === 1 ? " cadastrado" : " cadastrados");
+    });
+</script>
+{% endblock %}

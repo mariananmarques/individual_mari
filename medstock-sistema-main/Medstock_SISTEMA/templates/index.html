@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MEDSTOCK</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Favicon -->
+    <link rel="icon"
+          href="{{ url_for('static', filename='img/MedStock.png') }}"
+          type="image/png">
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================================
+         HEADER
+    ========================================================== -->
+
+    <header id="header">
+
+
+        <!-- LOGO -->
+
+        <div class="logo">
+
+            <img
+                src="{{ url_for('static', filename='img/escrita_medstock.png') }}"
+                alt="Logo MEDSTOCK">
+                
+
+        </div>
+
+
+        <!-- BOTÃO DO MENU RESPONSIVO -->
+
+        <button
+            class="menu-toggle"
+            id="menu-toggle"
+            aria-label="Abrir menu">
+
+            ☰
+
+        </button>
+
+
+        <!-- MENU -->
+
+        <nav class="menu">
+
+
+            <a href="#">
+
+                Home
+
+            </a>
+
+
+            <a href="#solucoes">
+
+                Soluções
+
+            </a>
+
+
+            <a href="#depoimentos">
+
+                Avaliações
+
+            </a>
+
+
+            <a href="#planos">
+
+                Contratos
+
+            </a>
+
+
+            <a href="#footer">
+
+                Mais
+
+            </a>
+
+
+        </nav>
+
+
+        <!-- BOTÕES -->
+
+        <div class="botoes">
+
+            
+                <a
+                href="{{ url_for('tela_login') }}"
+                id="login">
+                    LOGIN
+                </a>
+            
+
+
+            <button class="contrate">
+                <a href="#footer">
+                    CONTRATE
+                </a>
+
+            </button>
+
+
+        </div>
+
+
+    </header>
+
+
+    <!-- =========================================================
+         HEADER FIM
+    ========================================================== -->
+
+
+
+    <!-- =========================================================
+         MAIN / BANNER
+    ========================================================== -->
+
+    <section class="conteudo-banner_main">
+
+
+        <main
+            class="banner_main"
+            id="sobre-us">
+
+
+            <!-- LADO ESQUERDO -->
+
+            <div class="lado-esquerdo_main">
+
+
+                <div class="caixa1_main">
+
+
+                    <h1>
+
+                        Sobre nós
+
+                    </h1>
+
+
+                    <p>
+
+                        Nós somos da Medstock, uma empresa de gerenciamento
+                        de estoque voltado para indústrias farmacêuticas,
+                        onde os remédios que são trazidos até nós são
+                        armazenados no nosso sistema. A fim de facilitar
+                        a automação desse processo trazendo os benefícios
+                        de rapidez e eficácia para monitorar a entrada e
+                        saída de produtos e mais eficiência no gerenciamento
+                        do seu estoque.
+
+                    </p>
+
+
+                </div>
+
+
+
+                <div class="botoes_main">
+
+
+                    <input
+                        type="email"
+                        placeholder="Insira seu email">
+
+
+                    <button>
+
+                        Cadastre-se
+
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- LADO DIREITO -->
+
+            <div class="imagem_main">
+
+
+                <img
+                    src="{{ url_for('static', filename='img/img_main.jpg') }}"
+                    alt="Gerenciamento de estoque MEDSTOCK">
+
+
+            </div>
+
+
+        </main>
+
+
+    </section>
+
+
+    <!-- =========================================================
+         MAIN FIM
+    ========================================================== -->
+
+
+
+    <!-- =========================================================
+         SOLUÇÕES
+    ========================================================== -->
+
+    <section
+        id="solucoes"
+        class="reveal">
+
+
+        <h1>
+
+            Nossas Soluções
+
+        </h1>
+
+
+
+        <div id="card-solu">
+
+
+            <!-- BOX 1 -->
+
+            <div class="box1_solu">
+
+
+                <h2>
+
+                    Controle em Tempo Real
+
+                </h2>
+
+
+                <p>
+
+                    Evita o descompasso entre o estoque físico e o sistema,
+                    eliminando erros manuais.
+
+                </p>
+
+
+
+                <h2>
+
+                    Automação de Processos
+
+                </h2>
+
+
+                <p>
+
+                    Agiliza entradas, saídas e inventários, poupando seu
+                    tempo e agilizando a empresa.
+
+                </p>
+
+
+            </div>
+
+
+
+            <!-- IMAGEM SOLUÇÕES -->
+
+            <div id="img_solucoes">
+
+
+                <img
+                    src="https://static.vecteezy.com/system/resources/previews/016/349/274/non_2x/white-lightbulb-outline-drawing-icon-free-png.png"
+                    alt="Ícone de soluções">
+
+
+            </div>
+
+
+
+            <!-- BOX 2 -->
+
+            <div class="box2_solu">
+
+
+                <h2>
+
+                    Prevenção de Perdas
+
+                </h2>
+
+
+                <p>
+
+                    Automatiza o monitoramento de datas, reduzindo
+                    desperdícios de produtos vencidos e controlando
+
+                    <br>
+
+                    o giro de estoque para evitar o acúmulo desnecessário.
+
+                </p>
+
+
+
+                <h2>
+
+                    Sistema eficiente
+
+                </h2>
+
+
+                <p>
+
+                    O sistema monitora cada lote, permitindo o rastreamento
+                    completo (do recebimento à venda)
+
+                    <br>
+
+                    e alertando sobre produtos próximos ao vencimento,
+                    o que evita a venda de medicamentos vencidos e
+                    atende a regulamentações.
+
+                </p>
+
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =========================================================
+         SOLUÇÕES FIM
+    ========================================================== -->
+
+
+
+    <!-- =========================================================
+         DEPOIMENTOS
+    ========================================================== -->
+
+    <section
+        id="depoimentos"
+        class="reveal">
+
+
+        <h1>
+
+            O que dizem nossos clientes?
+
+        </h1>
+
+
+
+        <div class="depoimento">
+
+
+            <!-- DEPOIMENTO 1 -->
+
+            <div class="card-depo">
+
+
+                <div class="usuario">
+
+
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/500px-Default_pfp.svg.png"
+                        alt="Foto de perfil">
+
+
+                </div>
+
+
+                <h3>
+
+                    Jennifer Lawrence
+
+                </h3>
+
+
+                <p>
+
+                    "Muito bom! Recomendo."
+
+                </p>
+
+
+                <div class="estrelas">
+
+
+                    <img
+                        src="https://static.vecteezy.com/system/resources/thumbnails/051/691/096/small/five-stars-icon-on-transparent-background-free-png.png"
+                        alt="Cinco estrelas">
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- DEPOIMENTO 2 -->
+
+            <div class="card-depo">
+
+
+                <div class="usuario">
+
+
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/500px-Default_pfp.svg.png"
+                        alt="Foto de perfil">
+
+
+                </div>
+
+
+                <h3>
+
+                    Fernando Salazar
+
+                </h3>
+
+
+                <p>
+
+                    "Sistema maravilhoso!"
+
+                </p>
+
+
+                <div class="estrelas">
+
+
+                    <img
+                        src="https://static.vecteezy.com/system/resources/thumbnails/051/691/096/small/five-stars-icon-on-transparent-background-free-png.png"
+                        alt="Cinco estrelas">
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- DEPOIMENTO 3 -->
+
+            <div class="card-depo">
+
+
+                <div class="usuario">
+
+
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/500px-Default_pfp.svg.png"
+                        alt="Foto de perfil">
+
+
+                </div>
+
+
+                <h3>
+
+                    Kim Namjoon
+
+                </h3>
+
+
+                <p>
+
+                    "Amei! Mudou a minha vida!!"
+
+                </p>
+
+
+                <div class="estrelas">
+
+
+                    <img
+                        src="https://static.vecteezy.com/system/resources/thumbnails/051/691/096/small/five-stars-icon-on-transparent-background-free-png.png"
+                        alt="Cinco estrelas">
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- DEPOIMENTO 4 -->
+
+            <div class="card-depo">
+
+
+                <div class="usuario">
+
+
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/500px-Default_pfp.svg.png"
+                        alt="Foto de perfil">
+
+
+                </div>
+
+
+                <h3>
+
+                    Manoel Jacinto
+
+                </h3>
+
+
+                <p>
+
+                    "Super funcional!!!"
+
+                </p>
+
+
+                <div class="estrelas">
+
+
+                    <img
+                        src="https://static.vecteezy.com/system/resources/thumbnails/051/691/096/small/five-stars-icon-on-transparent-background-free-png.png"
+                        alt="Cinco estrelas">
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =========================================================
+         DEPOIMENTOS FIM
+    ========================================================== -->
+
+
+
+    <!-- =========================================================
+         PLANOS
+    ========================================================== -->
+
+    <section
+        class="nossosplanos-container reveal">
+
+
+        <h1
+            class="comeco"
+            id="planos">
+
+            Nossos Planos
+
+        </h1>
+
+
+
+        <div class="cards">
+
+
+            <!-- PLANO TESTE -->
+
+            <div class="card">
+
+
+                <h2>
+
+                    TESTE GRÁTIS
+
+                </h2>
+
+
+                <hr>
+
+
+                <p class="descricao">
+
+                    Teste nosso sistema
+
+                    <br>
+
+                    para simular seu estoque
+
+                    <br>
+
+                    durante 7 dias
+
+                </p>
+
+
+                <hr>
+
+
+                <p class="testetexto">
+
+                    -Grátis-
+
+                </p>
+
+
+                <button id="botao-planos">
+
+                    OK
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- PLANO LENDÁRIO -->
+
+            <div class="card">
+
+
+                <h2>
+
+                    Plano Lendário
+
+                </h2>
+
+
+                <p class="descricao">
+
+                    -Plano mensal-
+
+                    <br>
+
+                    Fale com um especialista e
+
+                    <br>
+
+                    descubra o plano ideal para
+
+                    <br>
+
+                    seu estoque
+
+                </p>
+
+
+                <hr>
+
+
+                <p class="preco-texto">
+
+                    Valor
+
+                </p>
+
+
+                <h3 class="preco">
+
+                    Sob consulta
+
+                </h3>
+
+
+                <button id="botao-planos">
+
+                    Falar com um especialista
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- PLANO PREMIUM -->
+
+            <div class="card">
+
+
+                <h2>
+
+                    Plano Lendário Premium
+
+                </h2>
+
+
+                <p class="descricao">
+
+                    -Plano anual-
+
+                    <br>
+
+                    Fale com um especialista e
+
+                    <br>
+
+                    descubra o plano ideal para
+
+                    <br>
+
+                    seu estoque
+
+                </p>
+
+
+                <hr>
+
+
+                <p class="preco-texto">
+
+                    Valor
+
+                </p>
+
+
+                <h3 class="preco">
+
+                    Sob consulta
+
+                </h3>
+
+
+                <button id="botao-planos">
+
+                    Falar com um especialista
+
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =========================================================
+         PLANOS FIM
+    ========================================================== -->
+
+
+
+    <!-- =========================================================
+         FORMULÁRIO
+    ========================================================== -->
+
+    <h1 id="h1-footer">
+
+        Fale com nossos especialistas
+
+    </h1>
+
+
+
+    <form
+        action=""
+        id="form-footer"
+        class="reveal">
+
+
+        <!-- EMAIL -->
+
+        <div id="caixa-texto-footer">
+
+
+            <input
+                type="email"
+                name="email"
+                placeholder="Insira seu melhor email:"
+                id="input-footer">
+
+
+        </div>
+
+
+
+        <!-- WHATSAPP -->
+
+        <div id="caixa-texto-footer">
+
+
+            <input
+                type="tel"
+                name="number"
+                placeholder="Insira seu Whatsapp:"
+                id="input-footer">
+
+
+            <button>
+
+                ENVIAR
+
+            </button>
+
+
+        </div>
+
+
+    </form>
+
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================== -->
+
+    <footer
+        id="footer"
+        class="reveal">
+
+
+        <section id="container-footer">
+
+
+            <!-- FOOTER 1 -->
+
+            <div id="footer1">
+
+
+                <img
+                    src="{{ url_for('static', filename='img/MedStock.png') }}"
+                    alt="Logo MEDSTOCK">
+
+
+                <p>
+
+                    Melhor programa de gerenciamento de estoque
+
+                </p>
+
+
+            </div>
+
+
+
+            <div id="divisao-footer1"></div>
+
+
+
+            <!-- FOOTER 2 -->
+
+            <div id="footer2">
+
+
+                <nav id="navegacao-footer">
+
+
+                    <!-- LINKS -->
+
+                    <ul id="lista-footer">
+
+
+                        <div id="primeira-linha-footer">
+
+
+                            <a
+                                href="#home"
+                                id="home-footer">
+
+                                Home
+
+                            </a>
+
+
+                            <a href="#sobre-us">
+
+                                Sobre Nós
+
+                            </a>
+
+
+                            <a href="#solucoes">
+
+                                Soluções
+
+                            </a>
+
+
+                        </div>
+
+
+
+                        <div id="segunda-linha-footer">
+
+
+                            <li>ㅤ</li>
+
+
+                            <a href="#depoimentos">
+
+                                Avaliações
+
+                            </a>
+
+
+                            <a href="#planos">
+
+                                Nossos Planos
+
+                            </a>
+
+
+                        </div>
+
+
+                    </ul>
+
+
+
+                    <!-- CONTATO -->
+
+                    <ul id="lista2-footer">
+
+
+                        <li id="home-footer">
+
+                            Entre em contato conosco
+
+                        </li>
+
+
+                        <li>
+
+                            E-mail:
+
+                            <a href="mailto:Medstock@gmail.com">
+
+                                Medstock@gmail.com
+
+                            </a>
+
+                        </li>
+
+
+                        <li>
+
+                            Telefone:
+
+                            <a href="tel:199999999">
+
+                                199999999
+
+                            </a>
+
+                        </li>
+
+
+                    </ul>
+
+
+                </nav>
+
+
+            </div>
+
+
+
+            <!-- FOOTER 3 -->
+
+            <div id="footer3">
+
+
+                <p>
+
+                    Medstock — 2026 – © Todos os direitos reservados.
+                    CNPJ: 02.351.877/0011-24.
+
+                </p>
+
+
+
+                <!-- REDES SOCIAIS -->
+
+                <div id="footer-apps">
+
+
+                    <!-- INSTAGRAM -->
+
+                    <div id="footer-contorno">
+
+
+                        <img
+                            src="{{ url_for('static', filename='img/instagram.png') }}"
+                            alt="Instagram">
+
+
+                    </div>
+
+
+
+                    <!-- FACEBOOK -->
+
+                    <div id="footer-contorno">
+
+
+                        <img
+                            src="{{ url_for('static', filename='img/facebook.png') }}"
+                            alt="Facebook">
+
+
+                    </div>
+
+
+
+                    <!-- LINKEDIN -->
+
+                    <div id="footer-contorno">
+
+
+                        <img
+                            src="{{ url_for('static', filename='img/linkedin.png') }}"
+                            alt="LinkedIn">
+
+
+                    </div>
+
+
+
+                    <!-- WHATSAPP -->
+
+                    <div id="footer-contorno">
+
+
+                        <img
+                            src="{{ url_for('static', filename='img/whatsapp.png') }}"
+                            alt="WhatsApp">
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </footer>
+
+
+    <!-- =========================================================
+         FOOTER FIM
+    ========================================================== -->
+
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================== -->
+
+    <script src="{{ url_for('static', filename='js/scriptresponsivo.js') }}"></script>
+
+
+</body>
+
+</html>

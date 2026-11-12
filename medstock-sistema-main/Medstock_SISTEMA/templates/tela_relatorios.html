@@ -1,0 +1,312 @@
+{% extends "tela_home.html" %}
+
+{% block conteudo %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tela_relatorios.css') }}">
+
+{% macro celula(valor, fmt) -%}
+  {%- if valor is none or valor == '' -%}—
+  {%- elif fmt == 'moeda' -%}{{ valor | brl }}
+  {%- elif fmt == 'int' -%}{{ valor | inteiro }}
+  {%- elif fmt == 'pct' -%}{{ valor }}%
+  {%- elif fmt == 'data' -%}{{ valor.strftime('%d/%m/%Y') }}
+  {%- elif fmt == 'datahora' -%}{{ valor.strftime('%d/%m/%Y %H:%M') }}
+  {%- elif fmt == 'badge' -%}
+    <span class="rel-badge badge-{{ valor | lower | replace(' ', '-') }}">{{ valor }}</span>
+  {%- else -%}{{ valor }}
+  {%- endif -%}
+{%- endmacro %}
+
+<main class="rel-page">
+
+  <form method="get" action="{{ url_for('relatorios.tela_relatorios') }}" id="formRelatorio">
+
+    <!-- ===== CABEÇALHO (mesmo padrão da tela de Produtos) ===== -->
+    <div class="rel-header">
+
+      <h1 class="rel-titulo">
+        Relatórios
+        <i class="bi bi-bar-chart-line"></i>
+      </h1>
+
+      <div class="rel-toolbar">
+
+        <!-- FILTROS -->
+        <button type="button" class="btn-filtros" id="btnFiltros" aria-expanded="true" aria-controls="painelFiltros">
+          <i class="bi bi-funnel-fill"></i>
+          Filtros
+          <span class="filtros-selo" id="filtrosSelo" hidden>0</span>
+          <i class="bi bi-list filtros-menu"></i>
+        </button>
+
+        <!-- BUSCA -->
+        <div class="busca-wrap">
+            <i class="bi bi-search"></i>
+            <input type="text" id="inputBusca" placeholder="Pesquisar" autocomplete="off">
+        </div>
+
+        <!-- ALTERNÂNCIA DE VISUALIZAÇÃO -->
+        <div class="view-toggle" role="tablist" aria-label="Alternar visualização do relatório">
+
+            <button type="button" class="view-btn" data-view="grid"
+                    role="tab" aria-pressed="false" aria-label="Visualização em grade" title="Grade">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+            </button>
+
+            <button type="button" class="view-btn" data-view="lista"
+                    role="tab" aria-pressed="false" aria-label="Visualização em lista" title="Lista">
+                <i class="bi bi-list-ul"></i>
+            </button>
+
+            <button type="button" class="view-btn ativo" data-view="tabela"
+                    role="tab" aria-pressed="true" aria-label="Visualização em tabela" title="Tabela">
+                <i class="bi bi-table"></i>
+            </button>
+
+        </div>
+
+        <!-- EXPORTAR -->
+        <button type="submit" class="btn-cadastro" formaction="{{ url_for('relatorios.exportar_excel') }}">
+            <i class="bi bi-file-earmark-excel"></i>
+            Exportar Excel
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Painel de filtros (aberto/fechado pelo botão Filtros) -->
+    <div id="painelFiltros">
+
+      <!-- Tipo de relatório -->
+      <h2 class="rel-section-title">Tipo de relatório</h2>
+      <div class="rel-tipos">
+        {% set icones = {
+          'estoque': 'bi-box-seam',
+          'movimentacao': 'bi-arrow-left-right',
+          'baixo': 'bi-exclamation-triangle',
+          'validade': 'bi-calendar2-x',
+          'financeiro': 'bi-cash-coin'
+        } %}
+        {% set descricoes = {
+          'estoque': 'Produtos, categorias, fornecedores, quantidades, mínimo e valores.',
+          'movimentacao': 'Movimentações por período e tipo, com quantidades e valores.',
+          'baixo': 'Produtos que precisam de reposição conforme o estoque mínimo.',
+          'validade': 'Medicamentos vencidos ou próximos do vencimento.',
+          'financeiro': 'Valor do estoque, potencial de venda e margem estimada.'
+        } %}
+        {% for chave, nome in tipos.items() %}
+        <label class="rel-tipo {{ 'ativo' if f.tipo == chave }}">
+          <input type="radio" name="tipo" value="{{ chave }}" {{ 'checked' if f.tipo == chave }}>
+          <span class="rel-tipo-icone"><i class="bi {{ icones[chave] }}"></i></span>
+          <span class="rel-tipo-texto">
+            <strong>{{ nome }}</strong>
+            <small>{{ descricoes[chave] }}</small>
+          </span>
+        </label>
+        {% endfor %}
+      </div>
+
+      <!-- Filtros -->
+      <h2 class="rel-section-title">Filtros</h2>
+      <section class="rel-card rel-filtros">
+
+        <div class="rel-campo" data-tipos="movimentacao financeiro">
+          <label for="data_inicial">Data inicial</label>
+          <input type="date" id="data_inicial" name="data_inicial" value="{{ f.data_inicial }}">
+        </div>
+
+        <div class="rel-campo" data-tipos="movimentacao financeiro">
+          <label for="data_final">Data final</label>
+          <input type="date" id="data_final" name="data_final" value="{{ f.data_final }}">
+        </div>
+
+        <div class="rel-campo" data-tipos="movimentacao">
+          <label for="tipo_mov">Tipo de movimentação</label>
+          <select id="tipo_mov" name="tipo_mov">
+            <option value="">Entradas e saídas</option>
+            <option value="ENTRADA" {{ 'selected' if f.tipo_mov == 'ENTRADA' }}>Somente entradas</option>
+            <option value="SAIDA"   {{ 'selected' if f.tipo_mov == 'SAIDA' }}>Somente saídas</option>
+          </select>
+        </div>
+
+        <div class="rel-campo" data-tipos="estoque movimentacao baixo validade">
+          <label for="fornecedor_id">Fornecedor</label>
+          <select id="fornecedor_id" name="fornecedor_id">
+            <option value="">Todos</option>
+            {% for fo in fornecedores %}
+            <option value="{{ fo.id }}" {{ 'selected' if f.fornecedor_id|string == fo.id|string }}>{{ fo.nome_fornecedor }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="rel-campo" data-tipos="estoque baixo validade">
+          <label for="categoria">Categoria</label>
+          <select id="categoria" name="categoria">
+            <option value="">Todas</option>
+            {% for c in categorias %}
+            <option value="{{ c }}" {{ 'selected' if f.categoria == c }}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="rel-campo" data-tipos="validade">
+          <label for="prazo">Prazo de validade</label>
+          <select id="prazo" name="prazo">
+            <option value="vencidos" {{ 'selected' if f.prazo == 'vencidos' }}>Somente vencidos</option>
+            <option value="30" {{ 'selected' if f.prazo == '30' }}>Vencidos + até 30 dias</option>
+            <option value="60" {{ 'selected' if f.prazo == '60' }}>Vencidos + até 60 dias</option>
+            <option value="90" {{ 'selected' if f.prazo == '90' }}>Vencidos + até 90 dias</option>
+          </select>
+        </div>
+
+        <div class="rel-acoes">
+          <button type="submit" class="btn-rel btn-primario">
+            <i class="bi bi-search"></i> Gerar relatório
+          </button>
+          <button type="button" class="btn-rel btn-secundario" onclick="window.print()">
+            <i class="bi bi-file-earmark-pdf"></i> PDF
+          </button>
+        </div>
+      </section>
+    </div>
+  </form>
+
+  <!-- Resumo -->
+  <section class="rel-resumo">
+    {% for rotulo, valor, fmt, icone in resumo %}
+    <article class="rel-stat">
+      <span class="rel-stat-icone"><i class="bi {{ icone }}"></i></span>
+      <div>
+        <small>{{ rotulo }}</small>
+        <strong>{{ celula(valor, fmt) }}</strong>
+      </div>
+    </article>
+    {% endfor %}
+  </section>
+
+  <!-- Resultado -->
+  <section class="rel-card rel-resultado">
+    <div class="rel-resultado-topo">
+      <div>
+        <h3>{{ titulo_relatorio }}</h3>
+        <small>Gerado em {{ gerado_em }} · <span id="contador">{{ linhas|length }} registro(s)</span></small>
+      </div>
+    </div>
+
+    {% if linhas %}
+    <div class="rel-tabela-wrap view-tabela" id="tabelaWrap">
+      <table class="rel-tabela" id="tabelaRelatorio">
+        <thead>
+          <tr>{% for chave, rotulo, fmt in colunas %}
+            <th class="{{ 'num' if fmt in ('int','moeda','pct') }}">{{ rotulo }}</th>
+          {% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for l in linhas %}
+          <tr>
+            {% for chave, rotulo, fmt in colunas %}
+            <td class="{{ 'num' if fmt in ('int','moeda','pct') }}" data-label="{{ rotulo }}">{{ celula(l[chave], fmt) }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="rel-vazio" id="vazioBusca" hidden>
+        <i class="bi bi-search"></i>
+        <p>Nenhum registro corresponde à pesquisa.</p>
+      </div>
+    </div>
+    {% else %}
+    <div class="rel-vazio">
+      <i class="bi bi-inbox"></i>
+      <p>Nenhum registro encontrado para os filtros selecionados.</p>
+    </div>
+    {% endif %}
+  </section>
+</main>
+
+<script>
+(function () {
+  const form     = document.getElementById('formRelatorio');
+  const painel   = document.getElementById('painelFiltros');
+  const btnFilt  = document.getElementById('btnFiltros');
+  const selo     = document.getElementById('filtrosSelo');
+  const busca    = document.getElementById('inputBusca');
+  const wrap     = document.getElementById('tabelaWrap');
+  const tabela   = document.getElementById('tabelaRelatorio');
+  const contador = document.getElementById('contador');
+  const vazio    = document.getElementById('vazioBusca');
+
+  /* ----- Campos visíveis conforme o tipo + selo de filtros ativos ----- */
+  function atualizarCampos() {
+    const tipo = form.querySelector('input[name="tipo"]:checked').value;
+    form.querySelectorAll('.rel-tipo').forEach(el =>
+      el.classList.toggle('ativo', el.querySelector('input').checked));
+
+    let ativos = 0;
+    form.querySelectorAll('.rel-campo').forEach(el => {
+      const visivel = el.dataset.tipos.split(' ').includes(tipo);
+      el.style.display = visivel ? '' : 'none';
+      el.querySelectorAll('input, select').forEach(i => {
+        i.disabled = !visivel;
+        if (visivel && i.value && i.id !== 'prazo') ativos++;
+      });
+    });
+    selo.textContent = ativos;
+    selo.hidden = ativos === 0;
+  }
+
+  form.querySelectorAll('input[name="tipo"]').forEach(r =>
+    r.addEventListener('change', () => { atualizarCampos(); form.submit(); }));
+  form.querySelectorAll('.rel-campo input, .rel-campo select').forEach(i =>
+    i.addEventListener('change', atualizarCampos));
+
+  /* ----- Botão Filtros: abre/fecha o painel ----- */
+  btnFilt.addEventListener('click', () => {
+    const fechado = painel.classList.toggle('fechado');
+    btnFilt.setAttribute('aria-expanded', !fechado);
+    btnFilt.classList.toggle('aberto', !fechado);
+  });
+  btnFilt.classList.add('aberto');
+
+  /* ----- Busca dentro do resultado ----- */
+  if (tabela) {
+    const linhas = Array.from(tabela.tBodies[0].rows);
+    busca.addEventListener('input', () => {
+      const termo = busca.value.trim().toLowerCase();
+      let visiveis = 0;
+      linhas.forEach(tr => {
+        const ok = !termo || tr.textContent.toLowerCase().includes(termo);
+        tr.hidden = !ok;
+        if (ok) visiveis++;
+      });
+      contador.textContent = termo
+        ? visiveis + ' de ' + linhas.length + ' registro(s)'
+        : linhas.length + ' registro(s)';
+      vazio.hidden = visiveis !== 0;
+    });
+    busca.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
+  } else {
+    busca.disabled = true;
+  }
+
+  /* ----- Alternância Grade / Lista / Tabela ----- */
+  const botoes = document.querySelectorAll('.view-btn');
+  function aplicarView(v) {
+    botoes.forEach(b => {
+      const on = b.dataset.view === v;
+      b.classList.toggle('ativo', on);
+      b.setAttribute('aria-pressed', on);
+    });
+    if (wrap) wrap.className = 'rel-tabela-wrap view-' + v;
+    try { localStorage.setItem('rel_view', v); } catch (e) {}
+  }
+  botoes.forEach(b => b.addEventListener('click', () => aplicarView(b.dataset.view)));
+  let salva = 'tabela';
+  try { salva = localStorage.getItem('rel_view') || salva; } catch (e) {}
+  aplicarView(salva);
+
+  atualizarCampos();
+})();
+</script>
+{% endblock %}
